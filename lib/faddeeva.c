@@ -40,7 +40,7 @@
  *   ../CHANGELOG
  *
  * More information:
- *   man 3 faddeeva
+ *   man 3 w_of_z
  */
 
 /* 
@@ -62,14 +62,6 @@
        and a lookup table of Chebyshev polynomials.  For speed,
        I implemented a similar algorithm for Im[w(x)] of real x,
        since this comes up frequently in the other error functions.
-
-   If HAVE_CONFIG_H is #defined (e.g. by compiling with -DHAVE_CONFIG_H),
-   then we #include "config.h", which is assumed to be a GNU autoconf-style
-   header defining HAVE_* macros to indicate the presence of features. In
-   particular, if HAVE_ISNAN and HAVE_ISINF are #defined, we use those
-   functions in math.h instead of defining our own, and if HAVE_ERF and/or
-   HAVE_ERFC are defined we use those functions from <cmath> for erf and
-   erfc of real arguments, respectively, instead of defining our own.
 */
 
 #include "cerf.h"
@@ -97,14 +89,7 @@ static inline cmplx cpolar(double r, double t)
 // compute erfcx(z) = exp(z^2) erfz(z)
 cmplx faddeeva_erfcx(cmplx z, double relerr)
 {
-    return faddeeva(C(-cimag(z), creal(z)), relerr);
-}
-
-/******************************************************************************/
-// compute the error function erf(x)
-double faddeeva_erf_re(double x)
-{
-    return erf(x); // C99 supplies erf in math.h
+    return w_of_z(C(-cimag(z), creal(z)), relerr);
 }
 
 /******************************************************************************/
@@ -114,15 +99,14 @@ cmplx faddeeva_erf(cmplx z, double relerr)
     double x = creal(z), y = cimag(z);
 
     if (y == 0)
-        return C(faddeeva_erf_re(x),
-                 y); // preserve sign of 0
+        return C(erf(x), y); // preserve sign of 0
     if (x == 0) // handle separately for speed & handling of y = Inf or NaN
         return C(x, // preserve sign of 0
                  /* handle y -> Inf limit manually, since
                     exp(y^2) -> Inf but Im[w(y)] -> 0, so
                     IEEE will give us a NaN when it should be Inf */
                  y*y > 720 ? (y > 0 ? Inf : -Inf)
-                 : exp(y*y) * im_w_of_z(y));
+                 : exp(y*y) * im_w_of_x(y));
   
     double mRe_z2 = (y - x) * (x + y); // Re(-z^2), being careful of overflow
     double mIm_z2 = -2*x*y; // Im(-z^2)
@@ -143,7 +127,7 @@ cmplx faddeeva_erf(cmplx z, double relerr)
            values when multiplying w in an overflow situation. */
         return 1.0 - exp(mRe_z2) *
             (C(cos(mIm_z2), sin(mIm_z2))
-             * faddeeva(C(-y,x), relerr));
+             * w_of_z(C(-y,x), relerr));
     }
     else { // x < 0
         if (x > -8e-2) { // duplicate from above to avoid fabs(x) call
@@ -158,7 +142,7 @@ cmplx faddeeva_erf(cmplx z, double relerr)
            values when multiplying w in an overflow situation. */
         return exp(mRe_z2) *
             (C(cos(mIm_z2), sin(mIm_z2))
-             * faddeeva(C(y,-x), relerr)) - 1.0;
+             * w_of_z(C(y,-x), relerr)) - 1.0;
     }
 
     // Use Taylor series for small |z|, to avoid cancellation inaccuracy
@@ -193,7 +177,7 @@ taylor_erfi:
                           + x2*x2 * (0.11283791670955125739
                                      + y2 * (0.45135166683820502956
                                              + 0.15045055561273500986*y2))),
-             expy2 * (im_w_of_z(y)
+             expy2 * (im_w_of_x(y)
                       - x2*y * (1.1283791670955125739 
                                 - x2 * (0.56418958354775628695 
                                         + 0.37612638903183752464*y2))));
@@ -213,14 +197,7 @@ cmplx faddeeva_erfi(cmplx z, double relerr)
 double faddeeva_erfi_re(double x)
 {
     return x*x > 720 ? (x > 0 ? Inf : -Inf)
-        : exp(x*x) * im_w_of_z(x);
-}
-
-/******************************************************************************/
-// erfc(x) = 1 - erf(x)
-double faddeeva_erfc_re(double x)
-{
-    return erfc(x); // C99 supplies erfc in math.h
+        : exp(x*x) * im_w_of_x(x);
 }
 
 /******************************************************************************/
@@ -235,7 +212,7 @@ cmplx faddeeva_erfc(cmplx z, double relerr)
                     exp(y^2) -> Inf but Im[w(y)] -> 0, so
                     IEEE will give us a NaN when it should be Inf */
                  y*y > 720 ? (y > 0 ? -Inf : Inf)
-                 : -exp(y*y) * im_w_of_z(y));
+                 : -exp(y*y) * im_w_of_x(y));
     if (y == 0.) {
         if (x*x > 750) // underflow
             return C(x >= 0 ? 0.0 : 2.0,
@@ -252,10 +229,10 @@ cmplx faddeeva_erfc(cmplx z, double relerr)
 
     if (x >= 0)
         return cexp(C(mRe_z2, mIm_z2))
-            * faddeeva(C(-y,x), relerr);
+            * w_of_z(C(-y,x), relerr);
     else
         return 2.0 - cexp(C(mRe_z2, mIm_z2))
-            * faddeeva(C(y,-x), relerr);
+            * w_of_z(C(y,-x), relerr);
 } // faddeeva_erfc
 
 /******************************************************************************/
@@ -263,7 +240,7 @@ cmplx faddeeva_erfc(cmplx z, double relerr)
 double dawson_re(double x)
 {
     const double spi2 = 0.8862269254527580136490837416705725913990; // sqrt(pi)/2
-    return spi2 * im_w_of_z(x);
+    return spi2 * im_w_of_x(x);
 } // dawson_re
 
 /******************************************************************************/
@@ -275,7 +252,7 @@ cmplx dawson(cmplx z, double relerr)
 
     // handle axes separately for speed & proper handling of x or y = Inf or NaN
     if (y == 0)
-        return C(spi2 * im_w_of_z(x),
+        return C(spi2 * im_w_of_x(x),
                  -y); // preserve sign of 0
     if (x == 0) {
         double y2 = y*y;
@@ -305,7 +282,7 @@ cmplx dawson(cmplx z, double relerr)
             else if (fabs(mIm_z2) < 5e-3)
                 goto taylor_realaxis;
         }
-        cmplx res = cexp(mz2) - faddeeva(z, relerr);
+        cmplx res = cexp(mz2) - w_of_z(z, relerr);
         return spi2 * C(-cimag(res), creal(res));
     }
     else { // y < 0
@@ -317,7 +294,7 @@ cmplx dawson(cmplx z, double relerr)
         }
         else if (isnan(y))
             return C(x == 0 ? 0 : NaN, NaN);
-        cmplx res = faddeeva(-z, relerr) - cexp(mz2);
+        cmplx res = w_of_z(-z, relerr) - cexp(mz2);
         return spi2 * C(-cimag(res), creal(res));
     }
 
@@ -382,7 +359,7 @@ taylor_realaxis:
                        + y2 * (4*x2 - 10 - 4*y2)));
         }
         else {
-            double D = spi2 * im_w_of_z(x);
+            double D = spi2 * im_w_of_x(x);
             double y2 = y*y;
             return C
                 (D + y2 * (D + x - 2*D*x2)
@@ -475,13 +452,13 @@ static const double expa2n2[] = {
 }; // expa2n2
 
 /******************************************************************************/
-cmplx faddeeva(cmplx z, double relerr)
+cmplx w_of_z(cmplx z, double relerr)
 {
     if (creal(z) == 0.0)
         return C(faddeeva_erfcx_re(cimag(z)), creal(z));
                // give correct sign of 0 in cimag(w)
     else if (cimag(z) == 0)
-        return C(exp(-sqr(creal(z))),  im_w_of_z(creal(z)));
+        return C(exp(-sqr(creal(z))),  im_w_of_x(creal(z)));
 
     double a, a2, c;
     if (relerr <= DBL_EPSILON) {
@@ -766,4 +743,4 @@ cmplx faddeeva(cmplx z, double relerr)
 finish:
     return ret + C((0.5*c)*y*(sum2+sum3), 
                    (0.5*c)*copysign(sum5-sum4, creal(z)));
-} // faddeeva
+} // w_of_z

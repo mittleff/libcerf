@@ -2,8 +2,8 @@
  *   compute complex error functions,
  *   along with Dawson, Faddeeva and Voigt functions
  *
- * File im_w_of_z.c:
- *   Compute scaled Dawson integral im_w_of_z(x) = 2*dawson(x)/sqrt(pi),
+ * File im_w_of_x.c:
+ *   Compute scaled Dawson integral im_w_of_x(x) = 2*dawson(x)/sqrt(pi),
  *   equivalent to the imaginary part of the Faddeeva function w(x) for real x.
  * 
  * Copyright:
@@ -41,7 +41,7 @@
  *   ../CHANGELOG
  *
  * Manual page:
- *   man 3 im_w_of_z
+ *   man 3 im_w_of_x
  */
 
 #include "cerf.h"
@@ -480,7 +480,7 @@ static double w_im_y100(double y100, double x)
 /*  Library function im_w_of_z                                                */
 /******************************************************************************/
 
-double im_w_of_z(double x)
+double im_w_of_x(double x)
 {
 
     // Steven G. Johnson, October 2012.

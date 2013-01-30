@@ -2,7 +2,7 @@
  *   compute complex error functions,
  *   along with Dawson, Faddeeva and Voigt functions
  *
-/* File test1.c:
+ * File test1.c:
  *   Test implementation of Faddeeva, Dawson, and error functions
  *   by checking against values computed using Maple and Wolfram Alfa.
  * 
@@ -44,43 +44,14 @@
  *   man 3 faddeeva
  */
 
-#include "faddeeva.h"
+#include "cerf.h"
 
 #define _GNU_SOURCE // enable GNU libc NAN extension if possible
 
 #include <float.h>
 #include <math.h>
 
-typedef double complex cmplx;
-
-/* Constructing complex numbers like 0+i*NaN is problematic in C99
-   without the C11 CMPLX macro, because 0.+I*NAN may give NaN+i*NAN if
-   I is a complex (rather than imaginary) constant.  For some reason,
-   however, it works fine in (pre-4.7) gcc if I define Inf and NaN as
-   1/0 and 0/0 (and only if I compile with optimization -O1 or more),
-   but not if I use the INFINITY or NAN macros. */
-
-/* __builtin_complex was introduced in gcc 4.7, but the C11 CMPLX macro
-   may not be defined unless we are using a recent (2012) version of
-   glibc and compile with -std=c11... note that icc lies about being
-   gcc and probably doesn't have this builtin(?), so exclude icc explicitly */
-#  if !defined(CMPLX) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)) && !(defined(__ICC) || defined(__INTEL_COMPILER))
-#    define CMPLX(a,b) __builtin_complex((double) (a), (double) (b))
-#  endif
-
-#  ifdef CMPLX // C11
-#    define C(a,b) CMPLX(a,b)
-#    define Inf INFINITY // C99 infinity
-#    ifdef NAN // GNU libc extension
-#      define NaN NAN
-#    else
-#      define NaN (0./0.) // NaN
-#    endif
-#  else
-#    define C(a,b) ((a) + I*(b))
-#    define Inf (1./0.) 
-#    define NaN (0./0.) 
-#  endif
+#include "defs.h" // defines cmplx, CMPLX, NaN
 
 #include <stdio.h>
 
@@ -321,7 +292,7 @@ double test_faddeeva()
     };
     double errmax = 0;
     for (int i = 0; i < NTST; ++i) {
-        cmplx fw = faddeeva(z[i],0.);
+        cmplx fw = w_of_z(z[i],0.);
         double re_err = relerr(creal(w[i]), creal(fw));
         double im_err = relerr(cimag(w[i]), cimag(fw));
         printf("w(%g%+gi) = %g%+gi (vs. %g%+gi), re/im rel. err. = %0.2g/%0.2g)\n",
@@ -456,7 +427,7 @@ double test_erf()
         C(0.07886723099940260286824654364807981336591,
           0.01235199327873258197931147306290916629654)
     };
-    TST(faddeeva_erf, faddeeva_erf_re, 1e-20);
+    TST(faddeeva_erf, erf, 1e-20);
     return errmax;
 }
 
@@ -575,7 +546,7 @@ double test_erfc()
         C(NaN, NaN),
         C(0,0)
     };
-    TST(faddeeva_erfc, faddeeva_erfc_re, 1e-20);
+    TST(faddeeva_erfc, erfc, 1e-20);
     return errmax;
 }
 
