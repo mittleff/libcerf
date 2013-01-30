@@ -71,6 +71,9 @@
 #include "defs.h" // defines cmplx, CMPLX, NaN
 
 /******************************************************************************/
+/*  auxiliary functions                                                       */
+/******************************************************************************/
+
 static inline cmplx cpolar(double r, double t)
 {
     if (r == 0.0 && !isnan(t))
@@ -79,26 +82,27 @@ static inline cmplx cpolar(double r, double t)
         return C(r * cos(t), r * sin(t));
 }
 
-/******************************************************************************/
-// return sinc(x) = sin(x)/x, given both x and sin(x) 
-// [since we only use this in cases where sin(x) has already been computed]
-static inline double sinc(double x, double sinx) { 
+static inline double sinc(double x, double sinx)
+{ 
+    // return sinc(x) = sin(x)/x, given both x and sin(x) 
+    // [since we only use this in cases where sin(x) has already been computed]
     return fabs(x) < 1e-4 ? 1 - (0.1666666666666666666667)*x*x : sinx / x; 
 }
 
-/******************************************************************************/
-// sinh(x) via Taylor series, accurate to machine precision for |x| < 1e-2
-static inline double sinh_taylor(double x) {
+static inline double sinh_taylor(double x)
+{
+    // sinh(x) via Taylor series, accurate to machine precision for |x| < 1e-2
     return x * (1 + (x*x) * (0.1666666666666666666667
                              + 0.00833333333333333333333 * (x*x)));
 }
 
-/******************************************************************************/
 static inline double sqr(double x) { return x*x; }
 
 /******************************************************************************/
-// precomputed table of expa2n2[n-1] = exp(-a2*n*n)
-// for double-precision a2 = 0.26865... in w_of_z, below.
+/* precomputed table of expa2n2[n-1] = exp(-a2*n*n)                           */
+/* for double-precision a2 = 0.26865... in w_of_z, below.                     */
+/******************************************************************************/
+
 static const double expa2n2[] = {
     7.64405281671221563e-01,
     3.41424527166548425e-01,
@@ -155,6 +159,9 @@ static const double expa2n2[] = {
 }; // expa2n2
 
 /******************************************************************************/
+/*  w_of_z, Faddeeva's scaled complex error function                          */
+/******************************************************************************/
+
 cmplx w_of_z(cmplx z, double relerr)
 {
 
