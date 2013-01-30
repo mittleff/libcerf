@@ -55,10 +55,14 @@
 
 #include <float.h>
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "defs.h" // defines cmplx, CMPLX, NaN
 
 const double spi2 = 0.8862269254527580136490837416705725913990; // sqrt(pi)/2
+const double s2pi = 2.5066282746310005024157652848110; // sqrt(2*pi)
+const double pi   = 3.141592653589793238462643383279503;
 
 /******************************************************************************/
 /*  Simple wrappers: cerfcx, cerfi, erfi, dawson                              */
@@ -97,6 +101,51 @@ double dawson(double x)
     // Dawson's integral for a real argument.
 
     return spi2 * im_w_of_x(x);
+}
+
+/******************************************************************************/
+/*  voigt                                                                     */
+/******************************************************************************/
+
+double voigt( double x, double sigma, double gamma )
+{
+    // Joachim Wuttke, January 2013.
+
+    // Compute Voigt's convolution of a Gaussian
+    //    G(x,sigma) = 1/sqrt(2*pi)/|sigma| * exp(-x^2/2/sigma^2)
+    // and a Lorentzian
+    //    L(x,gamma) = |gamma| / pi / ( x^2 + gamma^2 ),
+    // namely
+    //    voigt(x,sigma,gamma) =
+    //          \int_{-infty}^{infty} dx' G(x',sigma) L(x-x',gamma)
+    // using the relation
+    //    voigt(x,sigma,gamma) = Re{ w(z) } / sqrt(2*pi) / |sigma|
+    // with
+    //    z = (x+i*|gamma|) / sqrt(2) / |sigma|.
+
+    // Reference: Abramowitz&Stegun (1964), formula (7.4.13).
+
+    double gam = gamma < 0 ? -gamma : gamma;
+    double sig = sigma < 0 ? -sigma : sigma;
+
+    if ( gam==0 ) {
+        if ( sig==0 ) {
+            // It's kind of a delta function
+            return x ? 0 : Inf;
+        } else {
+            // It's a pure Gaussian
+            return exp( -x*x/2/(sig*sig) ) / s2pi / sig;
+        }
+    } else {
+        if ( sig==0 ) {
+            // It's a pure Lorentzian
+            return gam / pi / (x*x + gam*gam);
+        } else {
+            // Regular case, both parameters are nonzero
+            double z = C(x,gam) / sqrt(2) / sig;
+            return creal( w_of_z(z) ) / s2pi / sig;
+        }
+    }
 }
 
 /******************************************************************************/

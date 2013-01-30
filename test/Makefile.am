@@ -20,6 +20,7 @@
 #   http://apps.jcns.fz-juelich.de/libcerf
 
 AM_CFLAGS = -I$(srcdir)/../lib -Wall -std=c99
-bin_PROGRAMS = test_libcerf_1
+bin_PROGRAMS = test_libcerf_1 runvoigt
 test_libcerf_1_SOURCES = test1.c
+runvoigt_SOURCES = runvoigt.c
 AM_LDFLAGS = -lm -L../lib -lcerf

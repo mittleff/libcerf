@@ -84,7 +84,7 @@ extern double complex cdawson(double complex z);
 extern double         dawson (double x); // special case for real x
 
 // compute voigt(x,??), the convolution of a Gaussian and a Lorentzian
-extern double voigt( double x );
+extern double voigt( double x, double sigma, double gamma );
 
 __END_DECLS
 #endif /* __FADDEEVA_H__ */
