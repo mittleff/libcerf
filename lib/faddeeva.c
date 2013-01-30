@@ -3,7 +3,13 @@
  *   Faddeeva's w_of_z. Also provide Dawson and Voigt functions.
  *
  * File faddeeva.c:
- *   Computation of Faddeeva, Dawson, Voigt, and error functions.
+ *   Computate Dawson, Voigt, and several error functions,
+ *   based on erfcx, im_w_of_x, w_of_z implemented in separate files.
+ *
+ *   Given w(z), the error functions are mostly straightforward
+ *   to compute, except for certain regions where we have to
+ *   switch to Taylor expansions to avoid cancellation errors
+ *   [e.g. near the origin for erf(z)].
  * 
  * Copyright:
  *   (C) 2012 Massachusetts Institute of Technology
@@ -39,21 +45,9 @@
  * Revision history:
  *   ../CHANGELOG
  *
- * More information:
- *   man 3 w_of_z
+ * Man pages:
+ *   cerf(3), dawson(3), voigt(3)
  */
-
-/* 
-   Computes various error functions (erf, erfc, erfi, erfcx), 
-   including the Dawson integral, in the complex plane, based
-   on algorithms for the computation of the Faddeeva function 
-              w(z) = exp(-z^2) * erfc(-i*z).
-   Given w(z), the error functions are mostly straightforward
-   to compute, except for certain regions where we have to
-   switch to Taylor expansions to avoid cancellation errors
-   [e.g. near the origin for erf(z)].
-
-*/
 
 #include "cerf.h"
 
@@ -63,10 +57,6 @@
 #include <math.h>
 
 #include "defs.h" // defines cmplx, CMPLX, NaN
-
-
-/////////////////////////////////////////////////////////////////////////
-// Auxiliary routines to compute other special functions based on w(z)
 
 /******************************************************************************/
 // compute erfcx(z) = exp(z^2) erfz(z)
