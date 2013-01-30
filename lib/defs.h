@@ -22,7 +22,7 @@
  */
 
 
-typedef double complex cmplx;
+typedef double _Complex cmplx;
 
 /* Constructing complex numbers like 0+i*NaN is problematic in C99
    without the C11 CMPLX macro, because 0.+I*NAN may give NaN+i*NAN if

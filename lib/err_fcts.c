@@ -142,7 +142,7 @@ double voigt( double x, double sigma, double gamma )
             return gam / pi / (x*x + gam*gam);
         } else {
             // Regular case, both parameters are nonzero
-            double z = C(x,gam) / sqrt(2) / sig;
+            cmplx z = C(x,gam) / sqrt(2) / sig;
             return creal( w_of_z(z) ) / s2pi / sig;
         }
     }

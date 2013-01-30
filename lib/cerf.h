@@ -46,8 +46,10 @@
  *   w_of_z(3), erfcx(3), cerf(3), dawson(3), voigt(3)
  */
 
-#ifndef __FADDEEVA_H
-#  define __FADDEEVA_H
+#include <complex.h> // C99 complex-number support
+
+#ifndef __CERF_H
+#  define __CERF_H
 #  undef __BEGIN_DECLS
 #  undef __END_DECLS
 #  ifdef __cplusplus
@@ -59,32 +61,30 @@
 #  endif
 __BEGIN_DECLS
 
-#include <complex.h> // C99 complex-number support
-
 // compute w(z) = exp(-z^2) erfc(-iz), Faddeeva's scaled complex error function
-extern double complex w_of_z   (double complex z);
-extern double         im_w_of_x(double x); // special case Im[w(x)] of real x
+double _Complex w_of_z   (double _Complex z);
+double         im_w_of_x(double x); // special case Im[w(x)] of real x
 
 // compute erf(z), the error function of complex arguments
-extern double complex cerf  (double complex z);
+double _Complex cerf  (double _Complex z);
 
 // compute erfc(z) = 1 - erf(z), the complementary error function
-extern double complex cerfc(double complex z);
+double _Complex cerfc(double _Complex z);
 
 // compute erfcx(z) = exp(z^2) erfc(z), an underflow-compensated version of erfc
-extern double complex cerfcx(double complex z);
-extern double         erfcx (double x); // special case for real x
+double _Complex cerfcx(double _Complex z);
+double         erfcx (double x); // special case for real x
 
 // compute erfi(z) = -i erf(iz), the imaginary error function
-extern double complex cerfi(double complex z);
-extern double         erfi (double x); // special case for real x
+double _Complex cerfi(double _Complex z);
+double         erfi (double x); // special case for real x
 
 // compute dawson(z) = sqrt(pi)/2 * exp(-z^2) * erfi(z), Dawson's integral
-extern double complex cdawson(double complex z);
-extern double         dawson (double x); // special case for real x
+double _Complex cdawson(double _Complex z);
+double         dawson (double x); // special case for real x
 
 // compute voigt(x,??), the convolution of a Gaussian and a Lorentzian
-extern double voigt( double x, double sigma, double gamma );
+double voigt( double x, double sigma, double gamma );
 
 __END_DECLS
-#endif /* __FADDEEVA_H__ */
+#endif /* __CERF_H__ */
