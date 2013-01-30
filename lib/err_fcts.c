@@ -4,7 +4,7 @@
  *
  * File err_fcts.c:
  *   Computate Dawson, Voigt, and several error functions,
- *   based on erfcx, im_w_of_x, w_of_z implemented in separate files.
+ *   based on erfcx, im_w_of_x, w_of_z as implemented in separate files.
  *
  *   Given w(z), the error functions are mostly straightforward
  *   to compute, except for certain regions where we have to
@@ -58,17 +58,59 @@
 
 #include "defs.h" // defines cmplx, CMPLX, NaN
 
+const double spi2 = 0.8862269254527580136490837416705725913990; // sqrt(pi)/2
+
 /******************************************************************************/
-// compute erfcx(z) = exp(z^2) erfz(z)
+/*  Simple wrappers: cerfcx, cerfi, erfi, dawson                              */
+/******************************************************************************/
+
 cmplx cerfcx(cmplx z, double relerr)
 {
+    // Compute erfcx(z) = exp(z^2) erfc(z),
+    // the complex underflow-compensated complementary error function,
+    // trivially related to Faddeeva's w_of_z.
+
     return w_of_z(C(-cimag(z), creal(z)), relerr);
 }
 
+cmplx cerfi(cmplx z, double relerr)
+{
+    // Compute erfi(z) = -i erf(iz),
+    // the rotated complex error function.
+
+    cmplx e = cerf(C(-cimag(z),creal(z)), relerr);
+    return C(cimag(e), -creal(e));
+}
+
+double erfi(double x)
+{
+    // Compute erfi(x) = -i erf(ix),
+    // the imaginary error function.
+
+    return x*x > 720 ? (x > 0 ? Inf : -Inf) : exp(x*x) * im_w_of_x(x);
+}
+
+double dawson(double x)
+{
+
+    // Compute dawson(x) = sqrt(pi)/2 * exp(-x^2) * erfi(x),
+    // Dawson's integral for a real argument.
+
+    return spi2 * im_w_of_x(x);
+}
+
 /******************************************************************************/
-// compute the error function erf(z)
+/*  cerf                                                                      */
+/******************************************************************************/
+
 cmplx cerf(cmplx z, double relerr)
 {
+
+    // Steven G. Johnson, October 2012.
+
+    // Compute erf(z), the complex error function,
+    // using w_of_z except for certain regions.
+
     double x = creal(z), y = cimag(z);
 
     if (y == 0)
@@ -158,25 +200,16 @@ taylor_erfi:
 } // cerf
 
 /******************************************************************************/
-// erfi(z) = -i erf(iz)
-cmplx cerfi(cmplx z, double relerr)
-{
-    cmplx e = cerf(C(-cimag(z),creal(z)), relerr);
-    return C(cimag(e), -creal(e));
-}
-
+/*  cerfc                                                                     */
 /******************************************************************************/
-// erfi(x) = -i erf(ix)
-double erfi(double x)
-{
-    return x*x > 720 ? (x > 0 ? Inf : -Inf)
-        : exp(x*x) * im_w_of_x(x);
-}
 
-/******************************************************************************/
-// erfc(z) = 1 - erf(z)
 cmplx cerfc(cmplx z, double relerr)
 {
+    // Steven G. Johnson, October 2012.
+
+    // Compute erfc(z) = 1 - erf(z), the complex complementary error function,
+    // using w_of_z except for certain regions.
+
     double x = creal(z), y = cimag(z);
 
     if (x == 0.)
@@ -209,18 +242,18 @@ cmplx cerfc(cmplx z, double relerr)
 } // cerfc
 
 /******************************************************************************/
-// compute Dawson(x) = sqrt(pi)/2  *  exp(-x^2) * erfi(x)
-double dawson(double x)
-{
-    const double spi2 = 0.8862269254527580136490837416705725913990; // sqrt(pi)/2
-    return spi2 * im_w_of_x(x);
-} // dawson
-
+/*  cdawson                                                                   */
 /******************************************************************************/
-// compute Dawson(z) = sqrt(pi)/2  *  exp(-z^2) * erfi(z)
+
 cmplx cdawson(cmplx z, double relerr)
 {
-    const double spi2 = 0.8862269254527580136490837416705725913990; // sqrt(pi)/2
+
+    // Steven G. Johnson, October 2012.
+
+    // Compute Dawson(z) = sqrt(pi)/2  *  exp(-z^2) * erfi(z),
+    // Dawson's integral for a complex argument,
+    // using w_of_z except for certain regions.
+
     double x = creal(z), y = cimag(z);
 
     // handle axes separately for speed & proper handling of x or y = Inf or NaN

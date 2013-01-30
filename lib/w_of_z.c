@@ -157,6 +157,9 @@ static const double expa2n2[] = {
 /******************************************************************************/
 cmplx w_of_z(cmplx z, double relerr)
 {
+
+    // Steven G. Johnson, October 2012.
+
     if (creal(z) == 0.0)
         return C(erfcx(cimag(z)), creal(z));
                // give correct sign of 0 in cimag(w)
