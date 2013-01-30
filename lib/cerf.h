@@ -62,7 +62,7 @@ __BEGIN_DECLS
 #include <complex.h> // C99 complex-number support
 
 // compute w(z) = exp(-z^2) erfc(-iz), Faddeeva's scaled complex error function
-extern double complex w_of_z   (double complex z,double relerr);
+extern double complex w_of_z   (double complex z);
 extern double         im_w_of_x(double x); // special case Im[w(x)] of real x
 
 // compute erf(z), the error function of complex arguments

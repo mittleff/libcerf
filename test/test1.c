@@ -292,7 +292,7 @@ double test_faddeeva()
     };
     double errmax = 0;
     for (int i = 0; i < NTST; ++i) {
-        cmplx fw = w_of_z(z[i],0.);
+        cmplx fw = w_of_z(z[i]);
         double re_err = relerr(creal(w[i]), creal(fw));
         double im_err = relerr(cimag(w[i]), cimag(fw));
         printf("w(%g%+gi) = %g%+gi (vs. %g%+gi), re/im rel. err. = %0.2g/%0.2g)\n",

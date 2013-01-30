@@ -162,7 +162,7 @@ static const double expa2n2[] = {
 /*  w_of_z, Faddeeva's scaled complex error function                          */
 /******************************************************************************/
 
-cmplx w_of_z(cmplx z, double relerr)
+cmplx w_of_z(cmplx z)
 {
 
     // Steven G. Johnson, October 2012.
@@ -174,19 +174,10 @@ cmplx w_of_z(cmplx z, double relerr)
         return C(exp(-sqr(creal(z))),  im_w_of_x(creal(z)));
 
     double a, a2, c;
-    if (relerr <= DBL_EPSILON) {
-        relerr = DBL_EPSILON;
-        a = 0.518321480430085929872; // pi / sqrt(-log(eps*0.5))
-        c = 0.329973702884629072537; // (2/pi) * a;
-        a2 = 0.268657157075235951582; // a^2
-    }
-    else {
-        const double pi = 3.14159265358979323846264338327950288419716939937510582;
-        if (relerr > 0.1) relerr = 0.1; // not sensible to compute < 1 digit
-        a = pi / sqrt(-log(relerr*0.5));
-        c = (2/pi)*a;
-        a2 = a*a;
-    }
+    double relerr = DBL_EPSILON;
+    a = 0.518321480430085929872; // pi / sqrt(-log(eps*0.5))
+    c = 0.329973702884629072537; // (2/pi) * a;
+    a2 = 0.268657157075235951582; // a^2
     const double x = fabs(creal(z));
     const double y = cimag(z), ya = fabs(y);
 
@@ -280,86 +271,46 @@ cmplx w_of_z(cmplx z, double relerr)
         if (isnan(y))
             return C(y,y);
     
-        /* Somewhat ugly copy-and-paste duplication here, but I see significant
-           speedups from using the special-case code with the precomputed
-           exponential, and the x < 5e-4 special case is needed for accuracy. */
 
-        if (relerr == DBL_EPSILON) { // use precomputed exp(-a2*(n*n)) table
-            if (x < 5e-4) { // compute sum4 and sum5 together as sum5-sum4
-                const double x2 = x*x;
-                expx2 = 1 - x2 * (1 - 0.5*x2); // exp(-x*x) via Taylor
-                // compute exp(2*a*x) and exp(-2*a*x) via Taylor, to double precision
-                const double ax2 = 1.036642960860171859744*x; // 2*a*x
-                const double exp2ax =
-                    1 + ax2 * (1 + ax2 * (0.5 + 0.166666666666666666667*ax2));
-                const double expm2ax =
-                    1 - ax2 * (1 - ax2 * (0.5 - 0.166666666666666666667*ax2));
-                for (int n = 1; 1; ++n) {
-                    const double coef = expa2n2[n-1] * expx2 / (a2*(n*n) + y*y);
-                    prod2ax *= exp2ax;
-                    prodm2ax *= expm2ax;
-                    sum1 += coef;
-                    sum2 += coef * prodm2ax;
-                    sum3 += coef * prod2ax;
+        if (x < 5e-4) { // compute sum4 and sum5 together as sum5-sum4
+                        // This special case is needed for accuracy.
+            const double x2 = x*x;
+            expx2 = 1 - x2 * (1 - 0.5*x2); // exp(-x*x) via Taylor
+            // compute exp(2*a*x) and exp(-2*a*x) via Taylor, to double precision
+            const double ax2 = 1.036642960860171859744*x; // 2*a*x
+            const double exp2ax =
+                1 + ax2 * (1 + ax2 * (0.5 + 0.166666666666666666667*ax2));
+            const double expm2ax =
+                1 - ax2 * (1 - ax2 * (0.5 - 0.166666666666666666667*ax2));
+            for (int n = 1; 1; ++n) {
+                const double coef = expa2n2[n-1] * expx2 / (a2*(n*n) + y*y);
+                prod2ax *= exp2ax;
+                prodm2ax *= expm2ax;
+                sum1 += coef;
+                sum2 += coef * prodm2ax;
+                sum3 += coef * prod2ax;
           
-                    // really = sum5 - sum4
-                    sum5 += coef * (2*a) * n * sinh_taylor((2*a)*n*x);
+                // really = sum5 - sum4
+                sum5 += coef * (2*a) * n * sinh_taylor((2*a)*n*x);
           
-                    // test convergence via sum3
-                    if (coef * prod2ax < relerr * sum3) break;
-                }
-            }
-            else { // x > 5e-4, compute sum4 and sum5 separately
-                expx2 = exp(-x*x);
-                const double exp2ax = exp((2*a)*x), expm2ax = 1 / exp2ax;
-                for (int n = 1; 1; ++n) {
-                    const double coef = expa2n2[n-1] * expx2 / (a2*(n*n) + y*y);
-                    prod2ax *= exp2ax;
-                    prodm2ax *= expm2ax;
-                    sum1 += coef;
-                    sum2 += coef * prodm2ax;
-                    sum4 += (coef * prodm2ax) * (a*n);
-                    sum3 += coef * prod2ax;
-                    sum5 += (coef * prod2ax) * (a*n);
-                    // test convergence via sum5, since this sum has the slowest decay
-                    if ((coef * prod2ax) * (a*n) < relerr * sum5) break;
-                }
+                // test convergence via sum3
+                if (coef * prod2ax < relerr * sum3) break;
             }
         }
-        else { // relerr != DBL_EPSILON, compute exp(-a2*(n*n)) on the fly
+        else { // x > 5e-4, compute sum4 and sum5 separately
+            expx2 = exp(-x*x);
             const double exp2ax = exp((2*a)*x), expm2ax = 1 / exp2ax;
-            if (x < 5e-4) { // compute sum4 and sum5 together as sum5-sum4
-                const double x2 = x*x;
-                expx2 = 1 - x2 * (1 - 0.5*x2); // exp(-x*x) via Taylor
-                for (int n = 1; 1; ++n) {
-                    const double coef = exp(-a2*(n*n)) * expx2 / (a2*(n*n) + y*y);
-                    prod2ax *= exp2ax;
-                    prodm2ax *= expm2ax;
-                    sum1 += coef;
-                    sum2 += coef * prodm2ax;
-                    sum3 += coef * prod2ax;
-          
-                    // really = sum5 - sum4
-                    sum5 += coef * (2*a) * n * sinh_taylor((2*a)*n*x);
-          
-                    // test convergence via sum3
-                    if (coef * prod2ax < relerr * sum3) break;
-                }
-            }
-            else { // x > 5e-4, compute sum4 and sum5 separately
-                expx2 = exp(-x*x);
-                for (int n = 1; 1; ++n) {
-                    const double coef = exp(-a2*(n*n)) * expx2 / (a2*(n*n) + y*y);
-                    prod2ax *= exp2ax;
-                    prodm2ax *= expm2ax;
-                    sum1 += coef;
-                    sum2 += coef * prodm2ax;
-                    sum4 += (coef * prodm2ax) * (a*n);
-                    sum3 += coef * prod2ax;
-                    sum5 += (coef * prod2ax) * (a*n);
-                    // test convergence via sum5, since this sum has the slowest decay
-                    if ((coef * prod2ax) * (a*n) < relerr * sum5) break;
-                }
+            for (int n = 1; 1; ++n) {
+                const double coef = expa2n2[n-1] * expx2 / (a2*(n*n) + y*y);
+                prod2ax *= exp2ax;
+                prodm2ax *= expm2ax;
+                sum1 += coef;
+                sum2 += coef * prodm2ax;
+                sum4 += (coef * prodm2ax) * (a*n);
+                sum3 += coef * prod2ax;
+                sum5 += (coef * prod2ax) * (a*n);
+                // test convergence via sum5, since this sum has the slowest decay
+                if ((coef * prod2ax) * (a*n) < relerr * sum5) break;
             }
         }
         const double expx2erfcxy = // avoid spurious overflow for large negative y

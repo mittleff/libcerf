@@ -1,10 +1,11 @@
-libfaddeeva-1.0, released ??:
+libcerf-1.0, released ??:
   - Based on http://ab-initio.mit.edu/Faddeeva as of 28jan13.
-  - Added function voigt(..)
-  - Added configure.ac, Makefile.am &c to allow for autotools standard
+  - Add function voigt(..)
+  - Add configure.ac, Makefile.am &c to allow for autotools standard
     installation (commands ./configure, make, sudo make install)
-  - Splitted code into directories lib/ and test/
-  - Wrote man pages w_of_z(3), dawson(3), voigt(3), ...
+  - Split source code into directories lib/ and test/
+  - Eliminate unused alternate code (!USE_CONTINUED_FRACTION)
+  - Write man pages w_of_z(3), dawson(3), voigt(3), cerf(3), erfcx(3), ...
 
 == Revision history of Faddeeva.cc by Steven G. Johnson ==
 

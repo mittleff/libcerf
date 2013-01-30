@@ -70,7 +70,7 @@ cmplx cerfcx(cmplx z, double relerr)
     // the complex underflow-compensated complementary error function,
     // trivially related to Faddeeva's w_of_z.
 
-    return w_of_z(C(-cimag(z), creal(z)), relerr);
+    return w_of_z(C(-cimag(z), creal(z)));
 }
 
 cmplx cerfi(cmplx z, double relerr)
@@ -142,7 +142,7 @@ cmplx cerf(cmplx z, double relerr)
            values when multiplying w in an overflow situation. */
         return 1.0 - exp(mRe_z2) *
             (C(cos(mIm_z2), sin(mIm_z2))
-             * w_of_z(C(-y,x), relerr));
+             * w_of_z(C(-y,x)));
     }
     else { // x < 0
         if (x > -8e-2) { // duplicate from above to avoid fabs(x) call
@@ -157,7 +157,7 @@ cmplx cerf(cmplx z, double relerr)
            values when multiplying w in an overflow situation. */
         return exp(mRe_z2) *
             (C(cos(mIm_z2), sin(mIm_z2))
-             * w_of_z(C(y,-x), relerr)) - 1.0;
+             * w_of_z(C(y,-x))) - 1.0;
     }
 
     // Use Taylor series for small |z|, to avoid cancellation inaccuracy
@@ -235,10 +235,10 @@ cmplx cerfc(cmplx z, double relerr)
 
     if (x >= 0)
         return cexp(C(mRe_z2, mIm_z2))
-            * w_of_z(C(-y,x), relerr);
+            * w_of_z(C(-y,x));
     else
         return 2.0 - cexp(C(mRe_z2, mIm_z2))
-            * w_of_z(C(y,-x), relerr);
+            * w_of_z(C(y,-x));
 } // cerfc
 
 /******************************************************************************/
@@ -288,7 +288,7 @@ cmplx cdawson(cmplx z, double relerr)
             else if (fabs(mIm_z2) < 5e-3)
                 goto taylor_realaxis;
         }
-        cmplx res = cexp(mz2) - w_of_z(z, relerr);
+        cmplx res = cexp(mz2) - w_of_z(z);
         return spi2 * C(-cimag(res), creal(res));
     }
     else { // y < 0
@@ -300,7 +300,7 @@ cmplx cdawson(cmplx z, double relerr)
         }
         else if (isnan(y))
             return C(x == 0 ? 0 : NaN, NaN);
-        cmplx res = w_of_z(-z, relerr) - cexp(mz2);
+        cmplx res = w_of_z(-z) - cexp(mz2);
         return spi2 * C(-cimag(res), creal(res));
     }
 
