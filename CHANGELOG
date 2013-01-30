@@ -5,6 +5,7 @@ libcerf-1.0, released ??:
     installation (commands ./configure, make, sudo make install)
   - Split source code into directories lib/ and test/
   - Eliminate unused alternate code (!USE_CONTINUED_FRACTION)
+  - Eliminate relerr arguments
   - Write man pages w_of_z(3), dawson(3), voigt(3), cerf(3), erfcx(3), ...
 
 == Revision history of Faddeeva.cc by Steven G. Johnson ==

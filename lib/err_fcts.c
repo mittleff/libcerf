@@ -64,7 +64,7 @@ const double spi2 = 0.8862269254527580136490837416705725913990; // sqrt(pi)/2
 /*  Simple wrappers: cerfcx, cerfi, erfi, dawson                              */
 /******************************************************************************/
 
-cmplx cerfcx(cmplx z, double relerr)
+cmplx cerfcx(cmplx z)
 {
     // Compute erfcx(z) = exp(z^2) erfc(z),
     // the complex underflow-compensated complementary error function,
@@ -73,12 +73,12 @@ cmplx cerfcx(cmplx z, double relerr)
     return w_of_z(C(-cimag(z), creal(z)));
 }
 
-cmplx cerfi(cmplx z, double relerr)
+cmplx cerfi(cmplx z)
 {
     // Compute erfi(z) = -i erf(iz),
     // the rotated complex error function.
 
-    cmplx e = cerf(C(-cimag(z),creal(z)), relerr);
+    cmplx e = cerf(C(-cimag(z),creal(z)));
     return C(cimag(e), -creal(e));
 }
 
@@ -103,7 +103,7 @@ double dawson(double x)
 /*  cerf                                                                      */
 /******************************************************************************/
 
-cmplx cerf(cmplx z, double relerr)
+cmplx cerf(cmplx z)
 {
 
     // Steven G. Johnson, October 2012.
@@ -203,7 +203,7 @@ taylor_erfi:
 /*  cerfc                                                                     */
 /******************************************************************************/
 
-cmplx cerfc(cmplx z, double relerr)
+cmplx cerfc(cmplx z)
 {
     // Steven G. Johnson, October 2012.
 
@@ -245,7 +245,7 @@ cmplx cerfc(cmplx z, double relerr)
 /*  cdawson                                                                   */
 /******************************************************************************/
 
-cmplx cdawson(cmplx z, double relerr)
+cmplx cdawson(cmplx z)
 {
 
     // Steven G. Johnson, October 2012.

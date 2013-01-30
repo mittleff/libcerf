@@ -66,21 +66,21 @@ extern double complex w_of_z   (double complex z);
 extern double         im_w_of_x(double x); // special case Im[w(x)] of real x
 
 // compute erf(z), the error function of complex arguments
-extern double complex cerf  (double complex z, double relerr);
+extern double complex cerf  (double complex z);
 
 // compute erfc(z) = 1 - erf(z), the complementary error function
-extern double complex cerfc(double complex z, double relerr);
+extern double complex cerfc(double complex z);
 
 // compute erfcx(z) = exp(z^2) erfc(z), an underflow-compensated version of erfc
-extern double complex cerfcx(double complex z, double relerr);
+extern double complex cerfcx(double complex z);
 extern double         erfcx (double x); // special case for real x
 
 // compute erfi(z) = -i erf(iz), the imaginary error function
-extern double complex cerfi(double complex z, double relerr);
+extern double complex cerfi(double complex z);
 extern double         erfi (double x); // special case for real x
 
 // compute dawson(z) = sqrt(pi)/2 * exp(-z^2) * erfi(z), Dawson's integral
-extern double complex cdawson(double complex z, double relerr);
+extern double complex cdawson(double complex z);
 extern double         dawson (double x); // special case for real x
 
 // compute voigt(x,??), the convolution of a Gaussian and a Lorentzian
