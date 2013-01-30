@@ -71,45 +71,52 @@ static double relerr(double a, double b) {
 }
 
 /******************************************************************************/
-// Macro used for testing the complex and real Dawson and error functions.
-#define TST(F,FRE,isc)                                                  \
-    printf("############# " #F "(z) tests #############\n");            \
-    double errmax = 0;                                                  \
-    for (int i = 0; i < NTST; ++i) {                                    \
-        cmplx fw = F(z[i]);                                             \
-        double re_err = relerr(creal(w[i]), creal(fw));                 \
-        double im_err = relerr(cimag(w[i]), cimag(fw));                 \
-        printf(#F "(%g%+gi) = %g%+gi (vs. %g%+gi), re/im rel. err. = %0.2g/%0.2g)\n", \
-               creal(z[i]),cimag(z[i]), creal(fw),cimag(fw), creal(w[i]),cimag(w[i]), \
-               re_err, im_err);                                         \
-        if (re_err > errmax) errmax = re_err;                           \
-        if (im_err > errmax) errmax = im_err;                           \
-    }                                                                   \
-    if (errmax > 1e-13) {                                               \
-        printf("FAILURE -- relative error %g too large!\n", errmax);    \
-        return 1;                                                       \
-    }                                                                   \
-    printf("Checking " #F "(x) special case...\n");                     \
-    for (int i = 0; i < 10000; ++i) {                                   \
-        double x = pow(10., -300. + i * 600. / (10000 - 1));            \
-        double re_err = relerr(FRE(x), creal(F(C(x,x*isc))));           \
-        if (re_err > errmax) errmax = re_err;                           \
-        re_err = relerr(FRE(-x), creal(F(C(-x,x*isc))));                \
-        if (re_err > errmax) errmax = re_err;                           \
-    }                                                                   \
-    {                                                                   \
-        double re_err = relerr(FRE(Inf), creal(F(C(Inf,0.))));          \
-        if (re_err > errmax) errmax = re_err;                           \
-        re_err = relerr(FRE(-Inf), creal(F(C(-Inf,0.))));               \
-        if (re_err > errmax) errmax = re_err;                           \
-        re_err = relerr(FRE(NaN), creal(F(C(NaN,0.))));                 \
-        if (re_err > errmax) errmax = re_err;                           \
-    }                                                                   \
-    if (errmax > 1e-13) {                                               \
-        printf("FAILURE -- relative error %g too large!\n", errmax);    \
-        return 1;                                                       \
-    }                                                                   \
-    printf("SUCCESS (max relative error = %g)\n", errmax);              \
+// For testing the complex and real Dawson and error functions.
+
+double TST( char* Fname, cmplx (*F)(cmplx), double (*FRE)(double), double isc,
+         int nTst, cmplx *w, cmplx *z )
+{
+    printf("############# %s(z) tests #############\n", Fname);
+    double errmax = 0;                                         
+    for (int i = 0; i < nTst; ++i) {                           
+        cmplx fw = F(z[i]);                                    
+        double re_err = relerr(creal(w[i]), creal(fw));        
+        double im_err = relerr(cimag(w[i]), cimag(fw));        
+        printf("%s(%g%+gi) = %g%+gi (vs. %g%+gi), "
+               "re/im rel. err. = %0.2g/%0.2g)\n", Fname,
+               creal(z[i]), cimag(z[i]), creal(fw), cimag(fw),
+               creal(w[i]), cimag(w[i]), 
+               re_err, im_err);                                        
+        if (re_err > errmax) errmax = re_err;                          
+        if (im_err > errmax) errmax = im_err;                          
+    }                                                                  
+    if (errmax > 1e-13) {                                              
+        printf("FAILURE -- relative error %g too large!\n", errmax);   
+        return errmax;                                                      
+    }                                                                  
+    printf("Checking %s(x) special case...\n", Fname);                 
+    for (int i = 0; i < 10000; ++i) {                                  
+        double x = pow(10., -300. + i * 600. / (10000 - 1));           
+        double re_err = relerr(FRE(x), creal(F(C(x,x*isc))));          
+        if (re_err > errmax) errmax = re_err;                          
+        re_err = relerr(FRE(-x), creal(F(C(-x,x*isc))));               
+        if (re_err > errmax) errmax = re_err;                          
+    }                                                                  
+    {                                                                  
+        double re_err = relerr(FRE(Inf), creal(F(C(Inf,0.))));         
+        if (re_err > errmax) errmax = re_err;                          
+        re_err = relerr(FRE(-Inf), creal(F(C(-Inf,0.))));              
+        if (re_err > errmax) errmax = re_err;                          
+        re_err = relerr(FRE(NaN), creal(F(C(NaN,0.))));                
+        if (re_err > errmax) errmax = re_err;                          
+    }                                                                  
+    if (errmax > 1e-13) {                                              
+        printf("FAILURE -- relative error %g too large!\n", errmax);   
+        return errmax;                                                      
+    }                                                                  
+    printf("SUCCESS (max relative error = %g)\n", errmax);             
+    return errmax;
+}
 
 /******************************************************************************/
 double test_faddeeva()
@@ -422,8 +429,7 @@ double test_erf()
         C(0.07886723099940260286824654364807981336591,
           0.01235199327873258197931147306290916629654)
     };
-    TST(cerf, erf, 1e-20);
-    return errmax;
+    return TST("erf", cerf, erf, 1e-20, NTST, w, z);
 }
 
 /******************************************************************************/
@@ -438,8 +444,7 @@ double test_erfi()
         C(1.081032284405373149432716643834106923212,
           1.926775520840916645838949402886591180834)
     };
-    TST(cerfi, erfi, 0);
-    return errmax;
+    return TST("erfi", cerfi, erfi, 0, NTST, w, z);
 }
 
 /******************************************************************************/
@@ -454,8 +459,7 @@ double test_erfcx()
         C(0.3382187479799972294747793561190487832579,
           -0.1116077470811648467464927471872945833154)
     };
-    TST(cerfcx, erfcx, 0);
-    return errmax;
+    return TST("erfcx", cerfcx, erfcx, 0, NTST, w, z);
 }
 
 /******************************************************************************/
@@ -541,8 +545,7 @@ double test_erfc()
         C(NaN, NaN),
         C(0,0)
     };
-    TST(cerfc, erfc, 1e-20);
-    return errmax;
+    return TST("erfc", cerfc, erfc, 1e-20, NTST, w, z);
 }
 
 /******************************************************************************/
@@ -680,8 +683,7 @@ double test_dawson()
           -1.20000000000000000000000001800000000000000000e-42),
         C(5e-301, 0)
     };
-    TST(cdawson, dawson, 1e-20);
-    return errmax;
+    return TST("dawson", cdawson, dawson, 1e-20, NTST, w, z);
 }
 
 /******************************************************************************/
