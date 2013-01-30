@@ -8,21 +8,22 @@
 
 =head1 NAME
 
-cdawson, dawson - Dawson's integral
+cerfcx, erfcx - underflow-compensated complementary error function
 
 =head1 SYNOPSIS
 
 B<#include <cerf.h>>
 
-B<double _Complex cdawson ( double _Complex z );>
+B<double _Complex cerfcx ( double _Complex z );>
 
-B<double          dawson  ( double x );>
+B<double          erfcx  ( double x );>
+
 
 =head1 DESCRIPTION
 
-The function B<cdawson> returns Dawson's integral D(z) = exp(-z^2) integral from 0 to z exp(t^2) dt = sqrt(pi)/2  *  exp(-z^2) * erfi(z).
+The function B<cerfcx> is an underflow-compensated variant of the complex error function: erfcx(z) = exp(z^2) erfc(z).
 
-For function B<dawson> takes a real argument x, and returns the real result D(x).
+The function B<erfcx> takes a real argument and returns a real result.
 
 =head1 RESSOURCES
 
@@ -30,7 +31,10 @@ Project web site: http://apps.jcns.fz-juelich.de/libcerf
 
 =head1 REFERENCES
 
-The computation of D(z) is based on Faddeeva's function B<w_of_z>; to compute D(x), the imaginary part B<im_w_of_x> is used.
+The implementation of B<cerfcx> is a thin wrapper around Faddeeva's
+function B<w_of_z>.
+
+The implementation of B<ercx> is self-contained, and improves upon the SLATEC DERFC function (or an erfcx function derived therefrom) or Cody's CALERF function (from netlib.org/specfun), while retaining near machine precision in accuracy.
 
 =head1 BUG REPORTS
 
@@ -49,7 +53,11 @@ Joachim Wuttke <j.wuttke@fz-juelich.de>, Forschungszentrum Juelich,
 
 Related complex error functions in liberfc:
 
-B<w_of_z(3)>, B<voigt(3)>, B<cerf(3)>, B<erfcx(3)>, B<erfi(3)>.
+B<w_of_z(3)>, B<dawson(3)>, B<voigt(3)>, B<cerf(3)>, B<erfi(3)>.
+
+The real error function comes with recent versions of glibc, as requested by the C99 standard:
+
+B<erf(3)>
 
 =head1 COPYING
 

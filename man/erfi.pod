@@ -8,21 +8,22 @@
 
 =head1 NAME
 
-cdawson, dawson - Dawson's integral
+cerfi, erfi - imaginary error function
 
 =head1 SYNOPSIS
 
 B<#include <cerf.h>>
 
-B<double _Complex cdawson ( double _Complex z );>
+B<double _Complex cerfi ( double _Complex z );>
 
-B<double          dawson  ( double x );>
+B<double          erfi  ( double x );>
 
 =head1 DESCRIPTION
 
-The function B<cdawson> returns Dawson's integral D(z) = exp(-z^2) integral from 0 to z exp(t^2) dt = sqrt(pi)/2  *  exp(-z^2) * erfi(z).
+The function B<cerfi> returns an error function rotated in the complex plane,
+erfi(z) = -i erf(iz).
 
-For function B<dawson> takes a real argument x, and returns the real result D(x).
+The function B<erfi> takes a real argument and returns a real result.
 
 =head1 RESSOURCES
 
@@ -30,7 +31,8 @@ Project web site: http://apps.jcns.fz-juelich.de/libcerf
 
 =head1 REFERENCES
 
-The computation of D(z) is based on Faddeeva's function B<w_of_z>; to compute D(x), the imaginary part B<im_w_of_x> is used.
+The implementation of B<cerfi> and B<erfi> is trivially based on the functions
+B<cerf> and B<im_w_of_x>.
 
 =head1 BUG REPORTS
 
@@ -49,7 +51,11 @@ Joachim Wuttke <j.wuttke@fz-juelich.de>, Forschungszentrum Juelich,
 
 Related complex error functions in liberfc:
 
-B<w_of_z(3)>, B<voigt(3)>, B<cerf(3)>, B<erfcx(3)>, B<erfi(3)>.
+B<w_of_z(3)>, B<dawson(3)>, B<voigt(3)>, B<cerf(3)>, B<erfcx(3)>.
+
+The real error function comes with recent versions of glibc, as requested by the C99 standard:
+
+B<erf(3)>
 
 =head1 COPYING
 

@@ -8,25 +8,29 @@
 
 =head1 NAME
 
-faddeeva - Faddeeva's rescaled complex error function w(z)
+w_of_z, im_w_of_x - Faddeeva's rescaled complex error function
 
 =head1 SYNOPSIS
 
-B<#include <faddeeva.h>>
+B<#include <cerf.h>>
 
-B<double faddeeva (const double ??, const double ?? );>
+B<double _Complex w_of_z ( double _Complex z );>
 
-B<double faddeeva (const double ??, const double ?? );>
+B<double im_w_of_x ( double x );>
 
 =head1 DESCRIPTION
 
 Faddeeva's rescaled complex error function w(z), also called the plasma dispersion function.
 
-B<faddeeva> returns: ??
+B<w_of_z> returns w(z) = exp(-z^2) * erfc(-i*z).
 
-B<faddeeva_re> returns: ??
+B<im_w_of_x> returns Im[w(x)].
 
-Allowed parameter range: ??
+=head1 RESSOURCES
+
+Project web site: http://apps.jcns.fz-juelich.de/libcerf
+
+=head1 REFERENCES
 
 To compute w(z), a combination of two algorithms is used:
 
@@ -38,18 +42,7 @@ generally competitive at small |z|,
 and more accurate than the Poppe & Wijers expansion in some regions,
 e.g. in the vicinity of z=1+i.
 
-=head1 ERRORS
-
-On error, a message is written to stderr, and the program exits with errno
-EDOM (?? out of range) or
-ENOMEM (workspace allocation failed) or
-ENOSYS (no convergence in the parameter range that ought to be fully supported; please report to the author).
-
-=head1 RESSOURCES
-
-Project web site: http://apps.jcns.fz-juelich.de/faddeeva
-
-=head1 REFERENCES
+To compute Im[w(x)], Chebyshev polynomials and continous fractions are used.
 
 Milton Abramowitz and Irene M. Stegun, "Handbook of Mathematical Functions", National Bureau of Standards (1964): Formula (7.1.3) introduces the nameless function w(z). 
 
@@ -69,19 +62,22 @@ Please report bugs to the authors.
 
 Steven G. Johnson [http://math.mit.edu/~stevenj],
   Massachusetts Institute of Technology,
-  implemented the Faddeeva function;
+  researched the numerics, and implemented the Faddeeva function.
 
-Joachim Wuttke <j.wuttke@fz-juelich.de>, Forschungszentrum Jülich,
-  wrote the man page and reorganized the code into an autotools package
+Joachim Wuttke <j.wuttke@fz-juelich.de>, Forschungszentrum Juelich,
+  reorganized the code into a library, and wrote this man page.
 
 =head1 SEE ALSO
 
-B<dawson(3)>, B<voigt(3)>
+This function is used within liberfc to compute several other complex error functions:
+
+B<dawson(3)>, B<voigt(3)>, B<cerf(3)>, B<erfcx(3)>, B<erfi(3)>.
 
 =head1 COPYING
 
 Copyright (c) 2012 Massachusetts Institute of Technology
-Copyright (c) 2013 Forschungszentrum Jülich GmbH
+
+Copyright (c) 2013 Forschungszentrum Juelich GmbH
 
 Software: MIT License.
 
