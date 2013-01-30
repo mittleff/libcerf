@@ -53,15 +53,6 @@
    switch to Taylor expansions to avoid cancellation errors
    [e.g. near the origin for erf(z)].
 
-    -- Note that Algorithm 916 assumes that the erfc(x) function, 
-       or rather the scaled function erfcx(x) = exp(x*x)*erfc(x),
-       is supplied for REAL arguments x.   I originally used an
-       erfcx routine derived from DERFC in SLATEC, but I have
-       since replaced it with a much faster routine written by
-       me which uses a combination of continued-fraction expansions
-       and a lookup table of Chebyshev polynomials.  For speed,
-       I implemented a similar algorithm for Im[w(x)] of real x,
-       since this comes up frequently in the other error functions.
 */
 
 #include "cerf.h"
@@ -87,14 +78,14 @@ static inline cmplx cpolar(double r, double t)
 
 /******************************************************************************/
 // compute erfcx(z) = exp(z^2) erfz(z)
-cmplx faddeeva_erfcx(cmplx z, double relerr)
+cmplx cerfcx(cmplx z, double relerr)
 {
     return w_of_z(C(-cimag(z), creal(z)), relerr);
 }
 
 /******************************************************************************/
 // compute the error function erf(z)
-cmplx faddeeva_erf(cmplx z, double relerr)
+cmplx cerf(cmplx z, double relerr)
 {
     double x = creal(z), y = cimag(z);
 
@@ -186,9 +177,9 @@ taylor_erfi:
 
 /******************************************************************************/
 // erfi(z) = -i erf(iz)
-cmplx faddeeva_erfi(cmplx z, double relerr)
+cmplx cerfi(cmplx z, double relerr)
 {
-    cmplx e = faddeeva_erf(C(-cimag(z),creal(z)), relerr);
+    cmplx e = cerf(C(-cimag(z),creal(z)), relerr);
     return C(cimag(e), -creal(e));
 }
 
@@ -202,7 +193,7 @@ double faddeeva_erfi_re(double x)
 
 /******************************************************************************/
 // erfc(z) = 1 - erf(z)
-cmplx faddeeva_erfc(cmplx z, double relerr)
+cmplx cerfc(cmplx z, double relerr)
 {
     double x = creal(z), y = cimag(z);
 
@@ -233,7 +224,7 @@ cmplx faddeeva_erfc(cmplx z, double relerr)
     else
         return 2.0 - cexp(C(mRe_z2, mIm_z2))
             * w_of_z(C(y,-x), relerr);
-} // faddeeva_erfc
+} // cerfc
 
 /******************************************************************************/
 // compute Dawson(x) = sqrt(pi)/2  *  exp(-x^2) * erfi(x)
@@ -245,7 +236,7 @@ double dawson_re(double x)
 
 /******************************************************************************/
 // compute Dawson(z) = sqrt(pi)/2  *  exp(-z^2) * erfi(z)
-cmplx dawson(cmplx z, double relerr)
+cmplx cdawson(cmplx z, double relerr)
 {
     const double spi2 = 0.8862269254527580136490837416705725913990; // sqrt(pi)/2
     double x = creal(z), y = cimag(z);
@@ -395,7 +386,7 @@ static inline double sqr(double x) { return x*x; }
 
 /******************************************************************************/
 // precomputed table of expa2n2[n-1] = exp(-a2*n*n)
-// for double-precision a2 = 0.26865... in faddeeva, below.
+// for double-precision a2 = 0.26865... in w_of_z, below.
 static const double expa2n2[] = {
     7.64405281671221563e-01,
     3.41424527166548425e-01,

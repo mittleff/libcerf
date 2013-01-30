@@ -427,7 +427,7 @@ double test_erf()
         C(0.07886723099940260286824654364807981336591,
           0.01235199327873258197931147306290916629654)
     };
-    TST(faddeeva_erf, erf, 1e-20);
+    TST(cerf, erf, 1e-20);
     return errmax;
 }
 
@@ -443,7 +443,7 @@ double test_erfi()
         C(1.081032284405373149432716643834106923212,
           1.926775520840916645838949402886591180834)
     };
-    TST(faddeeva_erfi, faddeeva_erfi_re, 0);
+    TST(cerfi, faddeeva_erfi_re, 0);
     return errmax;
 }
 
@@ -459,7 +459,7 @@ double test_erfcx()
         C(0.3382187479799972294747793561190487832579,
           -0.1116077470811648467464927471872945833154)
     };
-    TST(faddeeva_erfcx, faddeeva_erfcx_re, 0);
+    TST(cerfcx, faddeeva_erfcx_re, 0);
     return errmax;
 }
 
@@ -546,7 +546,7 @@ double test_erfc()
         C(NaN, NaN),
         C(0,0)
     };
-    TST(faddeeva_erfc, erfc, 1e-20);
+    TST(cerfc, erfc, 1e-20);
     return errmax;
 }
 
@@ -685,7 +685,7 @@ double test_dawson()
           -1.20000000000000000000000001800000000000000000e-42),
         C(5e-301, 0)
     };
-    TST(dawson, dawson_re, 1e-20);
+    TST(cdawson, dawson_re, 1e-20);
     return errmax;
 }
 

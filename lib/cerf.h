@@ -56,31 +56,30 @@
 #  endif
 __BEGIN_DECLS
 
-// Require C99 complex-number support
-#include <complex.h>
+#include <complex.h> // C99 complex-number support
 
 // compute w(z) = exp(-z^2) erfc(-iz) [ Faddeeva / scaled complex error func ]
-extern double complex w_of_z (double complex z,double relerr);
+extern double complex w_of_z   (double complex z,double relerr);
 extern double         im_w_of_x(double x); // special case Im[w(x)] of real x
 
 // Various functions that we can compute with the help of w(z)
 
 // compute erfcx(z) = exp(z^2) erfc(z)
-extern double complex faddeeva_erfcx   (double complex z, double relerr);
+extern double complex cerfcx   (double complex z, double relerr);
 extern double         faddeeva_erfcx_re(double x); // special case for real x
 
 // compute erf(z), the error function of complex arguments
-extern double complex faddeeva_erf   (double complex z, double relerr);
+extern double complex cerf   (double complex z, double relerr);
 
 // compute erfi(z) = -i erf(iz), the imaginary error function
-extern double complex faddeeva_erfi   (double complex z, double relerr);
+extern double complex cerfi   (double complex z, double relerr);
 extern double         faddeeva_erfi_re(double x); // special case for real x
 
 // compute erfc(z) = 1 - erf(z), the complementary error function
-extern double complex faddeeva_erfc   (double complex z, double relerr);
+extern double complex cerfc   (double complex z, double relerr);
 
 // compute Dawson(z) = sqrt(pi)/2  *  exp(-z^2) * erfi(z)
-extern double complex dawson   (double complex z, double relerr);
+extern double complex cdawson   (double complex z, double relerr);
 extern double         dawson_re(double x); // special case for real x
 
 // compute Voigt function
