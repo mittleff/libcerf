@@ -2,7 +2,7 @@
  *   Compute complex error functions, based on a new implementation of
  *   Faddeeva's w_of_z. Also provide Dawson and Voigt functions.
  *
- * File faddeeva.c:
+ * File err_fcts.c:
  *   Computate Dawson, Voigt, and several error functions,
  *   based on erfcx, im_w_of_x, w_of_z implemented in separate files.
  *
