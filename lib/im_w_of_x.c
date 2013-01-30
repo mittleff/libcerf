@@ -1,6 +1,6 @@
 /* Library libcerf:
- *   compute complex error functions,
- *   along with Dawson, Faddeeva and Voigt functions
+ *   Compute complex error functions, based on a new implementation of
+ *   Faddeeva's w_of_z. Also provide Dawson and Voigt functions.
  *
  * File im_w_of_x.c:
  *   Compute scaled Dawson integral im_w_of_x(x) = 2*dawson(x)/sqrt(pi),
@@ -502,7 +502,7 @@ double im_w_of_x(double x)
         }
         return w_im_y100(100/(1+x), x);
     }
-    else { // = -faddeeva_im(-x)
+    else { // = -im_w_of_x(-x)
         if (x < -45) { // continued-fraction expansion is faster
             if (x < -5e7) // 1-term expansion, important to avoid overflow
                 return ispi / x;

@@ -1,6 +1,6 @@
 /* Library libcerf:
- *   compute complex error functions,
- *   along with Dawson, Faddeeva and Voigt functions
+ *   Compute complex error functions, based on a new implementation of
+ *   Faddeeva's w_of_z. Also provide Dawson and Voigt functions.
  *
  * File cerf.h:
  *   Declare exported functions.
@@ -39,8 +39,11 @@
  * Revision history:
  *   ../CHANGELOG
  *
- * More information:
- *   man 3 faddeeva
+ * References:
+ *   See man 3 w_of_z
+ *
+ * Man pages:
+ *   w_of_z(3), erfcx(3), cerf(3), dawson(3), voigt(3)
  */
 
 #ifndef __FADDEEVA_H
@@ -58,31 +61,29 @@ __BEGIN_DECLS
 
 #include <complex.h> // C99 complex-number support
 
-// compute w(z) = exp(-z^2) erfc(-iz) [ Faddeeva / scaled complex error func ]
+// compute w(z) = exp(-z^2) erfc(-iz), Faddeeva's scaled complex error function
 extern double complex w_of_z   (double complex z,double relerr);
 extern double         im_w_of_x(double x); // special case Im[w(x)] of real x
 
-// Various functions that we can compute with the help of w(z)
-
-// compute erfcx(z) = exp(z^2) erfc(z)
-extern double complex cerfcx   (double complex z, double relerr);
-extern double         faddeeva_erfcx_re(double x); // special case for real x
-
 // compute erf(z), the error function of complex arguments
-extern double complex cerf   (double complex z, double relerr);
-
-// compute erfi(z) = -i erf(iz), the imaginary error function
-extern double complex cerfi   (double complex z, double relerr);
-extern double         faddeeva_erfi_re(double x); // special case for real x
+extern double complex cerf  (double complex z, double relerr);
 
 // compute erfc(z) = 1 - erf(z), the complementary error function
-extern double complex cerfc   (double complex z, double relerr);
+extern double complex cerfc(double complex z, double relerr);
 
-// compute Dawson(z) = sqrt(pi)/2  *  exp(-z^2) * erfi(z)
-extern double complex cdawson   (double complex z, double relerr);
-extern double         dawson_re(double x); // special case for real x
+// compute erfcx(z) = exp(z^2) erfc(z), an underflow-compensated version of erfc
+extern double complex cerfcx(double complex z, double relerr);
+extern double         erfcx (double x); // special case for real x
 
-// compute Voigt function
+// compute erfi(z) = -i erf(iz), the imaginary error function
+extern double complex cerfi(double complex z, double relerr);
+extern double         erfi (double x); // special case for real x
+
+// compute dawson(z) = sqrt(pi)/2 * exp(-z^2) * erfi(z), Dawson's integral
+extern double complex cdawson(double complex z, double relerr);
+extern double         dawson (double x); // special case for real x
+
+// compute voigt(x,??), the convolution of a Gaussian and a Lorentzian
 extern double voigt( double x );
 
 __END_DECLS

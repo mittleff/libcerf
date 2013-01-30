@@ -1,6 +1,6 @@
 /* Library libcerf:
- *   compute complex error functions,
- *   along with Dawson, Faddeeva and Voigt functions
+ *   Compute complex error functions, based on a new implementation of
+ *   Faddeeva's w_of_z. Also provide Dawson and Voigt functions.
  *
  * File test1.c:
  *   Test implementation of Faddeeva, Dawson, and error functions
@@ -443,7 +443,7 @@ double test_erfi()
         C(1.081032284405373149432716643834106923212,
           1.926775520840916645838949402886591180834)
     };
-    TST(cerfi, faddeeva_erfi_re, 0);
+    TST(cerfi, erfi, 0);
     return errmax;
 }
 
@@ -459,7 +459,7 @@ double test_erfcx()
         C(0.3382187479799972294747793561190487832579,
           -0.1116077470811648467464927471872945833154)
     };
-    TST(cerfcx, faddeeva_erfcx_re, 0);
+    TST(cerfcx, erfcx, 0);
     return errmax;
 }
 
@@ -685,7 +685,7 @@ double test_dawson()
           -1.20000000000000000000000001800000000000000000e-42),
         C(5e-301, 0)
     };
-    TST(cdawson, dawson_re, 1e-20);
+    TST(cdawson, dawson, 1e-20);
     return errmax;
 }
 

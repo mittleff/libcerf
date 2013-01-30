@@ -1,6 +1,6 @@
 /* Library libcerf:
- *   compute complex error functions,
- *   along with Dawson, Faddeeva and Voigt functions
+ *   Compute complex error functions, based on a new implementation of
+ *   Faddeeva's w_of_z. Also provide Dawson and Voigt functions.
  *
  * File erfcx.c:
  *   Compute erfcx(x) = exp(x^2) erfc(x) function, for real x,
@@ -482,7 +482,7 @@ static double erfcx_y100(double y100)
 /*  Library function erfcx                                                    */
 /******************************************************************************/
 
-double faddeeva_erfcx_re(double x)
+double erfcx(double x)
 {
     // Steven G. Johnson, October 2012.
 
@@ -527,4 +527,4 @@ double faddeeva_erfcx_re(double x)
     else
         return x < -26.7 ? HUGE_VAL : (x < -6.1 ? 2*exp(x*x) 
                                        : 2*exp(x*x) - erfcx_y100(400/(4-x)));
-} // faddeeva_erfcx_re
+} // erfcx
