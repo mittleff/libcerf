@@ -1,0 +1,66 @@
+=pod
+
+=begin html
+
+<link rel="stylesheet" href="../podstyle.css" type="text/css" />
+
+=end html
+
+=head1 NAME
+
+dawson - Dawson's function
+
+=head1 SYNOPSIS
+
+B<#include <faddeeva.h>>
+
+B<double dawson (const double ??, const double ?? );>
+
+=head1 DESCRIPTION
+
+Dawson's function
+
+B<dawson> returns: ??
+
+Allowed parameter range: ??
+
+=head1 ERRORS
+
+On error, a message is written to stderr, and the program exits with errno
+EDOM (?? out of range) or
+ENOMEM (workspace allocation failed) or
+ENOSYS (no convergence in the parameter range that ought to be fully supported; please report to the author).
+
+=head1 RESSOURCES
+
+Project web site: http://apps.jcns.fz-juelich.de/faddeeva
+
+=head1 REFERENCES
+
+See B<faddeeva(3)>
+
+=head1 BUG REPORTS
+
+Please report bugs to the authors.
+
+=head1 AUTHORS
+
+Steven G. Johnson [http://math.mit.edu/~stevenj],
+  Massachusetts Institute of Technology,
+  implemented the Faddeeva and Dawson functions;
+
+Joachim Wuttke <j.wuttke@fz-juelich.de>, Forschungszentrum Jülich,
+  wrote the man page and reorganized the code into an autotools package
+
+=head1 SEE ALSO
+
+B<faddeeva(3)>
+
+=head1 COPYING
+
+Copyright (c) 2012 Massachusetts Institute of Technology
+Copyright (c) 2013 Forschungszentrum Jülich GmbH
+
+Software: MIT License.
+
+This documentation: Creative Commons Attribution Share Alike.
