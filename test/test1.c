@@ -55,6 +55,10 @@
 
 #include <stdio.h>
 
+/******************************************************************************/
+/*  Auxiliary routines                                                        */
+/******************************************************************************/
+
 // compute relative error |b-a|/|a|, handling case of NaN and Inf,
 static double relerr(double a, double b) {
     if (isnan(a) || isnan(b) || isinf(a) || isinf(b)) {
@@ -70,7 +74,6 @@ static double relerr(double a, double b) {
         return fabs((b-a) / a);
 }
 
-/******************************************************************************/
 // For testing the complex and real Dawson and error functions.
 
 double TST( char* Fname, cmplx (*F)(cmplx), double (*FRE)(double), double isc,
@@ -119,7 +122,11 @@ double TST( char* Fname, cmplx (*F)(cmplx), double (*FRE)(double), double isc,
 }
 
 /******************************************************************************/
-double test_faddeeva()
+/*  Test routines for specific library functions                              */
+/******************************************************************************/
+
+/******************************************************************************/
+double test_w_of_z()
 {
     printf("############# w(z) tests #############\n");
 #define NTST 57
@@ -687,10 +694,13 @@ double test_dawson()
 }
 
 /******************************************************************************/
+/*  Main: test sequence                                                       */
+/******************************************************************************
+/
 int main(void) {
     double errmax, errmax_all = 0;
 
-    errmax = test_faddeeva();
+    errmax = test_w_of_z();
     if (errmax > errmax_all) errmax_all = errmax;
 
     errmax = test_erf();
