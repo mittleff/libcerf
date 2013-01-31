@@ -85,6 +85,7 @@ double         dawson (double x); // special case for real x
 
 // compute voigt(x,??), the convolution of a Gaussian and a Lorentzian
 double voigt( double x, double sigma, double gamma );
+double myvoigt( double x, double sigma, double gamma ); // EXPERIMENTAL
 
 __END_DECLS
 #endif /* __CERF_H__ */
