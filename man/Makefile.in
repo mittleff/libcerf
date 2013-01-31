@@ -548,6 +548,15 @@ cerfi.3 : erfi.pod
 voigt.3 : voigt.pod
 	pod2man -s 3 -c "libcerf manual" $< > $@
 
+cerf.html : cerf.pod
+	pod2html --title="libcerf - Complex error, Faddeeva, Dawson, and Voigt functions" --noindex $< > $@
+
+erfcx.html : erfcx.pod
+	pod2html --title="libcerf - Complex error, Faddeeva, Dawson, and Voigt functions" --noindex $< > $@
+
+erfi.html : erfi.pod
+	pod2html --title="libcerf - Complex error, Faddeeva, Dawson, and Voigt functions" --noindex $< > $@
+
 w_of_z.html : w_of_z.pod
 	pod2html --title="libcerf - Complex error, Faddeeva, Dawson, and Voigt functions" --noindex $< > $@
 

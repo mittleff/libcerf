@@ -23,7 +23,7 @@ B<double _Complex cerfc ( double _Complex z );>
 
 The function B<cerf> is the complex version of the error function: erf(z) = 2/sqrt(pi) * integral from 0 to z of exp(-t*t) dt.
 
-The function cerfc() is defined as cerfc(z) = 1-cerf(z).
+The complementary complex error function B<cerfc> is defined as erfc(z) = 1-cerf(z).
 
 =head1 RESSOURCES
 

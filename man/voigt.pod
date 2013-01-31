@@ -32,6 +32,9 @@ and a Lorentzian
 
 with the integral extending from -infinity to +infinity.
 
+If sigma=0, L(x,gamma) is returned. Conversely, if gamma=0, G(x,sigma) is returned.
+
+If sigma=gamma=0, the return value is Inf for x=0, and 0 for all other x. It is advisable to test input arguments to exclude this irregular case.
 
 =head1 RESSOURCES
 

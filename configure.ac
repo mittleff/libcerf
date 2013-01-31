@@ -19,17 +19,19 @@
 # Website:
 #   http://apps.jcns.fz-juelich.de/libcerf
 
-AC_INIT([cerf], [0:0:0], [http://apps.jcns.fz-juelich.de/libcerf])
-AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_SRCDIR([lib/w_of_z.c]) # assure we have the right src dir
-AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([foreign])
-# AM_INIT_AUTOMAKE([-Wall -Werror foreign])
-AC_SUBST(AM_CFLAGS,"-pedantic -Wall")
+AC_INIT([cerf], [1:0:0], [http://apps.jcns.fz-juelich.de/libcerf])
+  # version is current:revision:age
+  # <- http://www.sourceware.org/autobook/autobook/autobook_91.html
 
+AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([m4])
+
+AM_INIT_AUTOMAKE([foreign])
+AC_SUBST(AM_CFLAGS,"-pedantic -Wall")
 LT_INIT
+AC_PROG_CC_C99
 AC_PROG_LIBTOOL
-AC_PROG_CC
+AC_CONFIG_SRCDIR([lib/w_of_z.c]) # assure we have the right src dir
 AC_CHECK_LIB([m], [sin], , [AC_MSG_ERROR(libm not found)])
 AC_CHECK_LIB([m], [erfc], , [AC_MSG_ERROR(libm outdated: missing erfc)])
 AC_HEADER_STDC

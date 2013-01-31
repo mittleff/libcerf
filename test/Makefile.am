@@ -19,7 +19,7 @@
 # Website:
 #   http://apps.jcns.fz-juelich.de/libcerf
 
-AM_CFLAGS = -I$(srcdir)/../lib -Wall -std=c99
+AM_CFLAGS = -I$(srcdir)/../lib -Wall
 bin_PROGRAMS = test_libcerf_1 runvoigt
 test_libcerf_1_SOURCES = test1.c
 runvoigt_SOURCES = runvoigt.c
