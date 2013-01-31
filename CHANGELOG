@@ -1,5 +1,7 @@
 libcerf-1.0, released 31jan12 by Joachim Wuttke:
   - Based on http://ab-initio.mit.edu/Faddeeva as of 28jan13.
+  - Simplify function names;
+    use leading 'c' for complex functions (except in w_of_z).
   - Add function voigt(x,sigma,gamma).
   - Add configure.ac, Makefile.am &c to allow for autotools standard
     installation (commands ./configure, make, sudo make install).
