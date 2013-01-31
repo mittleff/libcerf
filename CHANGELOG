@@ -1,13 +1,15 @@
-libcerf-1.0, released ??:
+libcerf-1.0, released 31jan12 by Joachim Wuttke:
   - Based on http://ab-initio.mit.edu/Faddeeva as of 28jan13.
-  - Add function voigt(..)
+  - Add function voigt(x,sigma,gamma).
   - Add configure.ac, Makefile.am &c to allow for autotools standard
-    installation (commands ./configure, make, sudo make install)
-  - Split source code into directories lib/ and test/
-  - Eliminate unused alternate code (!USE_CONTINUED_FRACTION)
-  - Eliminate relerr arguments
-  - Replace "complex" by "_Complex" for C++ compatibility
-  - Write man pages w_of_z(3), dawson(3), voigt(3), cerf(3), erfcx(3), ...
+    installation (commands ./configure, make, sudo make install).
+  - Split source code into directories lib/ and test/.
+  - Eliminate unused alternate code (!USE_CONTINUED_FRACTION).
+  - Eliminate relerr arguments.
+  - Replace "complex" by "_Complex" for C++ compatibility.
+  - Write man pages w_of_z(3), dawson(3), voigt(3), cerf(3), erfcx(3), erfi(3).
+  - Create project home page http://apps.jcns.fz-juelich.de/libcerf.
+  - Register project "libcerf" at sourceforge.net.
 
 == Revision history of Faddeeva.cc by Steven G. Johnson ==
 

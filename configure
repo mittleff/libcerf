@@ -636,6 +636,7 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+AM_CFLAGS
 CPP
 OTOOL64
 OTOOL
@@ -683,7 +684,6 @@ build_vendor
 build_cpu
 build
 LIBTOOL
-AM_CFLAGS
 am__untar
 am__tar
 AMTAR
@@ -2615,7 +2615,7 @@ am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
 
 
 
-AM_CFLAGS="-pedantic -Wall"
+  # do not create GNU-style project files
 
 case `pwd` in
   *\ * | *\	*)
@@ -11180,6 +11180,7 @@ CC="$lt_save_CC"
 # Only expand once:
 
 
+
    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $CC option to accept ISO C99" >&5
 $as_echo_n "checking for $CC option to accept ISO C99... " >&6; }
 if ${ac_cv_prog_cc_c99+:} false; then :
@@ -11357,6 +11358,8 @@ if test "x$ac_cv_prog_cc_c99" != xno; then :
 fi
 
 
+AM_CFLAGS="-pedantic -Wall"
+
 
  # assure we have the right src dir
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for sin in -lm" >&5
@@ -11452,6 +11455,7 @@ _ACEOF
 else
   as_fn_error $? "libm outdated: missing erfc" "$LINENO" 5
 fi
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
 $as_echo_n "checking for ANSI C header files... " >&6; }
@@ -11565,7 +11569,9 @@ $as_echo "#define STDC_HEADERS 1" >>confdefs.h
 
 fi
 
+
 ac_config_files="$ac_config_files Makefile lib/Makefile man/Makefile test/Makefile"
+
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure

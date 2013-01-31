@@ -21,7 +21,7 @@
 
 man_MANS = w_of_z.3 im_w_of_x.3 dawson.3 cdawson.3 cerf.3 cerfc.3 erfcx.3 cerfcx.3 erfi.3 cerfi.3 voigt.3 
 auxdir = $(datadir)/man/html
-aux_DATA = faddeeva.html voigt.html dawson.html
+aux_DATA = w_of_z.html voigt.html dawson.html cerf.html erfcx.html erfi.html
 
 w_of_z.3 : w_of_z.pod
 	pod2man -s 3 -c "libcerf manual" $< > $@

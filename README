@@ -1,0 +1,10 @@
+Installation requires a recent C compiler that supports the C99 standard.
+
+Otherwise, the library is self-contained, and installation should be
+straightforward, using the usual command sequence
+
+./configure
+make
+sudo make install
+
+Please report bugs to the package maintainer.

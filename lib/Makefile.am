@@ -19,7 +19,6 @@
 # Website:
 #   http://apps.jcns.fz-juelich.de/libcerf
 
-AM_CFLAGS = -Wall
 lib_LTLIBRARIES = libcerf.la
 libcerf_la_SOURCES = cerf.h im_w_of_x.c erfcx.c w_of_z.c err_fcts.c 
 include_HEADERS = cerf.h
