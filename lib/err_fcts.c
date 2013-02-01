@@ -512,7 +512,7 @@ double myintegration( int kind, double x, double y )
                                          (Nm[j][iter]+1+Np[j][iter])) ) ||
                 !( bk[kind][j][iter]=malloc((sizeof(long double))*
                                          (Nm[j][iter]+1+Np[j][iter])) ) ) {
-                fprintf( stderr, "kww: Workspace allocation failed\n" );
+                fprintf( stderr, "Workspace allocation failed\n" );
                 exit( ENOMEM );
             }
             h = logl( logl( 42*N/intgr_delta/Smin ) / p ) / N; // 42=(pi+1)*10
@@ -553,7 +553,7 @@ double myintegration( int kind, double x, double y )
         T = 0;
         for ( kaux=-Nm[j][iter]; kaux<=Np[j][iter]; ++kaux ) {
             tk = ak[kind][j][iter][kaux+Nm[j][iter]] / w;
-            f = expl(-tk*gamma-SQR(tk)/2);
+            f = expl(-tk*gamma-SQR(tk)/2); // Fourier kernel
             if ( mu )
                 f /= tk; // TODO
             s = bk[kind][j][iter][kaux+Nm[j][iter]] * f;
@@ -576,7 +576,7 @@ double myintegration( int kind, double x, double y )
         else if ( intgr_eps*T > intgr_delta*fabs(S) )
             return -2; // cancellation
         else if ( iter && fabs(S-S_last) + intgr_eps*T < intgr_delta*fabs(S) )
-            return S/sqrt(2*PI); // success
+            return S/w/sqrt(2*PI); // success
         N *= 2; // retry with more points
     }
     return -9; // not converged
