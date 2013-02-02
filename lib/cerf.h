@@ -64,6 +64,8 @@ __BEGIN_DECLS
 // compute w(z) = exp(-z^2) erfc(-iz), Faddeeva's scaled complex error function
 double _Complex w_of_z   (double _Complex z);
 double         im_w_of_x(double x); // special case Im[w(x)] of real x
+double re_w_of_z( double x, double y );
+double im_w_of_z( double x, double y );
 
 // compute erf(z), the error function of complex arguments
 double _Complex cerf  (double _Complex z);
@@ -87,11 +89,8 @@ double         dawson (double x); // special case for real x
 double voigt( double x, double sigma, double gamma );
 
 // EXPERIMENTAL
-double myvoigt( double x, double sigma, double gamma ); 
-double imw( double r, double a );
-double rew( double r, double a );
-double myimw( double r, double a );
-double myrew( double r, double a );
+double cerf_experimental_imw( double x, double y );
+double cerf_experimental_rew( double x, double y );
 
 __END_DECLS
 #endif /* __CERF_H__ */

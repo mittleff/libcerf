@@ -1,13 +1,33 @@
-double myvoigt( double x, double sigma, double gamma )
+/******************************************************************************/
+/*  Experimental code                                                         */
+/******************************************************************************/
+
+/*
+    Compute w_of_z via Fourier integration.
+    Agreement with Johnson's code usually < 1E-15, so far always < 1E-13.
+    Todo:
+    - sign for negative x or y
+    - determine application limits
+    - more systematical comparison with Johnson's code
+    - comparison with Abrarov&Quine
+ */
+
+#define max_iter_int 10
+#define num_range 5
+#define PI           3.14159265358979323846L  /* pi */
+#define SQR(x) ((x)*(x))
+#include <errno.h>
+
+double cerf_experimental_integration( int kind, double x, double y )
 // kind: 0 cos, 1 sin transform (precomputing arrays[2] depend on this)
 {
     // unused parameters
-    static int kind = 0;
     static int mu = 0;
     int intgr_debug = 0;
     static double intgr_delta=2.2e-16, intgr_eps=5.5e-20;
 
-    double w = fabs(x);
+    double w = sqrt(2)*x;
+    double gamma = sqrt(2)*fabs(y);
 
     int iter;
     int kaux;
@@ -69,7 +89,7 @@ double myvoigt( double x, double sigma, double gamma )
                                          (Nm[j][iter]+1+Np[j][iter])) ) ||
                 !( bk[kind][j][iter]=malloc((sizeof(long double))*
                                          (Nm[j][iter]+1+Np[j][iter])) ) ) {
-                fprintf( stderr, "kww: Workspace allocation failed\n" );
+                fprintf( stderr, "Workspace allocation failed\n" );
                 exit( ENOMEM );
             }
             h = logl( logl( 42*N/intgr_delta/Smin ) / p ) / N; // 42=(pi+1)*10
@@ -110,7 +130,7 @@ double myvoigt( double x, double sigma, double gamma )
         T = 0;
         for ( kaux=-Nm[j][iter]; kaux<=Np[j][iter]; ++kaux ) {
             tk = ak[kind][j][iter][kaux+Nm[j][iter]] / w;
-            f = expl(-tk*gamma-SQR(tk)*SQR(sigma)/2);
+            f = expl(-tk*gamma-SQR(tk)/2); // Fourier kernel
             if ( mu )
                 f /= tk; // TODO
             s = bk[kind][j][iter][kaux+Nm[j][iter]] * f;
@@ -128,13 +148,26 @@ double myvoigt( double x, double sigma, double gamma )
         // termination criteria
         if      ( intgr_debug & 4 )
             return -1; // we want to inspect just one sum
-        else if ( S < 0 )
-            return -6; // cancelling terms lead to negative S
+//        else if ( S < 0 )
+//            return -6; // cancelling terms lead to negative S
         else if ( intgr_eps*T > intgr_delta*fabs(S) )
             return -2; // cancellation
         else if ( iter && fabs(S-S_last) + intgr_eps*T < intgr_delta*fabs(S) )
-            return S/w; // success
+            return S*sqrt(2*PI)/w; // success
+            // factor 2 from int_-infty^+infty = 2 * int_0^+infty
+            // factor pi/w from formula 48 in kww paper
+            // factor 1/sqrt(2*pi) from Gaussian
         N *= 2; // retry with more points
     }
     return -9; // not converged
+}
+
+double cerf_experimental_imw( double x, double y )
+{
+    return cerf_experimental_integration( 1, x, y );
+}
+
+double cerf_experimental_rew( double x, double y )
+{
+    return cerf_experimental_integration( 0, x, y );
 }

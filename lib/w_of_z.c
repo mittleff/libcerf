@@ -70,6 +70,8 @@
 
 #include "defs.h" // defines cmplx, CMPLX, NaN
 
+int faddeeva_algorithm, faddeeva_nofterms; // for external analysis
+
 /******************************************************************************/
 /*  auxiliary functions                                                       */
 /******************************************************************************/
@@ -164,6 +166,7 @@ static const double expa2n2[] = {
 
 cmplx w_of_z(cmplx z)
 {
+    faddeeva_nofterms = 0;
 
     // Steven G. Johnson, October 2012.
 
@@ -192,6 +195,8 @@ cmplx w_of_z(cmplx z)
                       algorithm 816 in this region: */
                    && (ya > 0.1 || (x > 8 && ya > 1e-10) || x > 28))) {
     
+        faddeeva_algorithm = 100;
+
         /* Poppe & Wijers suggest using a number of terms
            nu = 3 + 1442 / (26*rho + 77)
            where rho = sqrt((x/x0)^2 + (y/y0)^2) where x0=6.3, y0=4.4.
@@ -208,26 +213,33 @@ cmplx w_of_z(cmplx z)
             if (x + ya > 1e7) { // nu == 1, w(z) = i/sqrt(pi) / z
                 // scale to avoid overflow
                 if (x > ya) {
+                    faddeeva_algorithm += 1;
                     double yax = ya / xs; 
+                    faddeeva_algorithm = 100;
                     double denom = ispi / (xs + yax*ya);
                     ret = C(denom*yax, denom);
                 }
-                else if (isinf(ya))
+                else if (isinf(ya)) {
+                    faddeeva_algorithm += 2;
                     return ((isnan(x) || y < 0) 
                             ? C(NaN,NaN) : C(0,0));
+                }
                 else {
+                    faddeeva_algorithm += 3;
                     double xya = xs / ya;
                     double denom = ispi / (xya*xs + ya);
                     ret = C(denom, denom*xya);
                 }
             }
             else { // nu == 2, w(z) = i/sqrt(pi) * z / (z*z - 0.5)
+                faddeeva_algorithm += 4;
                 double dr = xs*xs - ya*ya - 0.5, di = 2*xs*ya;
                 double denom = ispi / (dr*dr + di*di);
                 ret = C(denom * (xs*di-ya*dr), denom * (xs*dr+ya*di));
             }
         }
         else { // compute nu(z) estimate and do general continued fraction
+            faddeeva_algorithm += 5;
             const double c0=3.9, c1=11.398, c2=0.08254, c3=0.1421, c4=0.2023; // fit
             double nu = floor(c0 + c1 / (c2*x + c3*ya + c4));
             double wr = xs, wi = ya;
@@ -243,6 +255,7 @@ cmplx w_of_z(cmplx z)
             }
         }
         if (y < 0) {
+            faddeeva_algorithm += 10;
             // use w(z) = 2.0*exp(-z*z) - w(-z), 
             // but be careful of overflow in exp(-z*z) 
             //                                = exp(-(xs*xs-ya*ya) -2*i*xs*ya) 
@@ -265,15 +278,20 @@ cmplx w_of_z(cmplx z)
        problems start to appear in the various coefficients of the sums,
        below.  Therefore, we use x < 10 here. */
     else if (x < 10) {
+
+        faddeeva_algorithm = 200;
+
         double prod2ax = 1, prodm2ax = 1;
         double expx2;
 
-        if (isnan(y))
+        if (isnan(y)) {
+            faddeeva_algorithm += 99;
             return C(y,y);
-    
+        }
 
         if (x < 5e-4) { // compute sum4 and sum5 together as sum5-sum4
                         // This special case is needed for accuracy.
+            faddeeva_algorithm += 1;
             const double x2 = x*x;
             expx2 = 1 - x2 * (1 - 0.5*x2); // exp(-x*x) via Taylor
             // compute exp(2*a*x) and exp(-2*a*x) via Taylor, to double precision
@@ -283,6 +301,7 @@ cmplx w_of_z(cmplx z)
             const double expm2ax =
                 1 - ax2 * (1 - ax2 * (0.5 - 0.166666666666666666667*ax2));
             for (int n = 1; 1; ++n) {
+                ++faddeeva_nofterms;
                 const double coef = expa2n2[n-1] * expx2 / (a2*(n*n) + y*y);
                 prod2ax *= exp2ax;
                 prodm2ax *= expm2ax;
@@ -298,9 +317,11 @@ cmplx w_of_z(cmplx z)
             }
         }
         else { // x > 5e-4, compute sum4 and sum5 separately
+            faddeeva_algorithm += 2;
             expx2 = exp(-x*x);
             const double exp2ax = exp((2*a)*x), expm2ax = 1 / exp2ax;
             for (int n = 1; 1; ++n) {
+                ++faddeeva_nofterms;
                 const double coef = expa2n2[n-1] * expx2 / (a2*(n*n) + y*y);
                 prod2ax *= exp2ax;
                 prodm2ax *= expm2ax;
@@ -317,11 +338,13 @@ cmplx w_of_z(cmplx z)
             y > -6 // for y < -6, erfcx(y) = 2*exp(y*y) to double precision
             ? expx2*erfcx(y) : 2*exp(y*y-x*x);
         if (y > 5) { // imaginary terms cancel
+            faddeeva_algorithm += 10;
             const double sinxy = sin(x*y);
             ret = (expx2erfcxy - c*y*sum1) * cos(2*x*y)
                 + (c*x*expx2) * sinxy * sinc(x*y, sinxy);
         }
         else {
+            faddeeva_algorithm += 20;
             double xs = creal(z);
             const double sinxy = sin(xs*y);
             const double sin2xy = sin(2*xs*y), cos2xy = cos(2*xs*y);
@@ -332,6 +355,9 @@ cmplx w_of_z(cmplx z)
         }
     }
     else { // x large: only sum3 & sum5 contribute (see above note)    
+
+        faddeeva_algorithm = 300;
+
         if (isnan(x))
             return C(x,x);
         if (isnan(y))

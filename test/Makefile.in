@@ -72,7 +72,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = test_libcerf_1$(EXEEXT) runvoigt$(EXEEXT)
+bin_PROGRAMS = test_libcerf_1$(EXEEXT) runvoigt$(EXEEXT) \
+	run_w_of_z$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -87,6 +88,9 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
+am_run_w_of_z_OBJECTS = run_w_of_z.$(OBJEXT)
+run_w_of_z_OBJECTS = $(am_run_w_of_z_OBJECTS)
+run_w_of_z_LDADD = $(LDADD)
 am_runvoigt_OBJECTS = runvoigt.$(OBJEXT)
 runvoigt_OBJECTS = $(am_runvoigt_OBJECTS)
 runvoigt_LDADD = $(LDADD)
@@ -106,8 +110,10 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(runvoigt_SOURCES) $(test_libcerf_1_SOURCES)
-DIST_SOURCES = $(runvoigt_SOURCES) $(test_libcerf_1_SOURCES)
+SOURCES = $(run_w_of_z_SOURCES) $(runvoigt_SOURCES) \
+	$(test_libcerf_1_SOURCES)
+DIST_SOURCES = $(run_w_of_z_SOURCES) $(runvoigt_SOURCES) \
+	$(test_libcerf_1_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -232,6 +238,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 test_libcerf_1_SOURCES = test1.c
 runvoigt_SOURCES = runvoigt.c
+run_w_of_z_SOURCES = run_w_of_z.c
 AM_LDFLAGS = -lm -L../lib -lcerf
 all: all-am
 
@@ -313,6 +320,9 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+run_w_of_z$(EXEEXT): $(run_w_of_z_OBJECTS) $(run_w_of_z_DEPENDENCIES) $(EXTRA_run_w_of_z_DEPENDENCIES) 
+	@rm -f run_w_of_z$(EXEEXT)
+	$(LINK) $(run_w_of_z_OBJECTS) $(run_w_of_z_LDADD) $(LIBS)
 runvoigt$(EXEEXT): $(runvoigt_OBJECTS) $(runvoigt_DEPENDENCIES) $(EXTRA_runvoigt_DEPENDENCIES) 
 	@rm -f runvoigt$(EXEEXT)
 	$(LINK) $(runvoigt_OBJECTS) $(runvoigt_LDADD) $(LIBS)
@@ -326,6 +336,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_w_of_z.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/runvoigt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test1.Po@am__quote@
 
