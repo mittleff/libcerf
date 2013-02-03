@@ -26,8 +26,13 @@ double cerf_experimental_integration( int kind, double x, double y )
     int intgr_debug = 0;
     static double intgr_delta=2.2e-16, intgr_eps=5.5e-20;
 
+    if( x<0 || y<0 ) {
+        fprintf( stderr, "negative arguments not yet implemented\n" );
+        exit( EDOM );
+    }
+
     double w = sqrt(2)*x;
-    double gamma = sqrt(2)*fabs(y);
+    double gamma = sqrt(2)*y;
 
     int iter;
     int kaux;
@@ -148,8 +153,8 @@ double cerf_experimental_integration( int kind, double x, double y )
         // termination criteria
         if      ( intgr_debug & 4 )
             return -1; // we want to inspect just one sum
-//        else if ( S < 0 )
-//            return -6; // cancelling terms lead to negative S
+        else if ( S < 0 )
+            return -6; // cancelling terms lead to negative S
         else if ( intgr_eps*T > intgr_delta*fabs(S) )
             return -2; // cancellation
         else if ( iter && fabs(S-S_last) + intgr_eps*T < intgr_delta*fabs(S) )
