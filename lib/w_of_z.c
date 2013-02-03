@@ -170,19 +170,24 @@ cmplx w_of_z(cmplx z)
 
     // Steven G. Johnson, October 2012.
 
-    if (creal(z) == 0.0)
+    if (creal(z) == 0.0) {
+        // Purely imaginary input, purely real output.
+        // However, use creal(z) to give correct sign of 0 in cimag(w).
         return C(erfcx(cimag(z)), creal(z));
-               // give correct sign of 0 in cimag(w)
-    else if (cimag(z) == 0)
+    }
+    if (cimag(z) == 0) {
+        // Purely real input, complex output.
         return C(exp(-sqr(creal(z))),  im_w_of_x(creal(z)));
+    }
 
-    double a, a2, c;
-    double relerr = DBL_EPSILON;
-    a = 0.518321480430085929872; // pi / sqrt(-log(eps*0.5))
-    c = 0.329973702884629072537; // (2/pi) * a;
-    a2 = 0.268657157075235951582; // a^2
+    const double relerr = DBL_EPSILON;
+    const double a = 0.518321480430085929872; // pi / sqrt(-log(eps*0.5))
+    const double c = 0.329973702884629072537; // (2/pi) * a;
+    const double a2 = 0.268657157075235951582; // a^2
+
     const double x = fabs(creal(z));
-    const double y = cimag(z), ya = fabs(y);
+    const double y = cimag(z);
+    const double ya = fabs(y);
 
     cmplx ret = 0.; // return value
 

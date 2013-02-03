@@ -39,11 +39,8 @@
  * Revision history:
  *   ../CHANGELOG
  *
- * References:
- *   See man 3 w_of_z
- *
  * Man pages:
- *   w_of_z(3), erfcx(3), cerf(3), dawson(3), voigt(3)
+ *   w_of_z(3), dawson(3), voigt(3), cerf(3), erfcx(3), erfi(3)
  */
 
 #include <complex.h> // C99 complex-number support
