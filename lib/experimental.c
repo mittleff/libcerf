@@ -3,7 +3,7 @@
 /******************************************************************************/
 
 /*
-    Compute w_of_z via Fourier integration.
+    Compute w_of_z via Fourier integration using Ooura-Mori transform.
     Agreement with Johnson's code usually < 1E-15, so far always < 1E-13.
     Todo:
     - sign for negative x or y
