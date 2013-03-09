@@ -25,7 +25,7 @@ The function B<cerf> is the complex version of the error function: erf(z) = 2/sq
 
 The complementary complex error function B<cerfc> is defined as erfc(z) = 1-cerf(z).
 
-=head1 RESSOURCES
+=head1 RESOURCES
 
 Project web site: http://apps.jcns.fz-juelich.de/libcerf
 

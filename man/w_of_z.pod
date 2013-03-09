@@ -26,7 +26,7 @@ B<w_of_z> returns w(z) = exp(-z^2) * erfc(-i*z).
 
 B<im_w_of_x> returns Im[w(x)].
 
-=head1 RESSOURCES
+=head1 RESOURCES
 
 Project web site: http://apps.jcns.fz-juelich.de/libcerf
 

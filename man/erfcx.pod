@@ -25,7 +25,7 @@ The function B<cerfcx> is an underflow-compensated variant of the complex error 
 
 The function B<erfcx> takes a real argument and returns a real result.
 
-=head1 RESSOURCES
+=head1 RESOURCES
 
 Project web site: http://apps.jcns.fz-juelich.de/libcerf
 

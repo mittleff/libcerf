@@ -25,7 +25,7 @@ erfi(z) = -i erf(iz).
 
 The function B<erfi> takes a real argument and returns a real result.
 
-=head1 RESSOURCES
+=head1 RESOURCES
 
 Project web site: http://apps.jcns.fz-juelich.de/libcerf
 

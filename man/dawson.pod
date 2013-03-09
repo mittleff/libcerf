@@ -24,7 +24,7 @@ The function B<cdawson> returns Dawson's integral D(z) = exp(-z^2) integral from
 
 For function B<dawson> takes a real argument x, and returns the real result D(x).
 
-=head1 RESSOURCES
+=head1 RESOURCES
 
 Project web site: http://apps.jcns.fz-juelich.de/libcerf
 
