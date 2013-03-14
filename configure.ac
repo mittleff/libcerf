@@ -19,27 +19,29 @@
 # Website:
 #   http://apps.jcns.fz-juelich.de/libcerf
 
-AC_INIT([cerf],[1:1:0],[http://apps.jcns.fz-juelich.de/libcerf])
-  # version is current:revision:age
+AC_INIT([cerf],[1:0],[http://apps.jcns.fz-juelich.de/libcerf])
+  # version is current:revision:age; for simplicity, we always put age=0
   # <- http://www.sourceware.org/autobook/autobook/autobook_91.html
 
+# standard configuration for shared libraries
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE([foreign])
-  # do not create GNU-style project files
-
-LT_INIT
+AM_INIT_AUTOMAKE([foreign]) # don't insert GNU standard text files
+LT_INIT([disable-static])
 
 AC_PROG_CC_C99
-AC_SUBST(AM_CFLAGS,"-pedantic -Wall")
+AC_SUBST(AM_CFLAGS,"-pedantic -Wall -Werror")
+AC_CONFIG_HEADERS([config.h]) # to avoid endless -D options
+AC_HEADER_STDC
 
+# consistency check: is source code present?
 AC_CONFIG_SRCDIR([lib/w_of_z.c]) # assure we have the right src dir
+
+# dependency checks
 AC_CHECK_LIB([m], [sin], , [AC_MSG_ERROR(libm not found)])
 AC_CHECK_LIB([m], [erfc], , [AC_MSG_ERROR(libm outdated: missing erfc)])
 
-AC_HEADER_STDC
-
+# make these Makefiles
 AC_CONFIG_FILES([Makefile lib/Makefile man/Makefile test/Makefile])
-
 AC_OUTPUT
