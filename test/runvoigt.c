@@ -36,6 +36,6 @@ int main( int argc, char **argv )
     s = atof( argv[2] );
     g = atof( argv[3] );
 
-    printf( "%25.19g %25.19g\n", voigt(x,s,g) );
+    printf( "%25.19g\n", voigt(x,s,g) );
     return 0;
 }
