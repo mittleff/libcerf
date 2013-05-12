@@ -1,4 +1,7 @@
-libcerf-1.0, released 31jan12 by Joachim Wuttke:
+libcerf-1.1, released 12may13:
+  - Added Fortran binding by Antonio Cervellino.
+
+libcerf-1.0, released 31jan13 by Joachim Wuttke:
   - Based on http://ab-initio.mit.edu/Faddeeva as of 28jan13.
   - Simplify function names;
     use leading 'c' for complex functions (except in w_of_z).
