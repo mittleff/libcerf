@@ -1,7 +1,9 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
-libcerf-1.0, released 31jan13:
+libcerf-1.1, released 12may13:
+  - Added Fortran binding by Antonio Cervellino.
 
+libcerf-1.0, released 31jan13 by Joachim Wuttke:
   - Based on http://ab-initio.mit.edu/Faddeeva as of 28jan13.
   - Verified accuracy using double-exponential transform.
   - Simplified function names;
