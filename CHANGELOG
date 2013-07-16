@@ -1,5 +1,8 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
+libcerf-1.2, released 16jul13:
+  - test programs no longer install to $bindir (reported by M. Miclavec).
+
 libcerf-1.1, released 12may13:
   - Added Fortran binding by Antonio Cervellino.
 
