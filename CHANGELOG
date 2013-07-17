@@ -1,7 +1,6 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
 libcerf-1.4 ?
-  - strict C99
   - HTML version of man pages no longer installs to man/html.
   - more concise man pages
 
