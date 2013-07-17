@@ -24,32 +24,24 @@ The function B<cdawson> returns Dawson's integral D(z) = exp(-z^2) integral from
 
 For function B<dawson> takes a real argument x, and returns the real result D(x).
 
-=head1 RESOURCES
+=head1 SEE ALSO
 
-Project web site: http://apps.jcns.fz-juelich.de/libcerf
+The computation of D(z) is based on Faddeeva's function B<w_of_z>(3); to compute D(x), the imaginary part B<im_w_of_x>(3) is used.
 
-=head1 REFERENCES
+Other complex error functions: B<w_of_z>(3), B<voigt>(3), B<cerf>(3), B<erfcx>(3), B<erfi>(3).
 
-The computation of D(z) is based on Faddeeva's function B<w_of_z>; to compute D(x), the imaginary part B<im_w_of_x> is used.
-
-=head1 BUG REPORTS
-
-Please report bugs to the authors.
+Homepage: http://apps.jcns.fz-juelich.de/libcerf
 
 =head1 AUTHORS
 
-Steven G. Johnson [http://math.mit.edu/~stevenj],
+Steven G. Johnson, http://math.mit.edu/~stevenj,
   Massachusetts Institute of Technology,
   researched the numerics, and implemented the Faddeeva function.
 
 Joachim Wuttke <j.wuttke@fz-juelich.de>, Forschungszentrum Juelich,
   reorganized the code into a library, and wrote this man page.
 
-=head1 SEE ALSO
-
-Related complex error functions in liberfc:
-
-B<w_of_z(3)>, B<voigt(3)>, B<cerf(3)>, B<erfcx(3)>, B<erfi(3)>.
+Please report bugs to the authors.
 
 =head1 COPYING
 

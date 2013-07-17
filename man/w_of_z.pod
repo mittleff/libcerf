@@ -26,10 +26,6 @@ B<w_of_z> returns w(z) = exp(-z^2) * erfc(-i*z).
 
 B<im_w_of_x> returns Im[w(x)].
 
-=head1 RESOURCES
-
-Project web site: http://apps.jcns.fz-juelich.de/libcerf
-
 =head1 REFERENCES
 
 To compute w(z), a combination of two algorithms is used:
@@ -52,26 +48,25 @@ G. P. M. Poppe and C. M. J. Wijers, "More efficient computation of the complex e
 
 Mofreh R. Zaghloul and Ahmed N. Ali, "Algorithm 916: Computing the Faddeyeva and Voigt Functions," ACM Trans. Math. Soft. 38, 15 (2011).
 
-Steven G. Johnson, http://ab-initio.mit.edu/Faddeeva (accessed January 2013).
+Steven G. Johnson, http://ab-initio.mit.edu/Faddeeva
 
-=head1 BUG REPORTS
+=head1 SEE ALSO
 
-Please report bugs to the authors.
+This function is used to compute several other complex error functions:
+B<dawson(3)>, B<voigt(3)>, B<cerf(3)>, B<erfcx(3)>, B<erfi(3)>.
+
+Homepage: http://apps.jcns.fz-juelich.de/libcerf
 
 =head1 AUTHORS
 
-Steven G. Johnson [http://math.mit.edu/~stevenj],
+Steven G. Johnson, http://math.mit.edu/~stevenj,
   Massachusetts Institute of Technology,
   researched the numerics, and implemented the Faddeeva function.
 
 Joachim Wuttke <j.wuttke@fz-juelich.de>, Forschungszentrum Juelich,
   reorganized the code into a library, and wrote this man page.
 
-=head1 SEE ALSO
-
-This function is used within liberfc to compute several other complex error functions:
-
-B<dawson(3)>, B<voigt(3)>, B<cerf(3)>, B<erfcx(3)>, B<erfi(3)>.
+Please report bugs to the authors.
 
 =head1 COPYING
 

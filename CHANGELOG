@@ -2,6 +2,7 @@
 
 libcerf-1.4 ?
   - HTML version of man pages no longer installs to man/html.
+  - Streamline man pages
 
 libcerf-1.3, released 17jul13:
   - Now supporting pkg-config (suggested by Mojca Miklavec).

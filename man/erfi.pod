@@ -25,37 +25,29 @@ erfi(z) = -i erf(iz).
 
 The function B<erfi> takes a real argument and returns a real result.
 
-=head1 RESOURCES
-
-Project web site: http://apps.jcns.fz-juelich.de/libcerf
-
-=head1 REFERENCES
+=head1 SEE ALSO
 
 The implementation of B<cerfi> and B<erfi> is trivially based on the functions
-B<cerf> and B<im_w_of_x>.
+B<cerf>(3) and B<im_w_of_x>(3).
 
-=head1 BUG REPORTS
+Other complex error functions in liberfc:
+B<dawson>(3), B<erfcx>(3), B<voigt>(3), B<w_of_z>(3).
 
-Please report bugs to the authors.
+The real error function comes with recent versions of glibc, as requested by the C99 standard:
+B<erf>(3).
+
+Homepage: http://apps.jcns.fz-juelich.de/libcerf
 
 =head1 AUTHORS
 
-Steven G. Johnson [http://math.mit.edu/~stevenj],
+Steven G. Johnson, http://math.mit.edu/~stevenj,
   Massachusetts Institute of Technology,
   researched the numerics, and implemented the Faddeeva function.
 
 Joachim Wuttke <j.wuttke@fz-juelich.de>, Forschungszentrum Juelich,
   reorganized the code into a library, and wrote this man page.
 
-=head1 SEE ALSO
-
-Related complex error functions in liberfc:
-
-B<w_of_z(3)>, B<dawson(3)>, B<voigt(3)>, B<cerf(3)>, B<erfcx(3)>.
-
-The real error function comes with recent versions of glibc, as requested by the C99 standard:
-
-B<erf(3)>
+Please report bugs to the authors.
 
 =head1 COPYING
 

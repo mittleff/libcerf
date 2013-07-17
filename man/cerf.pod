@@ -25,36 +25,28 @@ The function B<cerf> is the complex version of the error function: erf(z) = 2/sq
 
 The complementary complex error function B<cerfc> is defined as erfc(z) = 1-cerf(z).
 
-=head1 RESOURCES
+=head1 SEE ALSO
 
-Project web site: http://apps.jcns.fz-juelich.de/libcerf
+The computations are based on Faddeeva's function B<w_of_z(3)>.
 
-=head1 REFERENCES
+Other complex error functions in liberfc:
+B<w_of_z>(3), B<dawson>(3), B<voigt>(3), B<erfcx>(3), B<erfi>(3).
 
-The computations are based on Faddeeva's function B<w_of_z>.
+The real error function comes with recent versions of glibc, as requested by the C99 standard:
+B<erf>(3)
 
-=head1 BUG REPORTS
-
-Please report bugs to the authors.
+Homepage: http://apps.jcns.fz-juelich.de/libcerf
 
 =head1 AUTHORS
 
-Steven G. Johnson [http://math.mit.edu/~stevenj],
+Steven G. Johnson, http://math.mit.edu/~stevenj,
   Massachusetts Institute of Technology,
   researched the numerics, and implemented the Faddeeva function.
 
 Joachim Wuttke <j.wuttke@fz-juelich.de>, Forschungszentrum Juelich,
   reorganized the code into a library, and wrote this man page.
 
-=head1 SEE ALSO
-
-Related complex error functions in liberfc:
-
-B<w_of_z(3)>, B<dawson(3)>, B<voigt(3)>, B<erfcx(3)>, B<erfi(3)>.
-
-The real error function comes with recent versions of glibc, as requested by the C99 standard:
-
-B<erf(3)>
+Please report bugs to the authors.
 
 =head1 COPYING
 
