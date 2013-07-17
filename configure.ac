@@ -43,5 +43,5 @@ AC_CHECK_LIB([m], [sin], , [AC_MSG_ERROR(libm not found)])
 AC_CHECK_LIB([m], [erfc], , [AC_MSG_ERROR(libm outdated: missing erfc)])
 
 # make these Makefiles
-AC_CONFIG_FILES([Makefile lib/Makefile man/Makefile test/Makefile cerf.pc])
+AC_CONFIG_FILES([Makefile lib/Makefile man/Makefile test/Makefile libcerf.pc])
 AC_OUTPUT

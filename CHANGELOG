@@ -1,10 +1,10 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
 libcerf-1.3, released 17jul13:
-  - Now supporting pkg-config (suggested by Mocja Miclavec).
+  - Now supporting pkg-config (suggested by Mojca Miklavec).
 
 libcerf-1.2, released 16jul13:
-  - Test programs no longer install to $bindir (reported by Mocja Miclavec).
+  - Test programs no longer install to $bindir (reported by Mojca Miklavec).
 
 libcerf-1.1, released 12may13:
   - Added Fortran binding by Antonio Cervellino.

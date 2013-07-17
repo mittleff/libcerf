@@ -1,13 +1,10 @@
-# experimental pkg-config support since libcerf-1.3, 17jul13
-
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
 Name: libcerf
-Description: Library for complex error functions.
-# Requires: 
+Description: Complex error function library
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lcerf
 Cflags: -I${includedir}

@@ -20,7 +20,7 @@
 #   http://apps.jcns.fz-juelich.de/libcerf
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = cerf.pc
+pkgconfig_DATA = libcerf.pc
 
 SUBDIRS = lib man test
 ACLOCAL_AMFLAGS = -I m4
