@@ -1,6 +1,7 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
 libcerf-1.4 ?
+  - HTML version of man pages no longer installs to man/html.
 
 libcerf-1.3, released 17jul13:
   - Now supporting pkg-config (suggested by Mojca Miklavec).

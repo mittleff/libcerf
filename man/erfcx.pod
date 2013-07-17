@@ -2,7 +2,7 @@
 
 =begin html
 
-<link rel="stylesheet" href="../podstyle.css" type="text/css" />
+<link rel="stylesheet" href="podstyle.css" type="text/css" />
 
 =end html
 
