@@ -7,4 +7,5 @@ Name: libcerf
 Description: Complex error function library
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lcerf
+Libs.private: -lm
 Cflags: -I${includedir}
