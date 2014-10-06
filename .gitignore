@@ -61,6 +61,6 @@ man/*.html
 
 # executables
 
-libcerf/test/test_libcerf_1
-libcerf/test/runvoigt
-libcerf/test/run_w_of_z
+test/test_libcerf_1
+test/runvoigt
+test/run_w_of_z
