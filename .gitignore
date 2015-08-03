@@ -52,6 +52,7 @@ latex/
 html/
 
 # docs
+podstyle.css
 pod2*
 demo/*demo
 demo/*test
