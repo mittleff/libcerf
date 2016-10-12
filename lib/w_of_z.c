@@ -10,11 +10,11 @@
  *
  *   This implementation uses a combination of different algorithms.
  *   See man 3 w_of_z for references.
- * 
+ *
  * Copyright:
  *   (C) 2012 Massachusetts Institute of Technology
  *   (C) 2013 Forschungszentrum Jülich GmbH
- * 
+ *
  * Licence:
  *   Permission is hereby granted, free of charge, to any person obtaining
  *   a copy of this software and associated documentation files (the
@@ -23,17 +23,17 @@
  *   distribute, sublicense, and/or sell copies of the Software, and to
  *   permit persons to whom the Software is furnished to do so, subject to
  *   the following conditions:
- * 
+ *
  *   The above copyright notice and this permission notice shall be
  *   included in all copies or substantial portions of the Software.
- * 
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  *   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  *   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
  *   LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  *   OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+ *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * Authors:
  *   Steven G. Johnson, Massachusetts Institute of Technology, 2012, core author
@@ -49,10 +49,10 @@
  *   w_of_z(3)
  */
 
-/* 
-   Computes various error functions (erf, erfc, erfi, erfcx), 
+/*
+   Computes various error functions (erf, erfc, erfi, erfcx),
    including the Dawson integral, in the complex plane, based
-   on algorithms for the computation of the Faddeeva function 
+   on algorithms for the computation of the Faddeeva function
               w(z) = exp(-z^2) * erfc(-i*z).
    Given w(z), the error functions are mostly straightforward
    to compute, except for certain regions where we have to
@@ -76,19 +76,11 @@ int faddeeva_algorithm, faddeeva_nofterms; // for external analysis
 /*  auxiliary functions                                                       */
 /******************************************************************************/
 
-static inline cmplx cpolar(double r, double t)
-{
-    if (r == 0.0 && !isnan(t))
-        return 0.0;
-    else
-        return C(r * cos(t), r * sin(t));
-}
-
 static inline double sinc(double x, double sinx)
-{ 
-    // return sinc(x) = sin(x)/x, given both x and sin(x) 
+{
+    // return sinc(x) = sin(x)/x, given both x and sin(x)
     // [since we only use this in cases where sin(x) has already been computed]
-    return fabs(x) < 1e-4 ? 1 - (0.1666666666666666666667)*x*x : sinx / x; 
+    return fabs(x) < 1e-4 ? 1 - (0.1666666666666666666667)*x*x : sinx / x;
 }
 
 static inline double sinh_taylor(double x)
@@ -199,7 +191,7 @@ cmplx w_of_z(cmplx z)
                       Re w(z) for |x| ~ 6 and small |y|, so use
                       algorithm 816 in this region: */
                    && (ya > 0.1 || (x > 8 && ya > 1e-10) || x > 28))) {
-    
+
         faddeeva_algorithm = 100;
 
         /* Poppe & Wijers suggest using a number of terms
@@ -219,14 +211,14 @@ cmplx w_of_z(cmplx z)
                 // scale to avoid overflow
                 if (x > ya) {
                     faddeeva_algorithm += 1;
-                    double yax = ya / xs; 
+                    double yax = ya / xs;
                     faddeeva_algorithm = 100;
                     double denom = ispi / (xs + yax*ya);
                     ret = C(denom*yax, denom);
                 }
                 else if (isinf(ya)) {
                     faddeeva_algorithm += 2;
-                    return ((isnan(x) || y < 0) 
+                    return ((isnan(x) || y < 0)
                             ? C(NaN,NaN) : C(0,0));
                 }
                 else {
@@ -261,9 +253,9 @@ cmplx w_of_z(cmplx z)
         }
         if (y < 0) {
             faddeeva_algorithm += 10;
-            // use w(z) = 2.0*exp(-z*z) - w(-z), 
-            // but be careful of overflow in exp(-z*z) 
-            //                                = exp(-(xs*xs-ya*ya) -2*i*xs*ya) 
+            // use w(z) = 2.0*exp(-z*z) - w(-z),
+            // but be careful of overflow in exp(-z*z)
+            //                                = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
             return 2.0*cexp(C((ya-xs)*(xs+ya), 2*xs*y)) - ret;
         }
         else
@@ -313,10 +305,10 @@ cmplx w_of_z(cmplx z)
                 sum1 += coef;
                 sum2 += coef * prodm2ax;
                 sum3 += coef * prod2ax;
-          
+
                 // really = sum5 - sum4
                 sum5 += coef * (2*a) * n * sinh_taylor((2*a)*n*x);
-          
+
                 // test convergence via sum3
                 if (coef * prod2ax < relerr * sum3) break;
             }
@@ -359,7 +351,7 @@ cmplx w_of_z(cmplx z)
                     coef2 * sinc(2*xs*y, sin2xy) - coef1 * sin2xy);
         }
     }
-    else { // x large: only sum3 & sum5 contribute (see above note)    
+    else { // x large: only sum3 & sum5 contribute (see above note)
 
         faddeeva_algorithm = 300;
 
@@ -395,6 +387,6 @@ cmplx w_of_z(cmplx z)
         }
     }
 finish:
-    return ret + C((0.5*c)*y*(sum2+sum3), 
+    return ret + C((0.5*c)*y*(sum2+sum3),
                    (0.5*c)*copysign(sum5-sum4, creal(z)));
 } // w_of_z

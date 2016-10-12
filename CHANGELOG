@@ -1,5 +1,8 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
+libcerf-1.5, released 12oct16:
+   - rm unused inline function (detected by clang-1.3., reported by Luke Benes)
+
 libcerf-1.4, released 27aug14:
   - HTML version of man pages no longer installs to man/html.
   - More concise man pages.
