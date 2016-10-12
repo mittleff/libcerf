@@ -19,7 +19,7 @@
 # Website:
 #   http://apps.jcns.fz-juelich.de/libcerf
 
-AC_INIT([libcerf],[1:5],[http://apps.jcns.fz-juelich.de/libcerf])
+AC_INIT([libcerf],[1:6],[http://apps.jcns.fz-juelich.de/libcerf])
   # version is current:revision:age; for simplicity, we always put age=0
   # <- http://www.sourceware.org/autobook/autobook/autobook_91.html
 
