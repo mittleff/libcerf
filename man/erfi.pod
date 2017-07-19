@@ -30,7 +30,7 @@ The function B<erfi> takes a real argument and returns a real result.
 The implementation of B<cerfi> and B<erfi> is trivially based on the functions
 B<cerf>(3) and B<im_w_of_x>(3).
 
-Other complex error functions in liberfc:
+Other complex error functions in libcerf:
 B<dawson>(3), B<erfcx>(3), B<voigt>(3), B<w_of_z>(3).
 
 The real error function comes with recent versions of glibc, as requested by the C99 standard:

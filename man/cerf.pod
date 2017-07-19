@@ -29,7 +29,7 @@ The complementary complex error function B<cerfc> is defined as erfc(z) = 1-cerf
 
 The computations are based on Faddeeva's function B<w_of_z(3)>.
 
-Other complex error functions in liberfc:
+Other complex error functions in libcerf:
 B<w_of_z>(3), B<dawson>(3), B<voigt>(3), B<erfcx>(3), B<erfi>(3).
 
 The real error function comes with recent versions of glibc, as requested by the C99 standard:
