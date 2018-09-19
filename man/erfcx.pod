@@ -30,7 +30,7 @@ The function B<erfcx> takes a real argument and returns a real result.
 The implementation of B<cerfcx> is a thin wrapper around Faddeeva's
 function B<w_of_z>.
 
-The implementation of B<ercx> is self-contained, and improves upon the SLATEC DERFC function (or an erfcx function derived therefrom) or Cody's CALERF function (from netlib.org/specfun), while retaining near machine precision in accuracy.
+The implementation of B<erfcx> is self-contained, and improves upon the SLATEC DERFC function (or an erfcx function derived therefrom) or Cody's CALERF function (from netlib.org/specfun), while retaining near machine precision in accuracy.
 
 =head1 SEE ALSO
 
