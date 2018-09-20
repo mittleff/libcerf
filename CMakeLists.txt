@@ -7,8 +7,8 @@ set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 project(cerf)
-set(cerf_SOVERSION                  8) # API version
-set(cerf_VERSION ${cerf_SOVERSION}.0) # lib version
+set(cerf_SOVERSION                 1) # API version
+set(cerf_VERSION ${cerf_SOVERSION}.6) # minor version
 
 # --- Declare project-wide user flags, and set default values ---
 option(FITTEST "Build with FitTest" OFF)
