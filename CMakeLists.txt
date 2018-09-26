@@ -7,6 +7,8 @@ set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 option(CERF_CPP "Build as native C++" OFF)
+option(LIB_MAN "Build library man pages" ON)
+
 if (${CERF_CPP})
     project(cerfcpp CXX)
 else()
@@ -25,4 +27,6 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_subdirectory(lib)
 add_subdirectory(test)
-add_subdirectory(man)
+if (${LIB_MAN})
+    add_subdirectory(man)
+endif()
