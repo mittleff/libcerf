@@ -1,4 +1,4 @@
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${cerf_SOURCE_DIR}/lib)
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CERF_SOURCE_DIR}/lib)
 
 set(tests
     runvoigt
@@ -8,5 +8,9 @@ set(tests
 
 foreach(test ${tests})
     add_executable(${test} ${test}.c)
+    if (${CERF_CPP})
+        set_property(TARGET ${test} PROPERTY LINKER_LANGUAGE CXX)
+    endif()
+    message(STATUS "link ${test} with library ${cerf_LIBRARY}")
     target_link_libraries(${test} ${cerf_LIBRARY})
 endforeach()
