@@ -14,7 +14,7 @@ else()
 endif()
 
 set(CERF_SOVERSION                 1) # API version
-set(CERF_VERSION ${CERF_SOVERSION}.6) # minor version
+set(CERF_VERSION ${CERF_SOVERSION}.7) # minor version
 
 set(destination ${CMAKE_INSTALL_PREFIX})
 
