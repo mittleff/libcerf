@@ -21,7 +21,11 @@
  *   http://apps.jcns.fz-juelich.de/libcerf
  */
 
+#ifndef cmplx
 typedef double _Complex cmplx;
+#endif
+
+#define _GNU_SOURCE // enable GNU libc NAN extension if possible
 
 /* Constructing complex numbers like 0+i*NaN is problematic in C99
    without the C11 CMPLX macro, because 0.+I*NAN may give NaN+i*NAN if
