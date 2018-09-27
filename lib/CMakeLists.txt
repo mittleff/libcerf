@@ -13,7 +13,11 @@ if (${CERF_CPP})
     set_property(SOURCE ${src_files} PROPERTY LANGUAGE CXX)
 endif()
 
-add_library(${lib} SHARED ${src_files})
+if(MSVC)
+    add_library(${lib} ${src_files})
+else()
+    add_library(${lib} SHARED ${src_files})
+endif()
 
 set_target_properties(
     ${lib} PROPERTIES
@@ -24,7 +28,9 @@ if (${CERF_CPP})
     set_property(TARGET ${lib} PROPERTY LINKER_LANGUAGE CXX)
 endif()
 
-target_link_libraries(${lib} m)
+if(NOT MSVC)
+    target_link_libraries(${lib} m)
+endif()
 
 if (${LIB_INSTALL})
     install(
