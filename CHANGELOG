@@ -1,5 +1,9 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
+libcerf-1.10, released ?18:
+  - INSTALL instructions, and other minor adjustments for use of libcerf in C++ projects
+  - new function voigt_hwhm
+
 libcerf-1.8 [2oct18] and libcerf-1.9 [16oct18]
   MUST NOT BE USED
   - A bug introduced in v1.8 had broken the normalization of the Voigt function.

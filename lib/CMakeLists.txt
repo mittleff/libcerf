@@ -6,7 +6,7 @@ message(STATUS "libcerf: build library ${lib}")
 
 set(cerf_LIBRARY ${lib} PARENT_SCOPE)
 
-set(src_files erfcx.c err_fcts.c im_w_of_x.c w_of_z.c)
+set(src_files erfcx.c err_fcts.c im_w_of_x.c w_of_z.c width.c)
 set(inc_files cerf.h defs.h)
 
 if (${CERF_CPP})

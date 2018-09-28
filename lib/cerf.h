@@ -97,6 +97,8 @@ double dawson(double x); // special case for real x
 
 // compute voigt(x,...), the convolution of a Gaussian and a Lorentzian
 double voigt(double x, double sigma, double gamma);
+// compute the full width at half maximum of the Voigt function
+double voigt_hwhm(double sigma, double gamma);
 
 // EXPERIMENTAL
 double cerf_experimental_imw(double x, double y);

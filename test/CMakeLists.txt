@@ -2,6 +2,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/lib)
 
 set(tests
     runvoigt
+    runfwhm
     run_w_of_z
     test1
     )
