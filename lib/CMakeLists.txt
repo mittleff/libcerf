@@ -7,7 +7,7 @@ message(STATUS "libcerf: build library ${lib}")
 set(cerf_LIBRARY ${lib} PARENT_SCOPE)
 
 set(src_files erfcx.c err_fcts.c im_w_of_x.c w_of_z.c width.c)
-set(inc_files cerf.h defs.h)
+set(inc_files cerf.h)
 
 if (${CERF_CPP})
     set_property(SOURCE ${src_files} PROPERTY LANGUAGE CXX)

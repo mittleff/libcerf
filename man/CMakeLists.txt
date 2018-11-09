@@ -15,7 +15,11 @@ function(one_page pname section srcname)
         )
     install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/${pname}.${section}
-        DESTINATION "${CMAKE_INSTALL_PREFIX}/man/man${section}"
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/share/man/man${section}"
+        )
+    install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/${pname}.html
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/share/doc/libcerf/html"
         )
     set(TARGETS_MAN "${TARGETS_MAN};${pname}.${section}" PARENT_SCOPE)
     set(TARGETS_HTM "${TARGETS_HTM};${pname}.html"       PARENT_SCOPE)
@@ -37,7 +41,7 @@ one_page(voigt_hwhm 3 voigt_hwhm)
 one_page(w_of_z     3 w_of_z)
 one_page(im_w_of_z  3 w_of_z)
 
-message(STATUS "targets man: ${TARGETS_MAN}")
-message(STATUS "targets htm: ${TARGETS_HTM}")
+# message(STATUS "targets man: ${TARGETS_MAN}")
+# message(STATUS "targets htm: ${TARGETS_HTM}")
 add_custom_target(man  ALL DEPENDS ${TARGETS_MAN})
 add_custom_target(html ALL DEPENDS ${TARGETS_HTM})
