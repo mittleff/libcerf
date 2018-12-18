@@ -65,4 +65,4 @@ test/test_libcerf_1
 test/runvoigt
 test/run_w_of_z
 
-mybuild/
+build/

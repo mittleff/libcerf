@@ -1,0 +1,10 @@
+prefix=@destination@
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libcerf
+Description: Provides complex error, Dawson, Faddeeva, and Voigt functions.
+Version: @libcerf_VERSION@
+Libs: -L${libdir} -llibcerf
+Cflags: -I${includedir}

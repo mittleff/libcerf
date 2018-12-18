@@ -7,6 +7,7 @@ include(PreventInSourceBuilds)
 option(CERF_CPP "Build libcerf as native C++" OFF)
 option(LIB_MAN "Build libcerf man pages" ON)
 option(LIB_INSTALL "Install libcerf" ON)
+option(PEDANTIC "Compile with pedantic warnings" ON)
 
 if (${CERF_CPP})
     project(cerfcpp CXX)
@@ -19,13 +20,20 @@ else()
 endif()
 
 set(CERF_SOVERSION                 1) # API version
-set(CERF_VERSION ${CERF_SOVERSION}.7) # minor version
+set(CERF_VERSION ${CERF_SOVERSION}.8) # minor version
 
 set(destination ${CMAKE_INSTALL_PREFIX})
 
+configure_file("libcerf.pc.in" "libcerf.pc" @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libcerf.pc"
+    DESTINATION "${destination}/lib/pkgconfig/")
+
 if(MSVC)
 else()
-    set(CERF_COMPILER_FLAGS "-g -O2 -pedantic -Wall -Wno-sign-compare -Wno-unused-result -Wno-parentheses -Wno-unknown-pragmas")
+    add_compile_options(-g -O2)
+    if(PEDANTIC)
+        add_compile_options(-pedantic -Wall)
+    endif()
 endif()
 
 add_subdirectory(lib)
