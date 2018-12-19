@@ -11,11 +11,10 @@ option(PEDANTIC "Compile with pedantic warnings" ON)
 
 if (${CERF_CPP})
     project(cerfcpp CXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CERF_COMPILER_FLAGS} -DCERF_AS_CPP")
+    add_compile_definitions(CERF_AS_CPP)
     set(CMAKE_CXX_STANDARD 14)
 else()
     project(cerf C)
-    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${CERF_COMPILER_FLAGS}")
     set(CMAKE_C_STANDARD 99)
 endif()
 
