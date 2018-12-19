@@ -4,7 +4,8 @@ libdir=${prefix}/lib
 includedir=${prefix}/include
 
 Name: libcerf
-Description: Provides complex error, Dawson, Faddeeva, and Voigt functions.
-Version: @libcerf_VERSION@
-Libs: -L${libdir} -llibcerf
+Description: Complex error function library
+Version: @CERF_VERSION@
+Libs: -L${libdir} -lcerf
+Libs.private: -lm
 Cflags: -I${includedir}
