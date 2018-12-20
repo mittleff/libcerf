@@ -691,6 +691,35 @@ double test_dawson()
 }
 
 /******************************************************************************/
+void test_one(double* errmax, double reduction, double limit, const char* name, double a, double b)
+{
+    double re = relerr(a,b)/reduction;
+    if (re>limit)
+        printf("test case %s: found=%g, expected=%g, relerr=%g", name, a, b, re);
+    if (re>*errmax)
+        *errmax = re;
+}
+
+double test_voigt()
+{
+    printf("############# test_voigt #############\n");
+    double errmax = 0;
+    test_one(&errmax, 1,   1e-13, "voigt(0,1,0)", voigt(0,1,0), 1/sqrt(6.283185307179586));
+    test_one(&errmax, 1,   1e-13, "voigt(0,0,1)", voigt(0,0,1), 1/3.141592653589793);
+    test_one(&errmax, 1,   1e-13, "voigt(0,.5,.5)", voigt(0,.5,.5), .41741856104074);
+    // all the following expected results obtained from scipy.integrate
+    test_one(&errmax, 1e1, 1e-13, "voigt(1,.5,.5)", voigt(1,.5,.5),
+             .18143039885260323);
+    test_one(&errmax, 1e1, 1e-13, "voigt(1e5,.5e5,.5e5)", voigt(1e5,.5e5,.5e5),
+             .18143039885260323e-5);
+    test_one(&errmax, 1e1, 1e-13, "voigt(1m5,.5m5,.5m5)",
+             voigt(1e-5,.5e-5,.5e-5), .18143039885260323e5);
+    test_one(&errmax, 1e1, 1e-13, "voigt(1,.2,5)", voigt(1,.2,5), 0.06113399719916219);
+    test_one(&errmax, 1e1, 1e-13, "voigt(1,5,.2)", voigt(1,5,.2), 0.07582140674553575);
+    return errmax;
+}
+
+/******************************************************************************/
 /*  Main: test sequence                                                       */
 /******************************************************************************/
 
@@ -713,6 +742,9 @@ int main(void) {
     if (errmax > errmax_all) errmax_all = errmax;
 
     errmax = test_dawson();
+    if (errmax > errmax_all) errmax_all = errmax;
+
+    errmax = test_voigt();
     if (errmax > errmax_all) errmax_all = errmax;
 
     printf("#####################################\n");
