@@ -21,12 +21,6 @@ endif()
 set(CERF_SOVERSION                 1) # API version
 set(CERF_VERSION ${CERF_SOVERSION}.8) # minor version
 
-set(destination ${CMAKE_INSTALL_PREFIX})
-
-configure_file("libcerf.pc.in" "libcerf.pc" @ONLY)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libcerf.pc"
-    DESTINATION "${destination}/lib/pkgconfig/")
-
 if(MSVC)
 else()
     add_compile_options(-O2)
@@ -35,7 +29,16 @@ else()
     endif()
 endif()
 
+include(CTest)
+
+set(destination ${CMAKE_INSTALL_PREFIX})
+
+configure_file("libcerf.pc.in" "libcerf.pc" @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libcerf.pc"
+    DESTINATION "${destination}/lib/pkgconfig/")
+
 add_subdirectory(lib)
+add_subdirectory(run)
 add_subdirectory(test)
 if (${LIB_MAN})
     add_subdirectory(man)

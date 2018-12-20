@@ -716,5 +716,11 @@ int main(void) {
     if (errmax > errmax_all) errmax_all = errmax;
 
     printf("#####################################\n");
-    printf("OVERALL SUCCESS (max relative error = %g)\n", errmax_all);
+    if (errmax_all<1e-13) {
+        printf("OVERALL SUCCESS (max relative error = %g)\n", errmax_all);
+        return 0;
+    } else {
+        printf("OVERALL FAILURE (max relative error = %g is too large)\n", errmax_all);
+        return 1;
+    }
 }
