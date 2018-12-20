@@ -50,7 +50,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "defs.h" // defines cmplx, CMPLX, NaN
+#include "defs.h" // defines _cerf_cmplx, CMPLX, NaN
 
 /******************************************************************************/
 /*  Auxiliary routines                                                        */
@@ -73,13 +73,13 @@ static double relerr(double a, double b) {
 
 // For testing the complex and real Dawson and error functions.
 
-double TST(const char* Fname, cmplx (*F)(cmplx), double (*FRE)(double), double isc,
-         int nTst, cmplx *w, cmplx *z )
+double TST(const char* Fname, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double), double isc,
+         int nTst, _cerf_cmplx *w, _cerf_cmplx *z )
 {
     printf("############# %s(z) tests #############\n", Fname);
     double errmax = 0;
     for (int i = 0; i < nTst; ++i) {
-        cmplx fw = F(z[i]);
+        _cerf_cmplx fw = F(z[i]);
         double re_err = relerr(creal(w[i]), creal(fw));
         double im_err = relerr(cimag(w[i]), cimag(fw));
         printf("%s(%g%+gi) = %g%+gi (vs. %g%+gi), "
@@ -127,7 +127,7 @@ double test_w_of_z()
 {
     printf("############# w(z) tests #############\n");
 #define NTST 57
-    cmplx z[NTST] = {
+    _cerf_cmplx z[NTST] = {
         C(624.2,-0.26123),
         C(-0.4,3.),
         C(0.6,2.),
@@ -186,7 +186,7 @@ double test_w_of_z()
         C(NaN,Inf),
         C(Inf,NaN)
     };
-    cmplx w[NTST] = { /* w(z), computed with WolframAlpha
+    _cerf_cmplx w[NTST] = { /* w(z), computed with WolframAlpha
                          ... note that WolframAlpha is problematic
                          some of the above inputs, so I had to
                          use the continued-fraction expansion
@@ -298,7 +298,7 @@ double test_w_of_z()
     };
     double errmax = 0;
     for (int i = 0; i < NTST; ++i) {
-        cmplx fw = w_of_z(z[i]);
+        _cerf_cmplx fw = w_of_z(z[i]);
         double re_err = relerr(creal(w[i]), creal(fw));
         double im_err = relerr(cimag(w[i]), cimag(fw));
         printf("w(%g%+gi) = %g%+gi (vs. %g%+gi), re/im rel. err. = %0.2g/%0.2g)\n",
@@ -320,7 +320,7 @@ double test_erf()
 {
 #undef NTST
 #define NTST 41
-    cmplx z[NTST] = {
+    _cerf_cmplx z[NTST] = {
         C(1,2),
         C(-1,2),
         C(1,-2),
@@ -363,7 +363,7 @@ double test_erf()
         C(7e-2,0.9e-2),
         C(7e-2,1.1e-2)
     };
-    cmplx w[NTST] = { // erf(z[i]), evaluated with Maple
+    _cerf_cmplx w[NTST] = { // erf(z[i]), evaluated with Maple
         C(-0.5366435657785650339917955593141927494421,
           -5.049143703447034669543036958614140565553),
         C(0.5366435657785650339917955593141927494421,
@@ -443,8 +443,8 @@ double test_erfi()
     // be sufficient to make sure I didn't screw up the signs or something
 #undef NTST
 #define NTST 1 // define instead of const for C compatibility
-    cmplx z[NTST] = { C(1.234,0.5678) };
-    cmplx w[NTST] = { // erfi(z[i]), computed with Maple
+    _cerf_cmplx z[NTST] = { C(1.234,0.5678) };
+    _cerf_cmplx w[NTST] = { // erfi(z[i]), computed with Maple
         C(1.081032284405373149432716643834106923212,
           1.926775520840916645838949402886591180834)
     };
@@ -458,8 +458,8 @@ double test_erfcx()
     // be sufficient to make sure I didn't screw up the signs or something
 #undef NTST
 #define NTST 1 // define instead of const for C compatibility
-    cmplx z[NTST] = { C(1.234,0.5678) };
-    cmplx w[NTST] = { // erfcx(z[i]), computed with Maple
+    _cerf_cmplx z[NTST] = { C(1.234,0.5678) };
+    _cerf_cmplx w[NTST] = { // erfcx(z[i]), computed with Maple
         C(0.3382187479799972294747793561190487832579,
           -0.1116077470811648467464927471872945833154)
     };
@@ -471,7 +471,7 @@ double test_erfc()
 {
 #undef NTST
 #define NTST 30
-    cmplx z[NTST] = {
+    _cerf_cmplx z[NTST] = {
         C(1,2),
         C(-1,2),
         C(1,-2),
@@ -503,7 +503,7 @@ double test_erfc()
         C(Inf,NaN),
         C(88,0)
     };
-    cmplx w[NTST] = { // erfc(z[i]), evaluated with Maple
+    _cerf_cmplx w[NTST] = { // erfc(z[i]), evaluated with Maple
         C(1.536643565778565033991795559314192749442,
           5.049143703447034669543036958614140565553),
         C(0.4633564342214349660082044406858072505579,
@@ -557,7 +557,7 @@ double test_dawson()
 {
 #undef NTST
 #define NTST 48
-    cmplx z[NTST] = {
+    _cerf_cmplx z[NTST] = {
         C(2,1),
         C(-2,1),
         C(2,-1),
@@ -607,7 +607,7 @@ double test_dawson()
         C(1e13, 2.4e-16),
         C(1e300, 2.4e-303)
     };
-    cmplx w[NTST] = { // dawson(z[i]), evaluated with Maple
+    _cerf_cmplx w[NTST] = { // dawson(z[i]), evaluated with Maple
         C(0.1635394094345355614904345232875688576839,
           -0.1531245755371229803585918112683241066853),
         C(-0.1635394094345355614904345232875688576839,

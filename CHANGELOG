@@ -1,8 +1,10 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
 libcerf-1.10, released ?18:
-  - INSTALL instructions, and other minor adjustments for use of libcerf in C++ projects
-  - new function voigt_hwhm
+  - Implement new function voigt_hwhm
+  - Restore libcerf.pc
+  - Add INSTALL instructions, and other minor adjustments for use of libcerf in C++ projects
+  - Rename type cmplx into _cerf_cmplx to avoid name clash with Gnuplot pre 5.3
 
 libcerf-1.8 [2oct18] and libcerf-1.9 [16oct18]
   MUST NOT BE USED
