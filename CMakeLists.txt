@@ -29,7 +29,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libcerf.pc"
 
 if(MSVC)
 else()
-    add_compile_options(-g -O2)
+    add_compile_options(-O2)
     if(PEDANTIC)
         add_compile_options(-pedantic -Wall)
     endif()
