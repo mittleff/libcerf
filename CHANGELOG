@@ -5,7 +5,7 @@ libcerf-1.12, released 7feb19:
   - Relative paths in CMake sources, for use as subproject.
   - When compiling as CPP, then #include<complex>, not <complex.h>;
     revise the entire C-vs-CPP machinery.
- -  Remove tests with different inf or nan results on different systems or under
+  - Remove tests with different inf or nan results on different systems or under
     different compilers.
 
 libcerf-1.11, released 28dec18:

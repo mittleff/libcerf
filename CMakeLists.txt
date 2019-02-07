@@ -48,7 +48,7 @@ else()
 endif()
 
 set(CERF_SOVERSION                 1) # API version
-set(CERF_VERSION ${CERF_SOVERSION}.11) # minor version
+set(CERF_VERSION ${CERF_SOVERSION}.12) # minor version
 
 
 include(CTest)
