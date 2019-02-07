@@ -73,12 +73,12 @@ static double relerr(double a, double b) {
         return fabs((b-a) / a);
 }
 
-// For testing the complex and real Dawson and error functions.
+// For testing the complex Dawson and error functions.
 
-double TST(const char* Fname, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double), double isc,
-         int nTst, _cerf_cmplx *w, _cerf_cmplx *z )
+double zTest(const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx),
+             int nTst, _cerf_cmplx *w, _cerf_cmplx *z )
 {
-    printf("############# %s(z) tests #############\n", Fname);
+    printf("############# %s(z) tests #############\n", fctName);
     double errmax = 0;
     for (int i = 0; i < nTst; ++i) {
         _cerf_cmplx fw = F(z[i]);
@@ -86,7 +86,7 @@ double TST(const char* Fname, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(doubl
         double im_err = relerr(cimag(w[i]), cimag(fw));
         printf( re_err>errBound || im_err>errBound ? "ERR " : "    " );
         printf("%s(%g%+gi) = %g%+gi (vs. %g%+gi), "
-               "re/im rel. err. = %0.2g/%0.2g)\n", Fname,
+               "re/im rel. err. = %0.2g/%0.2g)\n", fctName,
                creal(z[i]), cimag(z[i]), creal(fw), cimag(fw),
                creal(w[i]), cimag(w[i]),
                re_err, im_err);
@@ -97,7 +97,16 @@ double TST(const char* Fname, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(doubl
         printf("FAILURE -- relative error %g too large!\n", errmax);
         return errmax;
     }
-    printf("Checking %s(x) special case...\n", Fname);
+    printf("SUCCESS (max relative error = %g)\n", errmax);
+    return errmax;
+}
+
+// For testing the Dawson and error functions for the special case of a real argument
+
+double xTest(const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double), double isc)
+{
+    printf("############# %s(x) tests #############\n", fctName);
+    double errmax = 0;
     for (int i = 0; i < 10000; ++i) {
         double x = pow(10., -300. + i * 600. / (10000 - 1));
         double re_err = relerr(FRE(x), creal(F(C(x,x*isc))));
@@ -105,14 +114,26 @@ double TST(const char* Fname, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(doubl
         re_err = relerr(FRE(-x), creal(F(C(-x,x*isc))));
         if (re_err > errmax) errmax = re_err;
     }
-    {
-        double re_err = relerr(FRE(Inf), creal(F(C(Inf,0.))));
-        if (re_err > errmax) errmax = re_err;
-        re_err = relerr(FRE(-Inf), creal(F(C(-Inf,0.))));
-        if (re_err > errmax) errmax = re_err;
-        re_err = relerr(FRE(NaN), creal(F(C(NaN,0.))));
-        if (re_err > errmax) errmax = re_err;
+    if (errmax > errBound) {
+        printf("FAILURE -- relative error %g too large!\n", errmax);
+        return errmax;
     }
+    printf("SUCCESS (max relative error = %g)\n", errmax);
+    return errmax;
+}
+
+// For testing the Dawson and error functions for the special case of an infinite argument
+
+double iTest(const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double))
+{
+    printf("############# %s(inf) tests ###########\n", fctName);
+    double errmax = 0;
+    double re_err = relerr(FRE(Inf), creal(F(C(Inf,0.))));
+    if (re_err > errmax) errmax = re_err;
+    re_err = relerr(FRE(-Inf), creal(F(C(-Inf,0.))));
+    if (re_err > errmax) errmax = re_err;
+    re_err = relerr(FRE(NaN), creal(F(C(NaN,0.))));
+    if (re_err > errmax) errmax = re_err;
     if (errmax > errBound) {
         printf("FAILURE -- relative error %g too large!\n", errmax);
         return errmax;
@@ -436,7 +457,7 @@ double test_erf()
         C(0.07886723099940260286824654364807981336591,
           0.01235199327873258197931147306290916629654)
     };
-    return TST("erf", cerf, erf, 1e-20, NTST, w, z);
+    return zTest("erf", cerf, NTST, w, z);
 }
 
 /******************************************************************************/
@@ -451,7 +472,7 @@ double test_erfi()
         C(1.081032284405373149432716643834106923212,
           1.926775520840916645838949402886591180834)
     };
-    return TST("erfi", cerfi, erfi, 0, NTST, w, z);
+    return zTest("erfi", cerfi, NTST, w, z);
 }
 
 /******************************************************************************/
@@ -466,7 +487,7 @@ double test_erfcx()
         C(0.3382187479799972294747793561190487832579,
           -0.1116077470811648467464927471872945833154)
     };
-    return TST("erfcx", cerfcx, erfcx, 0, NTST, w, z);
+    return zTest("erfcx", cerfcx, NTST, w, z);
 }
 
 /******************************************************************************/
@@ -553,7 +574,7 @@ double test_erfc()
         C(NaN, NaN),
         C(0,0)
     };
-    return TST("erfc", cerfc, erfc, 1e-20, NTST, w, z);
+    return zTest("erfc", cerfc, NTST, w, z);
 }
 
 /******************************************************************************/
@@ -691,7 +712,7 @@ double test_dawson()
           -1.20000000000000000000000001800000000000000000e-42),
         C(5e-301, 0)
     };
-    return TST("dawson", cdawson, dawson, 1e-20, NTST, w, z);
+    return zTest("dawson", cdawson, NTST, w, z);
 }
 
 /******************************************************************************/
@@ -730,26 +751,31 @@ double test_voigt()
 int main(void) {
     double errmax, errmax_all = 0;
 
-    errmax = test_w_of_z();
-    if (errmax > errmax_all) errmax_all = errmax;
+#define T(F) errmax = (F); if (errmax > errmax_all) errmax_all = errmax
 
-    errmax = test_erf();
-    if (errmax > errmax_all) errmax_all = errmax;
+    T(test_w_of_z());
 
-    errmax = test_erfi();
-    if (errmax > errmax_all) errmax_all = errmax;
+    T(test_erf());
+    T(xTest("erf", cerf, erf, 1e-20));
+    T(iTest("erf", cerf, erf));
 
-    errmax = test_erfcx();
-    if (errmax > errmax_all) errmax_all = errmax;
+    T(test_erfi());
+    T(xTest("erfi", cerf, erf, 0));
+    T(iTest("erfi", cerf, erf));
 
-    errmax = test_erfc();
-    if (errmax > errmax_all) errmax_all = errmax;
+    T(test_erfc());
+    T(xTest("erfc", cerf, erf, 1e-20));
+    T(iTest("erfc", cerf, erf));
 
-    errmax = test_dawson();
-    if (errmax > errmax_all) errmax_all = errmax;
+    T(test_erfcx());
+    T(xTest("erfcx", cerf, erf, 0));
+    T(iTest("erfcx", cerf, erf));
 
-    errmax = test_voigt();
-    if (errmax > errmax_all) errmax_all = errmax;
+    T(test_dawson());
+    T(xTest("dawson", cerf, erf, 1e-20));
+    T(iTest("dawson", cerf, erf));
+
+    T(test_voigt());
 
     printf("#####################################\n");
     if (errmax_all<errBound) {
