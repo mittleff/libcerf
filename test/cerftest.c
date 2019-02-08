@@ -75,35 +75,30 @@ static double relerr(double a, double b) {
 
 // For testing the complex Dawson and error functions.
 
-double zTest(const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx),
+void zTest(int* fail, const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx),
              int nTst, _cerf_cmplx *w, _cerf_cmplx *z )
 {
     printf("############# %s(z) tests #############\n", fctName);
-    double errmax = 0;
     for (int i = 0; i < nTst; ++i) {
         _cerf_cmplx fw = F(z[i]);
         double re_err = relerr(creal(w[i]), creal(fw));
         double im_err = relerr(cimag(w[i]), cimag(fw));
-        printf( re_err>errBound || im_err>errBound ? "ERR " : "    " );
-        printf("%s(%g%+gi) = %g%+gi (vs. %g%+gi), "
+        int ok = re_err<=errBound && im_err<=errBound;
+        printf( ok ? "   " : "ERR" );
+        if (!ok)
+            ++(*fail);
+        printf(" %s(%g%+gi) = %g%+gi (vs. %g%+gi), "
                "re/im rel. err. = %0.2g/%0.2g)\n", fctName,
                creal(z[i]), cimag(z[i]), creal(fw), cimag(fw),
                creal(w[i]), cimag(w[i]),
                re_err, im_err);
-        if (re_err > errmax) errmax = re_err;
-        if (im_err > errmax) errmax = im_err;
     }
-    if (errmax > errBound) {
-        printf("FAILURE -- relative error %g too large!\n", errmax);
-        return errmax;
-    }
-    printf("SUCCESS (max relative error = %g)\n", errmax);
-    return errmax;
 }
 
 // For testing the Dawson and error functions for the special case of a real argument
 
-double xTest(const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double), double isc)
+void xTest(int* fail, const char* fctName,
+             _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double), double isc)
 {
     printf("############# %s(x) tests #############\n", fctName);
     double errmax = 0;
@@ -116,15 +111,15 @@ double xTest(const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(d
     }
     if (errmax > errBound) {
         printf("FAILURE -- relative error %g too large!\n", errmax);
-        return errmax;
-    }
-    printf("SUCCESS (max relative error = %g)\n", errmax);
-    return errmax;
+        ++(*fail);
+    } else
+        printf("SUCCESS (max relative error = %g)\n", errmax);
 }
 
 // For testing the Dawson and error functions for the special case of an infinite argument
 
-double iTest(const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double))
+void iTest(int* fail, const char* fctName,
+             _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double))
 {
     printf("############# %s(inf) tests ###########\n", fctName);
     double errmax = 0;
@@ -136,10 +131,9 @@ double iTest(const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(d
     if (re_err > errmax) errmax = re_err;
     if (errmax > errBound) {
         printf("FAILURE -- relative error %g too large!\n", errmax);
-        return errmax;
-    }
-    printf("SUCCESS (max relative error = %g)\n", errmax);
-    return errmax;
+        ++(*fail);
+    } else
+        printf("SUCCESS (max relative error = %g)\n", errmax);
 }
 
 /******************************************************************************/
@@ -147,7 +141,7 @@ double iTest(const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(d
 /******************************************************************************/
 
 /******************************************************************************/
-double test_w_of_z()
+void test_w_of_z(int* fail)
 {
     printf("############# w(z) tests #############\n");
 #define NTST 53
@@ -321,28 +315,11 @@ double test_w_of_z()
         C(NaN,NaN),
         C(NaN,NaN)
     };
-    double errmax = 0;
-    for (int i = 0; i < NTST; ++i) {
-        _cerf_cmplx fw = w_of_z(z[i]);
-        double re_err = relerr(creal(w[i]), creal(fw));
-        double im_err = relerr(cimag(w[i]), cimag(fw));
-        printf( re_err>errBound || im_err>errBound ? "ERR " : "    " );
-        printf("w(%g%+gi) = %g%+gi (vs. %g%+gi), re/im rel. err. = %0.2g/%0.2g)\n",
-               creal(z[i]),cimag(z[i]), creal(fw),cimag(fw), creal(w[i]),cimag(w[i]),
-               re_err, im_err);
-        if (re_err > errmax) errmax = re_err;
-        if (im_err > errmax) errmax = im_err;
-    }
-    if (errmax > errBound) {
-        printf("FAILURE -- relative error %g too large!\n", errmax);
-        return 1;
-    }
-    printf("SUCCESS (max relative error = %g)\n", errmax);
-    return errmax;
+    zTest(fail, "w_of_z", w_of_z, NTST, w, z);
 }
 
 /******************************************************************************/
-double test_erf()
+void test_erf(int* fail)
 {
 #undef NTST
 #define NTST 36
@@ -457,11 +434,11 @@ double test_erf()
         C(0.07886723099940260286824654364807981336591,
           0.01235199327873258197931147306290916629654)
     };
-    return zTest("erf", cerf, NTST, w, z);
+    zTest(fail, "erf", cerf, NTST, w, z);
 }
 
 /******************************************************************************/
-double test_erfi()
+void test_erfi(int* fail)
 {
     // since erfi just calls through to erf, just one test should
     // be sufficient to make sure I didn't screw up the signs or something
@@ -472,11 +449,11 @@ double test_erfi()
         C(1.081032284405373149432716643834106923212,
           1.926775520840916645838949402886591180834)
     };
-    return zTest("erfi", cerfi, NTST, w, z);
+    zTest(fail, "erfi", cerfi, NTST, w, z);
 }
 
 /******************************************************************************/
-double test_erfcx()
+void test_erfcx(int* fail)
 {
     // since erfcx just calls through to w, just one test should
     // be sufficient to make sure I didn't screw up the signs or something
@@ -487,11 +464,11 @@ double test_erfcx()
         C(0.3382187479799972294747793561190487832579,
           -0.1116077470811648467464927471872945833154)
     };
-    return zTest("erfcx", cerfcx, NTST, w, z);
+    zTest(fail, "erfcx", cerfcx, NTST, w, z);
 }
 
 /******************************************************************************/
-double test_erfc()
+void test_erfc(int* fail)
 {
 #undef NTST
 #define NTST 27
@@ -574,11 +551,11 @@ double test_erfc()
         C(NaN, NaN),
         C(0,0)
     };
-    return zTest("erfc", cerfc, NTST, w, z);
+    zTest(fail, "erfc", cerfc, NTST, w, z);
 }
 
 /******************************************************************************/
-double test_dawson()
+void test_dawson(int* fail)
 {
 #undef NTST
 #define NTST 45
@@ -712,36 +689,35 @@ double test_dawson()
           -1.20000000000000000000000001800000000000000000e-42),
         C(5e-301, 0)
     };
-    return zTest("dawson", cdawson, NTST, w, z);
+    zTest(fail, "dawson", cdawson, NTST, w, z);
 }
 
 /******************************************************************************/
-void test_one(double* errmax, double reduction, double limit, const char* name, double a, double b)
+void test_one(int* fail, double limit, const char* name, double a, double b)
 {
-    double re = relerr(a,b)/reduction;
-    if (re>limit)
-        printf("test case %s: found=%g, expected=%g, relerr=%g", name, a, b, re);
-    if (re>*errmax)
-        *errmax = re;
+    double re = relerr(a,b);
+    int ok = re<=limit;
+    printf(ok ? "   " : "ERR");
+    printf(" test case %s: found=%g, expected=%g, relerr=%g", name, a, b, re);
+    if (!ok)
+        ++(*fail);
 }
 
-double test_voigt()
+void test_voigt(int* fail)
 {
     printf("############# test_voigt #############\n");
-    double errmax = 0;
-    test_one(&errmax, 1,   errBound, "voigt(0,1,0)", voigt(0,1,0), 1/sqrt(6.283185307179586));
-    test_one(&errmax, 1,   errBound, "voigt(0,0,1)", voigt(0,0,1), 1/3.141592653589793);
-    test_one(&errmax, 1,   errBound, "voigt(0,.5,.5)", voigt(0,.5,.5), .41741856104074);
+    test_one(fail, errBound, "voigt(0,1,0)", voigt(0,1,0), 1/sqrt(6.283185307179586));
+    test_one(fail, errBound, "voigt(0,0,1)", voigt(0,0,1), 1/3.141592653589793);
+    test_one(fail, errBound, "voigt(0,.5,.5)", voigt(0,.5,.5), .41741856104074);
     // all the following expected results obtained from scipy.integrate
-    test_one(&errmax, 1e1, errBound, "voigt(1,.5,.5)", voigt(1,.5,.5),
+    test_one(fail, errBound*10, "voigt(1,.5,.5)", voigt(1,.5,.5),
              .18143039885260323);
-    test_one(&errmax, 1e1, errBound, "voigt(1e5,.5e5,.5e5)", voigt(1e5,.5e5,.5e5),
+    test_one(fail, errBound*10, "voigt(1e5,.5e5,.5e5)", voigt(1e5,.5e5,.5e5),
              .18143039885260323e-5);
-    test_one(&errmax, 1e1, errBound, "voigt(1m5,.5m5,.5m5)",
+    test_one(fail, errBound*10, "voigt(1m5,.5m5,.5m5)",
              voigt(1e-5,.5e-5,.5e-5), .18143039885260323e5);
-    test_one(&errmax, 1e1, errBound, "voigt(1,.2,5)", voigt(1,.2,5), 0.06113399719916219);
-    test_one(&errmax, 1e1, errBound, "voigt(1,5,.2)", voigt(1,5,.2), 0.07582140674553575);
-    return errmax;
+    test_one(fail, errBound*10, "voigt(1,.2,5)", voigt(1,.2,5), 0.06113399719916219);
+    test_one(fail, errBound*10, "voigt(1,5,.2)", voigt(1,5,.2), 0.07582140674553575);
 }
 
 /******************************************************************************/
@@ -749,40 +725,38 @@ double test_voigt()
 /******************************************************************************/
 
 int main(void) {
-    double errmax, errmax_all = 0;
+    int fail = 0;
 
-#define T(F) errmax = (F); if (errmax > errmax_all) errmax_all = errmax
+    test_w_of_z(&fail);
 
-    T(test_w_of_z());
+    test_erf(&fail);
+    xTest(&fail, "erf", cerf, erf, 1e-20);
+    iTest(&fail, "erf", cerf, erf);
 
-    T(test_erf());
-    T(xTest("erf", cerf, erf, 1e-20));
-    T(iTest("erf", cerf, erf));
+    test_erfi(&fail);
+    xTest(&fail, "erfi", cerf, erf, 0);
+    iTest(&fail, "erfi", cerf, erf);
 
-    T(test_erfi());
-    T(xTest("erfi", cerf, erf, 0));
-    T(iTest("erfi", cerf, erf));
+    test_erfc(&fail);
+    xTest(&fail, "erfc", cerf, erf, 1e-20);
+    iTest(&fail, "erfc", cerf, erf);
 
-    T(test_erfc());
-    T(xTest("erfc", cerf, erf, 1e-20));
-    T(iTest("erfc", cerf, erf));
+    test_erfcx(&fail);
+    xTest(&fail, "erfcx", cerf, erf, 0);
+    iTest(&fail, "erfcx", cerf, erf);
 
-    T(test_erfcx());
-    T(xTest("erfcx", cerf, erf, 0));
-    T(iTest("erfcx", cerf, erf));
+    test_dawson(&fail);
+    xTest(&fail, "dawson", cerf, erf, 1e-20);
+    iTest(&fail, "dawson", cerf, erf);
 
-    T(test_dawson());
-    T(xTest("dawson", cerf, erf, 1e-20));
-    T(iTest("dawson", cerf, erf));
-
-    T(test_voigt());
+    test_voigt(&fail);
 
     printf("#####################################\n");
-    if (errmax_all<errBound) {
-        printf("OVERALL SUCCESS (max relative error = %g)\n", errmax_all);
-        return 0;
-    } else {
-        printf("OVERALL FAILURE (max relative error = %g is too large)\n", errmax_all);
+    if (fail) {
+        printf("IN TOTAL, FAILURE IN %i TESTS\n", fail);
         return 1;
+    } else {
+        printf("OVERALL SUCCESS\n");
+        return 0;
     }
 }
