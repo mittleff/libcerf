@@ -23,7 +23,8 @@
 #include "cerf.h"
 #include "defs.h"
 
-extern int faddeeva_algorithm, faddeeva_nofterms;
+extern int faddeeva_algorithm;
+extern int faddeeva_nofterms;
 
 int main( int argc, char **argv )
 {
