@@ -67,7 +67,7 @@
 #include "defs.h" // defines _cerf_cmplx, NaN, C, cexp, ...
 
 #if _WIN32
-#define EXPORT __declspec(dllimport)
+#define EXPORT __declspec(dllexport)
 #else
 #define EXPORT
 #endif

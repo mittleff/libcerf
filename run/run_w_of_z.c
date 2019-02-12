@@ -23,8 +23,14 @@
 #include "cerf.h"
 #include "defs.h"
 
-extern int faddeeva_algorithm;
-extern int faddeeva_nofterms;
+#if _WIN32
+#define IMPORT __declspec(dllimport)
+#else
+#define IMPORT
+#endif
+
+IMPORT extern int faddeeva_algorithm;
+IMPORT extern int faddeeva_nofterms;
 
 int main( int argc, char **argv )
 {
