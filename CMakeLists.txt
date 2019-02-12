@@ -18,11 +18,34 @@ endif()
 if(NOT DEFINED LIB_INSTALL)
     option(LIB_INSTALL "Install libcerf" ON)
 endif()
+if(NOT DEFINED CERF_CPP)
+    option(CERF_CPP "Build libcerf as native C++" OFF)
+endif()
 option(PEDANTIC "Compile with pedantic warnings" ON)
 
+if(CERF_CPP)
+    project(cerfcpp CXX)
+    message("Build C++ library libcerfcpp")
+    # add_compile_definitions(CERF_AS_CPP) # requires CMake 3.13, therefore more explicitly:
+    if(MSVC)
+        add_compile_options(/DCERF_AS_CPP)
+    else()
+        add_compile_options(-DCERF_AS_CPP)
+    endif()
+    set(CMAKE_CXX_STANDARD 14)
+else()
+    message("Build C library libcerf")
+    project(cerf C)
+    set(CMAKE_C_STANDARD 99)
+endif()
+
+set(CERF_SOVERSION                 1) # API version
+set(CERF_VERSION ${CERF_SOVERSION}.12) # minor version
+
 if(MSVC)
-    message("Build libcerfcpp for Windows")
-    set(CERF_CPP ON)
+    if (NOT CERF_CPP)
+        message(FATAL_ERROR "Under MSVC, only CERF_CPP=ON is supported")
+    endif()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS}")
     set(MS_NOWARN "/wd4018 /wd4068 /wd4101 /wd4244 /wd4267 /wd4305 /wd4715 /wd4996")
@@ -35,8 +58,6 @@ if(MSVC)
         set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
     endif()
 else()
-    option(CERF_CPP "Build libcerf as native C++" OFF)
-    message("Build libcerf as native C++? --- CERF_CPP=${CERF_CPP}")
     add_compile_options(-O2 -Wno-sign-compare -fno-omit-frame-pointer)
     if(PEDANTIC)
         add_compile_options(-pedantic -Wall)
@@ -44,24 +65,6 @@ else()
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${DEB_FLAGS} -O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -w")
 endif()
-
-if(CERF_CPP)
-    project(cerfcpp CXX)
-    # add_compile_definitions(CERF_AS_CPP) # requires CMake 3.13, therefore more explicitly:
-    if(MSVC)
-        add_compile_options(/DCERF_AS_CPP)
-    else()
-        add_compile_options(-DCERF_AS_CPP)
-    endif()
-    set(CMAKE_CXX_STANDARD 14)
-else()
-    project(cerf C)
-    set(CMAKE_C_STANDARD 99)
-endif()
-
-set(CERF_SOVERSION                 1) # API version
-set(CERF_VERSION ${CERF_SOVERSION}.12) # minor version
-
 
 include(CTest)
 
