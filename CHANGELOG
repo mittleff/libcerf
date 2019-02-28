@@ -1,5 +1,8 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
+libcerf-1.13, released 28feb19:
+  - Further adjustments for compilation under Windows
+
 libcerf-1.12, released 7feb19:
   - Require CMake 3.6, outcomment code that requires 3.13.
   - Relative paths in CMake sources, for use as subproject.
