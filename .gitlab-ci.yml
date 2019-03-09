@@ -2,6 +2,8 @@ stages:
   - build
 
 debian_stable:
+  tags: &unix
+  - docker
   image: debian:stable
   before_script: &debian
     - apt-get -y update
@@ -17,18 +19,21 @@ debian_stable:
     - cat Testing/Temporary/LastTest.log
 
 debian_testing:
+  tags: *unix
   image: debian:testing
   before_script: *debian
   stage: build
   script: *scr
 
 debian_sid:
+  tags: *unix
   image: debian:testing
   before_script: *debian
   stage: build
   script: *scr
 
 suse_current:
+  tags: *unix
   image: opensuse/tumbleweed
   # rolling release with infinite life time
   before_script:
@@ -45,6 +50,7 @@ suse_current:
 #  opensuse:leap, unsupported here because it is at cmake 3.5, while libcerf requires 3.6
 
 centos7:
+  tags: *unix
   image: centos:centos7
   before_script:
     - yum -y update
@@ -59,3 +65,18 @@ centos7:
     - ln -s /usr/bin/cpack3 /usr/bin/cpack
   stage: build
   script: *scr
+
+windows:
+  tags:
+  - windows
+  stage: build
+  script:
+    - New-Item -ItemType "directory" -Confirm:$false -Force:$true -Name "build"
+    - cd build
+    - cmd.exe "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+    - cmake -G "Visual Studio 15 2017" -A x64 -T host=x64 -DCERF_CPP=ON -DLIB_MAN=OFF -DLIB_INSTALL=OFF -B. ..
+    - cmake --build . --config Release
+    - Get-Location
+    - dir
+    - dir Release
+    - ctest -C Release --output-on-failure
