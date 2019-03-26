@@ -1,5 +1,7 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
+Homepage moved to https://jugit.fz-juelich.de/mlz/libcerf, 17mar19
+
 libcerf-1.13, released 28feb19:
   - Further adjustments for compilation under Windows
 
