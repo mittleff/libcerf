@@ -1,11 +1,11 @@
 stages:
   - build
 
-debian_stable:
+debian_stable_gcc:
   tags: &unix
   - docker
   image: debian:stable
-  before_script: &debian
+  before_script: &debian_gcc
     - apt-get -y update
     - apt-get -y upgrade
     - apt-get -y install cmake g++ perl
@@ -13,21 +13,38 @@ debian_stable:
   script: &scr
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake -DWERROR=ON ..
     - make
     - ctest --output-on-failure
 
-debian_testing:
+debian_stable_clang:
   tags: *unix
   image: debian:testing
-  before_script: *debian
+  before_script: &debian_clang
+    - apt-get -y update
+    - apt-get -y upgrade
+    - apt-get -y install cmake clang perl
   stage: build
   script: *scr
 
-debian_sid:
+debian_testing_gcc:
   tags: *unix
   image: debian:testing
-  before_script: *debian
+  before_script: *debian_gcc
+  stage: build
+  script: *scr
+
+debian_sid_gcc:
+  tags: *unix
+  image: debian:testing
+  before_script: *debian_gcc
+  stage: build
+  script: *scr
+
+debian_sid_clang:
+  tags: *unix
+  image: debian:testing
+  before_script: *debian_clang
   stage: build
   script: *scr
 
@@ -73,7 +90,7 @@ windows:
     - New-Item -ItemType "directory" -Confirm:$false -Force:$true -Name "build"
     - cd build
     - cmd.exe "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-    - cmake -G "Visual Studio 15 2017" -A x64 -T host=x64 -DCERF_CPP=ON -DLIB_MAN=OFF -DLIB_INSTALL=OFF -B. ..
+    - cmake -G "Visual Studio 15 2017" -A x64 -T host=x64 -DWERROR=ON -DLIB_MAN=OFF -DLIB_INSTALL=OFF -B. ..
     - cmake --build . --config Release
     - Get-Location
     - dir
