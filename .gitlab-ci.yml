@@ -15,8 +15,7 @@ debian_stable:
     - cd build
     - cmake ..
     - make
-    - ctest
-    - cat Testing/Temporary/LastTest.log
+    - ctest --output-on-failure
 
 debian_testing:
   tags: *unix
