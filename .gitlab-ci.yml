@@ -96,3 +96,8 @@ windows:
     - dir
     - dir Release
     - ctest -C Release --output-on-failure
+  artifacts:
+    paths:
+    - lib/*.h
+    - build/Release/*.dll
+    expire_in: 1 week
