@@ -73,7 +73,7 @@ The library has been developed using gcc-4.7. Reports about successful compilati
     * [Debian package](https://packages.debian.org/jessie/libs/libcerf1) by Eugen Wintersberger
   * OS X:
     * [MacPorts::libcerf](http://www.macports.org/ports.php?by=name&substr=libcerf), by Mojca Miklavec
-    * [Homebrew/homebrew-science/libcerf.rb](https://github.com/Homebrew/homebrew-science/blob/master/libcerf.rb), by Roman Garnett
+    * [Homebrew/homebrew-science/libcerf.rb](https://formulae.brew.sh/formula/libcerf), by Roman Garnett
 
 # Code structure
 
