@@ -55,6 +55,8 @@ double voigt_hwhm(double sigma, double gamma)
 {
     if (sigma==0 && gamma==0)
         return 0;
+    if (isnan(sigma) || isnan(gamma))
+        return NAN;
     const double eps = 1e-14;
     // start from an excellent approximation [Olivero & Longbothum, J Quant Spec Rad Transf 1977]:
     const double hwhm0 = .5*(1.06868*gamma+sqrt(0.86743*gamma*gamma+4*2*log(2)*sigma*sigma));
@@ -78,6 +80,7 @@ double voigt_hwhm(double sigma, double gamma)
             return nxt;
         ret = nxt;
     }
-    fprintf(stderr, "voigt_fwhm failed: Newton's iteration did not converge\n");
+    fprintf(stderr, "voigt_fwhm failed: Newton's iteration did not converge"
+            " with sigma = %f and gamma = %f\n", sigma, gamma);
     exit(-1);
 }
