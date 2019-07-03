@@ -68,7 +68,8 @@ suse_clang:
     - zypper -n up
     - zypper -n dup
     - zypper -n in cmake perl
-    - zypper -n in clang
+    - zypper -n in clang gcc glibc-devel
+    - export CC=/usr/bin/clang
   stage: build
   script: *scr
 
@@ -83,7 +84,7 @@ suse_gcc:
     - zypper -n up
     - zypper -n dup
     - zypper -n in cmake perl
-    - zypper -n in gcc-c++
+    - zypper -n in gcc
   stage: build
   script: *scr
 
@@ -98,7 +99,8 @@ centos7_clang:
     - yum -y install epel-release
     - yum repolist
     - yum -y install make cmake3 perl
-    - yum -y install clang
+    - yum -y install clang gcc glibc-devel
+    - export CC=/usr/bin/clang
     - cmake3 --version
     - ctest3 --version
     - cpack3 --version
@@ -116,7 +118,7 @@ centos7_gcc:
     - yum -y install epel-release
     - yum repolist
     - yum -y install make cmake3 perl
-    - yum -y install gcc-c++
+    - yum -y install gcc
     - cmake3 --version
     - ctest3 --version
     - cpack3 --version
