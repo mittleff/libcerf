@@ -1,14 +1,14 @@
 stages:
   - build
 
-debian_stable_gcc:
-  tags: &unix
-  - Linux
+debS_clang:
+  tags: *unix
   image: debian:stable
-  before_script: &debian_gcc
+  before_script: &debian_clang
     - apt-get -y update
     - apt-get -y upgrade
-    - apt-get -y install cmake g++ perl
+    - apt-get -y install cmake perl
+    - apt-get -y install clang
   stage: build
   script: &scr
     - mkdir build
@@ -17,45 +17,47 @@ debian_stable_gcc:
     - make
     - ctest --output-on-failure
 
-debian_stable_clang:
-  tags: *unix
+debS_gcc:
+  tags: &unix
+  - Linux
   image: debian:stable
-  before_script: &debian_clang
+  before_script: &debian_gcc
     - apt-get -y update
     - apt-get -y upgrade
-    - apt-get -y install cmake clang perl
+    - apt-get -y install cmake perl
+    - apt-get -y install g++
   stage: build
   script: *scr
 
-debian_test_gcc:
-  tags: *unix
-  image: debian:testing
-  before_script: *debian_gcc
-  stage: build
-  script: *scr
-
-debian_test_clang:
+debT_clang:
   tags: *unix
   image: debian:testing
   before_script: *debian_clang
   stage: build
   script: *scr
 
-debian_sid_gcc:
+debT_gcc:
+  tags: *unix
+  image: debian:testing
+  before_script: *debian_gcc
+  stage: build
+  script: *scr
+
+debU_gcc:
   tags: *unix
   image: debian:unstable
   before_script: *debian_gcc
   stage: build
   script: *scr
 
-debian_sid_clang:
+debU_clang:
   tags: *unix
   image: debian:unstable
   before_script: *debian_clang
   stage: build
   script: *scr
 
-suse_current:
+suse_clang:
   tags: *unix
   image: opensuse/tumbleweed
   # rolling release with infinite life time
@@ -65,21 +67,56 @@ suse_current:
     - zypper -n ref
     - zypper -n up
     - zypper -n dup
-    - zypper -n in cmake gcc-c++ perl
+    - zypper -n in cmake perl
+    - zypper -n in clang
+  stage: build
+  script: *scr
+
+suse_gcc:
+  tags: *unix
+  image: opensuse/tumbleweed
+  # rolling release with infinite life time
+  before_script:
+    - zypper -n patch || echo "do it again"
+    - zypper -n patch
+    - zypper -n ref
+    - zypper -n up
+    - zypper -n dup
+    - zypper -n in cmake perl
+    - zypper -n in gcc-c++
   stage: build
   script: *scr
 
 # suse_stable:
 #  opensuse:leap, unsupported here because it is at cmake 3.5, while libcerf requires 3.6
 
-centos7:
+centos7_clang:
   tags: *unix
   image: centos:centos7
   before_script:
     - yum -y update
     - yum -y install epel-release
     - yum repolist
-    - yum -y install make cmake3 gcc-c++ perl
+    - yum -y install make cmake3 perl
+    - yum -y install clang
+    - cmake3 --version
+    - ctest3 --version
+    - cpack3 --version
+    - ln -s /usr/bin/cmake3 /usr/bin/cmake
+    - ln -s /usr/bin/ctest3 /usr/bin/ctest
+    - ln -s /usr/bin/cpack3 /usr/bin/cpack
+  stage: build
+  script: *scr
+
+centos7_gcc:
+  tags: *unix
+  image: centos:centos7
+  before_script:
+    - yum -y update
+    - yum -y install epel-release
+    - yum repolist
+    - yum -y install make cmake3 perl
+    - yum -y install gcc-c++
     - cmake3 --version
     - ctest3 --version
     - cpack3 --version
