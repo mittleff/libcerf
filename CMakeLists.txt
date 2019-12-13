@@ -15,9 +15,6 @@ endif()
 if(NOT DEFINED LIB_RUN)
     option(LIB_RUN "Build executables for command-line computation" ON)
 endif()
-if(NOT DEFINED LIB_INSTALL)
-    option(LIB_INSTALL "Install libcerf" ON)
-endif()
 if(NOT DEFINED CERF_CPP)
     option(CERF_CPP "Build libcerf as native C++" OFF)
 endif()
@@ -72,12 +69,10 @@ endif()
 
 include(CTest)
 
-if(LIB_INSTALL)
-    set(destination ${CMAKE_INSTALL_PREFIX})
-    configure_file("libcerf.pc.in" "libcerf.pc" @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libcerf.pc"
-        DESTINATION "${destination}/lib/pkgconfig/")
-endif()
+set(destination ${CMAKE_INSTALL_PREFIX})
+configure_file("libcerf.pc.in" "libcerf.pc" @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libcerf.pc"
+    DESTINATION "${destination}/lib/pkgconfig/")
 
 add_subdirectory(lib)
 add_subdirectory(test)
