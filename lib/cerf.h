@@ -75,38 +75,44 @@
 
 __BEGIN_DECLS
 
+#if _WIN32
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
+
 // compute w(z) = exp(-z^2) erfc(-iz), Faddeeva's scaled complex error function
-_cerf_cmplx  w_of_z   (_cerf_cmplx z);
-double im_w_of_x(double x); // special case Im[w(x)] of real x
-double re_w_of_z(double x, double y);
-double im_w_of_z(double x, double y);
+EXPORT _cerf_cmplx w_of_z(_cerf_cmplx z);
+EXPORT double im_w_of_x(double x); // special case Im[w(x)] of real x
+EXPORT double re_w_of_z(double x, double y);
+EXPORT double im_w_of_z(double x, double y);
 
 // compute erf(z), the error function of complex arguments
-_cerf_cmplx cerf(_cerf_cmplx z);
+EXPORT _cerf_cmplx cerf(_cerf_cmplx z);
 
 // compute erfc(z) = 1 - erf(z), the complementary error function
-_cerf_cmplx cerfc(_cerf_cmplx z);
+EXPORT _cerf_cmplx cerfc(_cerf_cmplx z);
 
 // compute erfcx(z) = exp(z^2) erfc(z), an underflow-compensated version of erfc
-_cerf_cmplx cerfcx(_cerf_cmplx z);
-double erfcx(double x); // special case for real x
+EXPORT _cerf_cmplx cerfcx(_cerf_cmplx z);
+EXPORT double erfcx(double x); // special case for real x
 
 // compute erfi(z) = -i erf(iz), the imaginary error function
-_cerf_cmplx cerfi(_cerf_cmplx z);
-double erfi (double x); // special case for real x
+EXPORT _cerf_cmplx cerfi(_cerf_cmplx z);
+EXPORT double erfi (double x); // special case for real x
 
 // compute dawson(z) = sqrt(pi)/2 * exp(-z^2) * erfi(z), Dawson's integral
-_cerf_cmplx cdawson(_cerf_cmplx z);
-double dawson(double x); // special case for real x
+EXPORT _cerf_cmplx cdawson(_cerf_cmplx z);
+EXPORT double dawson(double x); // special case for real x
 
 // compute voigt(x,...), the convolution of a Gaussian and a Lorentzian
-double voigt(double x, double sigma, double gamma);
+EXPORT double voigt(double x, double sigma, double gamma);
 // compute the full width at half maximum of the Voigt function
-double voigt_hwhm(double sigma, double gamma);
+EXPORT double voigt_hwhm(double sigma, double gamma);
 
 // EXPERIMENTAL
-double cerf_experimental_imw(double x, double y);
-double cerf_experimental_rew(double x, double y);
+EXPORT double cerf_experimental_imw(double x, double y);
+EXPORT double cerf_experimental_rew(double x, double y);
 
 __END_DECLS
 #endif /* __CERF_H__ */

@@ -66,13 +66,7 @@
 #include <math.h>
 #include "defs.h" // defines _cerf_cmplx, NaN, C, cexp, ...
 
-#if _WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
-
-// for analysising the algorithm:
+// for analysing the algorithm:
 EXPORT int faddeeva_algorithm;
 EXPORT int faddeeva_nofterms;
 
