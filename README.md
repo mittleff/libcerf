@@ -90,12 +90,14 @@ The library libcerf is written in C. It can be compiled as C code (default) or a
 Otherwise, the library is self-contained, and installation should be
 straightforward, using the usual command sequence
 
-  ./configure
-  make
-  sudo make install
+    mkdir build
+    cd build
+    cmake ..
+    make
+    ctest
+    make install
 
-The command ./configure takes various options that are explained in the
-file INSTALL.
+For more details see the file INSTALL.
 
 ## Language bindings
 

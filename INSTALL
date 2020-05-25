@@ -10,8 +10,8 @@ Unpack the archive, go to the source directory, and do:
 mkdir build
 cd build
 cmake ..
-ctest
 make
+ctest
 make install
 
 == Compile as C++ code ==
