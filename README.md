@@ -32,7 +32,8 @@ Copyright (C) [Steven G. Johnson](http:*math.mit.edu/~stevenj), Massachusetts In
 License: [MIT License](http://opensource.org/licenses/MIT)
 
 When using libcerf in scientific work, please cite as follows:
-  * S. G. Johnson, A. Cervellino, J. Wuttke: libcerf, numeric library for complex error functions, version [...], http://apps.jcns.fz-juelich.de/libcerf
+  * S. G. Johnson, J. Wuttke: libcerf, numeric library for complex error functions, version [...], http://apps.jcns.fz-juelich.de/libcerf
+If appropriate cite also the authors of language bindings or binary packages.
 
 Please send bug reports to the authors, or submit them through the Gitlab issue tracker.
 
