@@ -75,6 +75,8 @@ The library has been developed using gcc-4.7. Reports about successful compilati
   * OS X:
     * [MacPorts::libcerf](http://www.macports.org/ports.php?by=name&substr=libcerf), by Mojca Miklavec
     * [Homebrew/homebrew-science/libcerf.rb](https://formulae.brew.sh/formula/libcerf), by Roman Garnett
+  * Cross platform:
+    * [vcpkg CMake packager](https://github.com/microsoft/vcpkg/tree/master/ports/libcerf), by Alexander Täschner
 
 # Code structure
 
