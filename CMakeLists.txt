@@ -42,7 +42,7 @@ if(MSVC)
     if (NOT CERF_CPP)
         message(FATAL_ERROR "Under MSVC, only CERF_CPP=ON is supported")
     endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP") # parallel compilation
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS}")
     set(MS_NOWARN "/wd4018 /wd4068 /wd4101 /wd4244 /wd4267 /wd4305 /wd4715 /wd4996")
     set(MS_D "-D_CRT_SECURE_NO_WARNINGS -D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
