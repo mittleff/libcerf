@@ -31,11 +31,16 @@ endif()
 
 install(
     TARGETS ${lib}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION lib
+    ARCHIVE DESTINATION lib
     COMPONENT Libraries)
 install(
     FILES ${inc_files}
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+    DESTINATION include
     COMPONENT Headers)
+
+if(MSVC)
+    set(CPACK_GENERATOR "ZIP")
+    include(CPack)
+endif()
