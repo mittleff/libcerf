@@ -51,8 +51,6 @@ project web site http://ab-initio.mit.edu/Faddeeva. The implementation partly re
 
 ## From source
 
-Download location: http://apps.jcns.fz-juelich.de/src/libcerf/
-
 Build&install are based on CMake. Out-of-source build is enforced.
 After unpacking the source, go to the source directory and do:
 
