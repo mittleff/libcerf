@@ -31,11 +31,11 @@ endif()
 
 install(
     TARGETS ${lib}
-    LIBRARY DESTINATION ${destination}/lib
-    RUNTIME DESTINATION ${destination}/lib
-    ARCHIVE DESTINATION ${destination}/lib
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
     COMPONENT Libraries)
 install(
     FILES ${inc_files}
-    DESTINATION ${destination}/include
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include
     COMPONENT Headers)
