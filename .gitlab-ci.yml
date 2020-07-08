@@ -147,4 +147,4 @@ windows:
     paths:
     - lib/*.h
     - build/Release/*.dll
-    expire_in: 1 week
+    expire_in: 10 days
