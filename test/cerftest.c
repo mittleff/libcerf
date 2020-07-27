@@ -692,33 +692,6 @@ void test_dawson(int* fail)
     zTest(fail, "dawson", cdawson, NTST, w, z);
 }
 
-/******************************************************************************/
-void test_one(int* fail, double limit, const char* name, double a, double b)
-{
-    double re = relerr(a,b);
-    int ok = re<=limit;
-    printf(ok ? "   " : "ERR");
-    printf(" test case %s: found=%g, expected=%g, relerr=%g", name, a, b, re);
-    if (!ok)
-        ++(*fail);
-}
-
-void test_voigt(int* fail)
-{
-    printf("############# test_voigt #############\n");
-    test_one(fail, errBound, "voigt(0,1,0)", voigt(0,1,0), 1/sqrt(6.283185307179586));
-    test_one(fail, errBound, "voigt(0,0,1)", voigt(0,0,1), 1/3.141592653589793);
-    test_one(fail, errBound, "voigt(0,.5,.5)", voigt(0,.5,.5), .41741856104074);
-    // all the following expected results obtained from scipy.integrate
-    test_one(fail, errBound*10, "voigt(1,.5,.5)", voigt(1,.5,.5),
-             .18143039885260323);
-    test_one(fail, errBound*10, "voigt(1e5,.5e5,.5e5)", voigt(1e5,.5e5,.5e5),
-             .18143039885260323e-5);
-    test_one(fail, errBound*10, "voigt(1m5,.5m5,.5m5)",
-             voigt(1e-5,.5e-5,.5e-5), .18143039885260323e5);
-    test_one(fail, errBound*10, "voigt(1,.2,5)", voigt(1,.2,5), 0.06113399719916219);
-    test_one(fail, errBound*10, "voigt(1,5,.2)", voigt(1,5,.2), 0.07582140674553575);
-}
 
 /******************************************************************************/
 /*  Main: test sequence                                                       */
@@ -748,8 +721,6 @@ int main(void) {
     test_dawson(&fail);
     xTest(&fail, "dawson", cerf, erf, 1e-20);
     iTest(&fail, "dawson", cerf, erf);
-
-    test_voigt(&fail);
 
     printf("#####################################\n");
     if (fail) {
