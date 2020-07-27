@@ -164,8 +164,9 @@ void test_erfcx(int* fail)
     // be sufficient to make sure I didn't screw up the signs or something
 #undef NTST
 #define NTST 1 // define instead of const for C compatibility
+     // erfcx(z[i]), computed with Maple
     _cerf_cmplx z[NTST] = { C(1.234,0.5678) };
-    _cerf_cmplx w[NTST] = { // erfcx(z[i]), computed with Maple
+    _cerf_cmplx w[NTST] = {
         C(0.3382187479799972294747793561190487832579,
           -0.1116077470811648467464927471872945833154)
     };
@@ -175,6 +176,12 @@ void test_erfcx(int* fail)
 /******************************************************************************/
 void test_w_of_z(int* fail)
 {
+        /* w(z), computed with WolframAlpha
+                         ... note that WolframAlpha is problematic
+                         some of the above inputs, so I had to
+                         use the continued-fraction expansion
+                         in WolframAlpha in some cases, or switch
+                         to Maple */
     printf("############# w(z) tests #############\n");
 #undef NTST
 #define NTST 57
@@ -237,12 +244,7 @@ void test_w_of_z(int* fail)
         C(NaN,Inf),
         C(Inf,NaN)
     };
-    _cerf_cmplx w[NTST] = { /* w(z), computed with WolframAlpha
-                         ... note that WolframAlpha is problematic
-                         some of the above inputs, so I had to
-                         use the continued-fraction expansion
-                         in WolframAlpha in some cases, or switch
-                         to Maple */
+    _cerf_cmplx w[NTST] = {
         C(-3.78270245518980507452677445620103199303131110e-7,
           0.000903861276433172057331093754199933411710053155),
         C(0.1764906227004816847297495349730234591778719532788,
@@ -353,6 +355,7 @@ void test_w_of_z(int* fail)
 /******************************************************************************/
 void test_erf(int* fail)
 {
+ // erf(z[i]), evaluated with Maple
 #undef NTST
 #define NTST 41
     _cerf_cmplx z[NTST] = {
@@ -398,7 +401,7 @@ void test_erf(int* fail)
         C(7e-2,0.9e-2),
         C(7e-2,1.1e-2)
     };
-    _cerf_cmplx w[NTST] = { // erf(z[i]), evaluated with Maple
+    _cerf_cmplx w[NTST] = {
         C(-0.5366435657785650339917955593141927494421,
           -5.049143703447034669543036958614140565553),
         C(0.5366435657785650339917955593141927494421,
@@ -471,9 +474,9 @@ void test_erf(int* fail)
 /******************************************************************************/
 void test_erfc(int* fail)
 {
+ // erfc(z[i]), evaluated with Maple
 #undef NTST
-#define NTST 27
-    // 3 outcommented inf cases fail under clang
+#define NTST 30
     _cerf_cmplx z[NTST] = {
         C(1,2),
         C(-1,2),
@@ -488,15 +491,15 @@ void test_erfc(int* fail)
         C(0,2e-6),
         C(0,2),
         C(0,20),
-//        C(0,200),
+        C(0,200),
         C(2e-6,0),
         C(2,0),
         C(20,0),
         C(200,0),
         C(Inf,0),
         C(-Inf,0),
-//        C(0,Inf),
-//        C(0,-Inf),
+        C(0,Inf),
+        C(0,-Inf),
         C(Inf,Inf),
         C(Inf,-Inf),
         C(NaN,NaN),
@@ -506,7 +509,7 @@ void test_erfc(int* fail)
         C(Inf,NaN),
         C(88,0)
     };
-    _cerf_cmplx w[NTST] = { // erfc(z[i]), evaluated with Maple
+    _cerf_cmplx w[NTST] = {
         C(1.536643565778565033991795559314192749442,
           5.049143703447034669543036958614140565553),
         C(0.4633564342214349660082044406858072505579,
@@ -531,7 +534,7 @@ void test_erfc(int* fail)
           -18.56480241457555259870429191324101719886),
         C(1,
           -0.1474797539628786202447733153131835124599e173),
-//        C(1, -Inf),
+        C(1, -Inf),
         C(0.9999977432416658119838633199332831406314,
           0),
         C(0.004677734981047265837930743632747071389108,
@@ -541,8 +544,8 @@ void test_erfc(int* fail)
         C(0, 0),
         C(0, 0),
         C(2, 0),
-//        C(1, -Inf),
-//        C(1, Inf),
+        C(1, -Inf),
+        C(1, Inf),
         C(NaN, NaN),
         C(NaN, NaN),
         C(NaN, NaN),
@@ -558,9 +561,9 @@ void test_erfc(int* fail)
 /******************************************************************************/
 void test_dawson(int* fail)
 {
+ // dawson(z[i]), evaluated with Maple
 #undef NTST
-#define NTST 45
-    // 3 outcommented inf cases fail under clang
+#define NTST 49
     _cerf_cmplx z[NTST] = {
         C(2,1),
         C(-2,1),
@@ -569,7 +572,7 @@ void test_dawson(int* fail)
         C(-28,9),
         C(33,-21),
         C(1e3,1e3),
-//        C(-1000,-3001),
+        C(-1000,-3001),
         C(1e-8, 5.1e-3),
         C(4.95e-3, -4.9e-3),
         C(5.1e-3, 5.1e-3),
@@ -590,11 +593,11 @@ void test_dawson(int* fail)
         C(0,2e-6),
         C(0,-2),
         C(0,20),
-//        C(0,-200),
+        C(0,-200),
         C(Inf,0),
         C(-Inf,0),
-//        C(0,Inf),
-//        C(0,-Inf),
+        C(0,Inf),
+        C(0,-Inf),
         C(Inf,Inf),
         C(Inf,-Inf),
         C(NaN,NaN),
@@ -611,7 +614,7 @@ void test_dawson(int* fail)
         C(1e13, 2.4e-16),
         C(1e300, 2.4e-303)
     };
-    _cerf_cmplx w[NTST] = { // dawson(z[i]), evaluated with Maple
+    _cerf_cmplx w[NTST] = {
         C(0.1635394094345355614904345232875688576839,
           -0.1531245755371229803585918112683241066853),
         C(-0.1635394094345355614904345232875688576839,
@@ -626,7 +629,7 @@ void test_dawson(int* fail)
           0.006866888783433775382193630944275682670599),
         C(-0.5808616819196736225612296471081337245459,
           0.6688593905505562263387760667171706325749),
-//        C(Inf, -Inf), // under Windows, got -nan(ind)-nan(ind)i
+        C(Inf, -Inf),
         C(0.1000052020902036118082966385855563526705e-7,
           0.005100088434920073153418834680320146441685),
         C(0.004950156837581592745389973960217444687524,
@@ -662,11 +665,11 @@ void test_dawson(int* fail)
         C(0,0.2000000000005333333333341866666666676419e-5),
         C(0,-48.16001211429122974789822893525016528191),
         C(0,0.4627407029504443513654142715903005954668e174),
-//        C(0,-Inf),
+        C(0,-Inf),
         C(0,0),
         C(-0,0),
-//        C(0, Inf),
-//        C(0, -Inf),
+        C(0, Inf),
+        C(0, -Inf),
         C(NaN, NaN),
         C(NaN, NaN),
         C(NaN, NaN),
