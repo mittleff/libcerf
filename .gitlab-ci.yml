@@ -57,22 +57,6 @@ debU_clang:
   stage: build
   script: *scr
 
-suse_clang:
-  tags: *unix
-  image: opensuse/tumbleweed
-  # rolling release with infinite life time
-  before_script:
-    - zypper -n patch || echo "do it again"
-    - zypper -n patch
-    - zypper -n ref
-    - zypper -n up
-    - zypper -n dup
-    - zypper -n in cmake perl
-    - zypper -n in clang gcc glibc-devel
-    - export CC=/usr/bin/clang
-  stage: build
-  script: *scr
-
 suse_gcc:
   tags: *unix
   image: opensuse/tumbleweed
@@ -91,9 +75,9 @@ suse_gcc:
 # suse_stable:
 #  opensuse:leap, unsupported here because it is at cmake 3.5, while libcerf requires 3.6
 
-centos7_clang:
+centos8_clang:
   tags: *unix
-  image: centos:centos7
+  image: centos:centos8
   before_script:
     - yum -y update
     - yum -y install epel-release
