@@ -74,29 +74,6 @@ static double relerr(double a, double b)
         return fabs((b - a) / a);
 }
 
-// For testing the complex Dawson and error functions.
-
-void zTest(
-    int* fail, const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), int nTst, _cerf_cmplx* w,
-    _cerf_cmplx* z)
-{
-    printf("############# %s(z) tests #############\n", fctName);
-    for (int i = 0; i < nTst; ++i) {
-        _cerf_cmplx fw = F(z[i]);
-        double re_err = relerr(creal(w[i]), creal(fw));
-        double im_err = relerr(cimag(w[i]), cimag(fw));
-        int ok = re_err <= errBound && im_err <= errBound;
-        printf(ok ? "   " : "ERR");
-        if (!ok)
-            ++(*fail);
-        printf(
-            " %s(%g%+gi) = %g%+gi (vs. %g%+gi), "
-            "re/im rel. err. = %0.2g/%0.2g)\n",
-            fctName, creal(z[i]), cimag(z[i]), creal(fw), cimag(fw), creal(w[i]), cimag(w[i]),
-            re_err, im_err);
-    }
-}
-
 // For testing the Dawson and error functions for the special case of a real
 // argument
 
