@@ -45,6 +45,7 @@
  */
 
 #include "cerf.h"
+#include "testtool.h"
 
 #include <float.h>
 #include <math.h>
@@ -141,9 +142,41 @@ void iTest(int* fail, const char* fctName,
 /******************************************************************************/
 
 /******************************************************************************/
+void test_erfi(int* fail)
+{
+    result_t result = { 0, 0 };
+
+    // since erfi just calls through to erf, just one test should
+    // be sufficient to make sure I didn't screw up the signs or something
+    ZTEST(result, 1e-15, cerfi(C(1.234,0.5678)),
+        C(1.081032284405373149432716643834106923212,
+          1.926775520840916645838949402886591180834));
+
+    printf("%i/%i tests failed", result.failed, result.total);
+    //return result.failed ? 1 : 0;
+    *fail += result.failed;
+}
+
+/******************************************************************************/
+void test_erfcx(int* fail)
+{
+    // since erfcx just calls through to w, just one test should
+    // be sufficient to make sure I didn't screw up the signs or something
+#undef NTST
+#define NTST 1 // define instead of const for C compatibility
+    _cerf_cmplx z[NTST] = { C(1.234,0.5678) };
+    _cerf_cmplx w[NTST] = { // erfcx(z[i]), computed with Maple
+        C(0.3382187479799972294747793561190487832579,
+          -0.1116077470811648467464927471872945833154)
+    };
+    zTest(fail, "erfcx", cerfcx, NTST, w, z);
+}
+
+/******************************************************************************/
 void test_w_of_z(int* fail)
 {
     printf("############# w(z) tests #############\n");
+#undef NTST
 #define NTST 57
     _cerf_cmplx z[NTST] = {
         C(624.2,-0.26123),
@@ -433,36 +466,6 @@ void test_erf(int* fail)
           0.01235199327873258197931147306290916629654)
     };
     zTest(fail, "erf", cerf, NTST, w, z);
-}
-
-/******************************************************************************/
-void test_erfi(int* fail)
-{
-    // since erfi just calls through to erf, just one test should
-    // be sufficient to make sure I didn't screw up the signs or something
-#undef NTST
-#define NTST 1 // define instead of const for C compatibility
-    _cerf_cmplx z[NTST] = { C(1.234,0.5678) };
-    _cerf_cmplx w[NTST] = { // erfi(z[i]), computed with Maple
-        C(1.081032284405373149432716643834106923212,
-          1.926775520840916645838949402886591180834)
-    };
-    zTest(fail, "erfi", cerfi, NTST, w, z);
-}
-
-/******************************************************************************/
-void test_erfcx(int* fail)
-{
-    // since erfcx just calls through to w, just one test should
-    // be sufficient to make sure I didn't screw up the signs or something
-#undef NTST
-#define NTST 1 // define instead of const for C compatibility
-    _cerf_cmplx z[NTST] = { C(1.234,0.5678) };
-    _cerf_cmplx w[NTST] = { // erfcx(z[i]), computed with Maple
-        C(0.3382187479799972294747793561190487832579,
-          -0.1116077470811648467464927471872945833154)
-    };
-    zTest(fail, "erfcx", cerfcx, NTST, w, z);
 }
 
 /******************************************************************************/
