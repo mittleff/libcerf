@@ -51,28 +51,11 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "defs.h" // defines _cerf_cmplx, CMPLX, NaN
-
 const double errBound = 1e-13;
 
 /******************************************************************************/
 /*  Auxiliary routines                                                        */
 /******************************************************************************/
-
-// compute relative error |b-a|/|a|, handling case of NaN and Inf,
-static double relerr(double a, double b)
-{
-    if (isnan(a) || isnan(b) || isinf(a) || isinf(b)) {
-        if ((isnan(a) && !isnan(b)) || (!isnan(a) && isnan(b)) || (isinf(a) && !isinf(b))
-            || (!isinf(a) && isinf(b)) || (isinf(a) && isinf(b) && a * b < 0))
-            return Inf; // "infinite" error
-        return 0; // matching infinity/nan results counted as zero error
-    }
-    if (a == 0)
-        return b == 0 ? 0 : Inf;
-    else
-        return fabs((b - a) / a);
-}
 
 // For testing the Dawson and error functions for the special case of a real
 // argument
