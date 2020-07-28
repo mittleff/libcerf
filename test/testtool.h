@@ -27,6 +27,7 @@
 #include <float.h>
 #include <math.h>
 #include <stdio.h>
+#include <assert.h>
 
 typedef struct {
     int failed;
@@ -36,16 +37,15 @@ typedef struct {
 // Compute relative error |b-a|/|a|, handling case of NaN and Inf,
 static double relerr(double a, double b)
 {
-    if (isnan(a) || isnan(b) || isinf(a) || isinf(b)) {
-        if ((isnan(a) && !isnan(b)) || (!isnan(a) && isnan(b)) || (isinf(a) && !isinf(b))
-            || (!isinf(a) && isinf(b)) || (isinf(a) && isinf(b) && a * b < 0))
-            return Inf; // "infinite" error
-        return 0; // matching infinity/nan results counted as zero error
+    if (!isfinite(a))
+        return !isfinite(b) ? 0 : Inf;
+    if (!isfinite(b)) {
+        assert(isfinite(a)); // implied by the above
+        return Inf;
     }
     if (a == 0)
         return b == 0 ? 0 : Inf;
-    else
-        return fabs((b - a) / a);
+    return fabs((b - a) / a);
 }
 
 // Test whether real numbers 'computed' and 'expected' agree within relative error bound 'limit'

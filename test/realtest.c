@@ -26,83 +26,50 @@
 #include "cerf.h"
 #include "testtool.h"
 
-#include <float.h>
-#include <math.h>
-#include <stdio.h>
-
 const double errBound = 1e-13;
-
-/******************************************************************************/
-/*  Auxiliary routines                                                        */
-/******************************************************************************/
 
 // For testing the Dawson and error functions for the special case of a real argument
 
 void xTest(
-    int* fail, const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double),
+    result_t* result, const char* name, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double),
     double isc)
 {
-    printf("test %s vs c%s\n", fctName, fctName);
-    double errmax = 0;
+    char info[30];
     for (int i = 0; i < 10000; ++i) {
         double x = pow(10., -300. + i * 600. / (10000 - 1));
-        double re_err = relerr(FRE(x), creal(F(C(x, x * isc))));
-        if (re_err > errmax)
-            errmax = re_err;
-        re_err = relerr(FRE(-x), creal(F(C(-x, x * isc))));
-        if (re_err > errmax)
-            errmax = re_err;
-    }
-    if (errmax > errBound) {
-        printf("FAILURE -- relative error %g too large!\n", errmax);
-        ++(*fail);
+        snprintf(info, 30, "%s(%g)", name, x);
+        rtest(result, 1e-13, creal(F(C(x, x * isc))), FRE(x), info);
     }
 }
 
 // For testing the Dawson and error functions for the special case of an infinite argument
 
-void iTest(int* fail, const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double))
+void iTest(result_t* result, const char* name, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double))
 {
-    printf("test %s vs c%s for inf args\n", fctName, fctName);
-    double errmax = 0;
-    double re_err = relerr(FRE(Inf), creal(F(C(Inf, 0.))));
-    if (re_err > errmax)
-        errmax = re_err;
-    re_err = relerr(FRE(-Inf), creal(F(C(-Inf, 0.))));
-    if (re_err > errmax)
-        errmax = re_err;
-    re_err = relerr(FRE(NaN), creal(F(C(NaN, 0.))));
-    if (re_err > errmax)
-        errmax = re_err;
-    if (errmax > errBound) {
-        printf("FAILURE -- relative error %g too large!\n", errmax);
-        ++(*fail);
-    }
+    rtest(result, 1e-13, FRE(Inf), creal(F(C(Inf, 0.))), name );
+    rtest(result, 1e-13, FRE(-Inf), creal(F(C(-Inf, 0.))), name);
+    rtest(result, 1e-13, FRE(NaN), creal(F(C(NaN, 0.))), name);
 }
-
-/******************************************************************************/
-/*  Main: test sequence                                                       */
-/******************************************************************************/
 
 int main(void)
 {
-    int fail = 0;
+    result_t result = {0, 0};
 
-    xTest(&fail, "erf", cerf, erf, 1e-20);
-    iTest(&fail, "erf", cerf, erf);
+    xTest(&result, "erf", cerf, erf, 1e-20);
+    iTest(&result, "erf", cerf, erf);
 
-    xTest(&fail, "erfi", cerfi, erfi, 0);
-    iTest(&fail, "erfi", cerfi, erfi);
+    xTest(&result, "erfi", cerfi, erfi, 0);
+    iTest(&result, "erfi", cerfi, erfi);
 
-    xTest(&fail, "erfc", cerfc, erfc, 1e-20);
-    iTest(&fail, "erfc", cerfc, erfc);
+    xTest(&result, "erfc", cerfc, erfc, 1e-20);
+    iTest(&result, "erfc", cerfc, erfc);
 
-    xTest(&fail, "erfcx", cerfcx, erfcx, 0);
-    iTest(&fail, "erfcx", cerfcx, erfcx);
+    xTest(&result, "erfcx", cerfcx, erfcx, 0);
+    iTest(&result, "erfcx", cerfcx, erfcx);
 
-    xTest(&fail, "dawson", cdawson, dawson, 1e-20);
-    iTest(&fail, "dawson", cdawson, dawson);
+    xTest(&result, "dawson", cdawson, dawson, 1e-20);
+    iTest(&result, "dawson", cdawson, dawson);
 
-    printf("%i/%i tests failed", fail, 8);
-    return fail;
+    printf("%i/%i tests failed", result.failed, result.total);
+    return result.failed;
 }
