@@ -645,20 +645,20 @@ int main(void)
     iTest(&fail, "erf", cerf, erf);
 
     test_erfi(&fail);
-    xTest(&fail, "erfi", cerf, erf, 0);
-    iTest(&fail, "erfi", cerf, erf);
+    xTest(&fail, "erfi", cerfi, erfi, 0);
+    iTest(&fail, "erfi", cerfi, erfi);
 
     test_erfc(&fail);
-    xTest(&fail, "erfc", cerf, erf, 1e-20);
-    iTest(&fail, "erfc", cerf, erf);
+    xTest(&fail, "erfc", cerfc, erfc, 1e-20);
+    iTest(&fail, "erfc", cerfc, erfc);
 
     test_erfcx(&fail);
-    xTest(&fail, "erfcx", cerf, erf, 0);
-    iTest(&fail, "erfcx", cerf, erf);
+    xTest(&fail, "erfcx", cerfcx, erfcx, 0);
+    iTest(&fail, "erfcx", cerfcx, erfcx);
 
     test_dawson(&fail);
-    xTest(&fail, "dawson", cerf, erf, 1e-20);
-    iTest(&fail, "dawson", cerf, erf);
+    xTest(&fail, "dawson", cdawson, dawson, 1e-20);
+    iTest(&fail, "dawson", cdawson, dawson);
 
     printf("#####################################\n");
     if (fail) {
