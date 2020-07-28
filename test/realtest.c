@@ -42,7 +42,7 @@ void xTest(
     int* fail, const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double),
     double isc)
 {
-    printf("############# %s(x) tests #############\n", fctName);
+    printf("test %s vs c%s\n", fctName, fctName);
     double errmax = 0;
     for (int i = 0; i < 10000; ++i) {
         double x = pow(10., -300. + i * 600. / (10000 - 1));
@@ -56,15 +56,14 @@ void xTest(
     if (errmax > errBound) {
         printf("FAILURE -- relative error %g too large!\n", errmax);
         ++(*fail);
-    } else
-        printf("SUCCESS (max relative error = %g)\n", errmax);
+    }
 }
 
 // For testing the Dawson and error functions for the special case of an infinite argument
 
 void iTest(int* fail, const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double))
 {
-    printf("############# %s(inf) tests ###########\n", fctName);
+    printf("test %s vs c%s for inf args\n", fctName, fctName);
     double errmax = 0;
     double re_err = relerr(FRE(Inf), creal(F(C(Inf, 0.))));
     if (re_err > errmax)
@@ -78,8 +77,7 @@ void iTest(int* fail, const char* fctName, _cerf_cmplx (*F)(_cerf_cmplx), double
     if (errmax > errBound) {
         printf("FAILURE -- relative error %g too large!\n", errmax);
         ++(*fail);
-    } else
-        printf("SUCCESS (max relative error = %g)\n", errmax);
+    }
 }
 
 /******************************************************************************/
@@ -105,12 +103,6 @@ int main(void)
     xTest(&fail, "dawson", cdawson, dawson, 1e-20);
     iTest(&fail, "dawson", cdawson, dawson);
 
-    printf("#####################################\n");
-    if (fail) {
-        printf("IN TOTAL, FAILURE IN %i TESTS\n", fail);
-        return 1;
-    } else {
-        printf("OVERALL SUCCESS\n");
-        return 0;
-    }
+    printf("%i/%i tests failed", fail, 8);
+    return fail;
 }
