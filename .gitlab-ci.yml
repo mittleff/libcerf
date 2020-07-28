@@ -82,9 +82,9 @@ centos8_clang:
     - yum -y install make cmake perl
     - yum -y install clang gcc glibc-devel
     - export CC=/usr/bin/clang
-    - cmake3 --version
-    - ctest3 --version
-    - cpack3 --version
+    - cmake --version
+    - ctest --version
+    - cpack --version
   stage: build
   script: *scr
 
