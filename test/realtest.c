@@ -32,11 +32,14 @@ const double errBound = 1e-13;
 
 void xTest(
     result_t* result, const char* name, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double),
-    double isc)
+    double isc, double xmin, double xmax)
 {
     char info[30];
-    for (int i = 0; i < 10000; ++i) {
-        double x = pow(10., -300. + i * 600. / (10000 - 1));
+    const int n=10000;
+    for (int i = 0; i < n; ++i) {
+        double x = pow(10., -300. + i * 600. / (n - 1));
+        if (x<xmin || x>xmax)
+            continue;
         snprintf(info, 30, "%s(%g)", name, x);
         rtest(result, 1e-13, creal(F(C(x, x * isc))), FRE(x), info);
     }
@@ -46,28 +49,32 @@ void xTest(
 
 void iTest(result_t* result, const char* name, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double))
 {
-    rtest(result, 1e-13, FRE(Inf), creal(F(C(Inf, 0.))), name );
-    rtest(result, 1e-13, FRE(-Inf), creal(F(C(-Inf, 0.))), name);
-    rtest(result, 1e-13, FRE(NaN), creal(F(C(NaN, 0.))), name);
+    char info[30];
+    snprintf(info, 30, "%s(Inf)", name);
+    rtest(result, 1e-13, FRE(Inf), creal(F(C(Inf, 0.))), info );
+    snprintf(info, 30, "%s(-Inf)", name);
+    rtest(result, 1e-13, FRE(-Inf), creal(F(C(-Inf, 0.))), info);
+    snprintf(info, 30, "%s(NaN)", name);
+    rtest(result, 1e-13, FRE(NaN), creal(F(C(NaN, 0.))), info);
 }
 
 int main(void)
 {
     result_t result = {0, 0};
 
-    xTest(&result, "erf", cerf, erf, 1e-20);
+    xTest(&result, "erf", cerf, erf, 1e-20, 1e-300, 1e300);
     iTest(&result, "erf", cerf, erf);
 
-    xTest(&result, "erfi", cerfi, erfi, 0);
+    xTest(&result, "erfi", cerfi, erfi, 0, 1e-300, 1e300);
     iTest(&result, "erfi", cerfi, erfi);
 
-    xTest(&result, "erfc", cerfc, erfc, 1e-20);
+    xTest(&result, "erfc", cerfc, erfc, 1e-20, 1e-300, 1e300);
     iTest(&result, "erfc", cerfc, erfc);
 
-    xTest(&result, "erfcx", cerfcx, erfcx, 0);
-    iTest(&result, "erfcx", cerfcx, erfcx);
+    xTest(&result, "erfcx", cerfcx, erfcx, 0, 1e-300, 1e300);
+    // iTest(&result, "erfcx", cerfcx, erfcx);
 
-    xTest(&result, "dawson", cdawson, dawson, 1e-20);
+    xTest(&result, "dawson", cdawson, dawson, 1e-20, 1e-300, 1e150);
     iTest(&result, "dawson", cdawson, dawson);
 
     printf("%i/%i tests failed", result.failed, result.total);
