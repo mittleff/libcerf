@@ -1,3 +1,29 @@
+/* Library libcerf:
+ *   Compute complex error functions, based on a new implementation of
+ *   Faddeeva's w_of_z. Also provide Dawson and Voigt functions.
+ *
+ * File voigttest.c:
+ *   Test the Voigt function
+ *
+ * Copyright:
+ *   (C) 2013 Forschungszentrum Jülich GmbH
+ *
+ * Licence:
+ *   ../LICENSE
+ *
+ * Authors:
+ *   Joachim Wuttke, Forschungszentrum Jülich, 2013
+ *
+ * Website:
+ *   http://apps.jcns.fz-juelich.de/libcerf
+ *
+ * Revision history:
+ *   ../CHANGELOG
+ *
+ * More information:
+ *   man 3 voigt
+ */
+
 #include "cerf.h"
 #include "testtool.h"
 #include <math.h>

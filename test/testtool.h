@@ -1,3 +1,28 @@
+/* Library libcerf:
+ *   Compute complex error functions, based on a new implementation of
+ *   Faddeeva's w_of_z. Also provide Dawson and Voigt functions.
+ *
+ * File testtool.h
+ *   Auxiliary functions and preprocessor macros for numeric tests.
+ *
+ * Copyright:
+ *   (C) 2012 Massachusetts Institute of Technology
+ *   (C) 2013 Forschungszentrum Jülich GmbH
+ *
+ * Licence:
+ *   ../LICENSE
+ *
+ * Authors:
+ *   Steven G. Johnson, Massachusetts Institute of Technology, 2012, core author
+ *   Joachim Wuttke, Forschungszentrum Jülich, 2013, package maintainer
+ *
+ * Website:
+ *   http://apps.jcns.fz-juelich.de/libcerf
+ *
+ * Revision history:
+ *   ../CHANGELOG
+ */
+
 #include "defs.h" // defines _cerf_cmplx, CMPLX, NaN, Inf
 #include <float.h>
 #include <math.h>
