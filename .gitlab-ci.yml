@@ -72,9 +72,6 @@ suse_gcc:
   stage: build
   script: *scr
 
-# suse_stable:
-#  opensuse:leap, unsupported here because it is at cmake 3.5, while libcerf requires 3.6
-
 centos8_clang:
   tags: *unix
   image: centos:centos8
