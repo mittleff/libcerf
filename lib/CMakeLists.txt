@@ -29,13 +29,21 @@ if(NOT MSVC)
     target_link_libraries(${lib} m)
 endif()
 
-if (LIB_INSTALL)
-    install(
-        TARGETS ${lib} LIBRARY
-        DESTINATION ${destination}/lib
-        COMPONENT Libraries)
-    install(
-        FILES ${inc_files}
-        DESTINATION ${destination}/include
-        COMPONENT Headers)
+install(
+    TARGETS ${lib}
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION lib
+    ARCHIVE DESTINATION lib
+    COMPONENT Libraries)
+install(
+    FILES ${inc_files}
+    DESTINATION include
+    COMPONENT Headers)
+
+if(MSVC)
+    set(CPACK_PACKAGE_VENDOR "Forschungszentrum Jülich GmbH")
+    set(CPACK_PACKAGE_VERSION_MAJOR ${CERF_SOVERSION})
+    set(CPACK_PACKAGE_VERSION_MINOR ${CERF_VERSION})
+    set(CPACK_GENERATOR "ZIP")
+    include(CPack)
 endif()
