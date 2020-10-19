@@ -1,6 +1,6 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
-libcerf-1.14, released
+libcerf-1.14, released 19oct20:
   - Simplified test code
   - Homepage moved to https://jugit.fz-juelich.de/mlz/libcerf, 17mar19
 
