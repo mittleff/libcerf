@@ -8,7 +8,7 @@ mac:
   script:
     - mkdir build
     - cd build
-    - cmake -DWERROR=ON ..
+    - cmake ..
     - make
     - ctest --output-on-failure
 
