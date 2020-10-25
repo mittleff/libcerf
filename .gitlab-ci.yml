@@ -1,6 +1,17 @@
 stages:
   - build
 
+mac:
+  tags:
+  - MacOS
+  stage: build
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DWERROR=ON ..
+    - make
+    - ctest --output-on-failure
+
 debS_clang:
   tags: &unix
   - Linux
