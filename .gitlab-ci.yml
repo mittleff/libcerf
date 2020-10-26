@@ -11,6 +11,14 @@ mac:
     - cmake ..
     - make
     - ctest --output-on-failure
+    - cpack .
+    - ls -Rl
+  artifacts:
+    paths:
+    - lib/*.h
+    - build/*
+    - build/*zip
+    expire_in: 10 days
 
 debS_clang:
   tags: &unix

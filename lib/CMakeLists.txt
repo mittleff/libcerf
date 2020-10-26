@@ -40,10 +40,8 @@ install(
     DESTINATION include
     COMPONENT Headers)
 
-if(MSVC)
-    set(CPACK_PACKAGE_VENDOR "Forschungszentrum Jülich GmbH")
-    set(CPACK_PACKAGE_VERSION_MAJOR ${CERF_SOVERSION})
-    set(CPACK_PACKAGE_VERSION_MINOR ${CERF_VERSION})
-    set(CPACK_GENERATOR "ZIP")
-    include(CPack)
-endif()
+set(CPACK_PACKAGE_VENDOR "Forschungszentrum Jülich GmbH")
+set(CPACK_PACKAGE_VERSION_MAJOR ${CERF_SOVERSION})
+set(CPACK_PACKAGE_VERSION_MINOR ${CERF_VERSION})
+set(CPACK_GENERATOR "ZIP")
+include(CPack)
