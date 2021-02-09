@@ -8,7 +8,7 @@ mac:
   script:
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake .. -DCERF_CPP=ON
     - make
     - ctest --output-on-failure
     - cpack .
