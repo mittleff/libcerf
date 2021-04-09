@@ -31,9 +31,9 @@ endif()
 
 install(
     TARGETS ${lib}
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION lib
-    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION ${LIBDIR}
+    RUNTIME DESTINATION ${LIBDIR}
+    ARCHIVE DESTINATION ${LIBDIR}
     COMPONENT Libraries)
 install(
     FILES ${inc_files}

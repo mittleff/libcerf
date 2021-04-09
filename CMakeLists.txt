@@ -5,6 +5,7 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(PreventInSourceBuilds)
+include(GNUInstallDirs)
 
 if(NOT DEFINED BUILD_SHARED_LIBS)
     option(BUILD_SHARED_LIBS "Build as shared library" ON)
@@ -74,7 +75,7 @@ include(CTest)
 
 configure_file("libcerf.pc.in" "libcerf.pc" @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libcerf.pc"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/")
+    DESTINATION "${CMAKE_INSTALL_PREFIX}/${LIBDIR}/pkgconfig/")
 
 add_subdirectory(lib)
 add_subdirectory(test)
