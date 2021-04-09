@@ -15,11 +15,11 @@ function(one_page pname section srcname)
         )
     install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/${pname}.${section}
-        DESTINATION "${CMAKE_INSTALL_PREFIX}/share/man/man${section}"
+        DESTINATION "${CMAKE_INSTALL_MANDIR}/man${section}"
         )
     install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/${pname}.html
-        DESTINATION "${CMAKE_INSTALL_PREFIX}/share/doc/libcerf/html"
+        DESTINATION "${CMAKE_INSTALL_DOCDIR}/html"
         )
     set(TARGETS_MAN "${TARGETS_MAN};${pname}.${section}" PARENT_SCOPE)
     set(TARGETS_HTM "${TARGETS_HTM};${pname}.html"       PARENT_SCOPE)
