@@ -1,5 +1,10 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
+libcerf-1.15:
+  - Added widthtest to test voigt_hwhm for numerous ratios gamma/sigma
+  - Use assertion in voigt_hwhm to check for impossible situations
+      (to avoid fprintf and exit, as suggested by Etham A Merrit)
+
 libcerf-1.14, released 19oct20:
   - Simplified test code
   - Homepage moved to https://jugit.fz-juelich.de/mlz/libcerf, 17mar19

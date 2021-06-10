@@ -42,9 +42,8 @@
  */
 
 #include "cerf.h"
+#include <assert.h>
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 double dvoigt(double x, double sigma, double gamma, double v0)
 {
@@ -63,24 +62,17 @@ double voigt_hwhm(double sigma, double gamma)
      const double del = eps*hwhm0;
     double ret = hwhm0;
     const double v0 = voigt(0, sigma, gamma);
-    for(int i=0; i<300; ++i) {
+    for(int i=0; i<30; ++i) {
         double val = dvoigt(ret, sigma, gamma, v0);
         if (fabs(val)<1e-15)
             return ret;
         double step = -del/(dvoigt(ret+del, sigma, gamma, v0)/val-1);
         double nxt = ret + step;
-        if      (nxt<ret/3) {
-            fprintf(stderr, "voigt_fwhm terminated because of huge deviation from 1st approx\n");
-            nxt = ret/3;
-        } else if (nxt>2*ret) {
-            fprintf(stderr, "voigt_fwhm terminated because of huge deviation from 1st approx\n");
-            nxt = 2*ret;
-        }
+        assert(nxt>ret/3);
+        assert(nxt<2*ret);
         if (fabs(ret-nxt)<del)
             return nxt;
         ret = nxt;
     }
-    fprintf(stderr, "voigt_fwhm failed: Newton's iteration did not converge"
-            " with sigma = %f and gamma = %f\n", sigma, gamma);
-    exit(-1);
+    assert(0);
 }
