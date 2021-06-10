@@ -1,9 +1,14 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
-libcerf-1.15:
-  - Added widthtest to test voigt_hwhm for numerous ratios gamma/sigma
+libcerf-1.15, released 10jun21:
   - Use assertion in voigt_hwhm to check for impossible situations
       (to avoid fprintf and exit, as suggested by Etham A Merrit)
+  - Added widthtest, which tests voigt_hwhm for numerous ratios gamma/sigma
+  - libcerf.pc.in: correct prefix (as suggested by Alexander Grund)
+  - CMake install
+    - make full use of CMAKE_INSTALL_<dir> variables
+    - DESTINATION now given by LIBDIR from GNUInstallDirs
+  - Support CPack for all platforms
 
 libcerf-1.14, released 19oct20:
   - Simplified test code
