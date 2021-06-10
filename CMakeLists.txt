@@ -37,7 +37,7 @@ else()
 endif()
 
 set(CERF_SOVERSION                  1) # API version
-set(CERF_VERSION ${CERF_SOVERSION}.14) # minor version
+set(CERF_VERSION ${CERF_SOVERSION}.15) # minor version
 
 if(MSVC)
     if (NOT CERF_CPP)
