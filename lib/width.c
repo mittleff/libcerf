@@ -1,14 +1,13 @@
-/* Library libcerf:
- *   Compute complex error functions, based on a new implementation of
- *   Faddeeva's w_of_z. Also provide Dawson and Voigt functions.
- *
+/*
  * File width.c:
- *   Computate voigt_hwhm, using Newton's iteration.
+ *   Compute voit_hwhm, half width at half maximum of the Voigt profile,
+ *   using iterative regula falsi (Illinois method).
+ *   Modified from code originally written for gnuplot.
  *
  * Copyright:
- *   (C) 2018 Forschungszentrum Jülich GmbH
+ *   Ethan A Merritt 2020, 2021
  *
- * Licence:
+ * License:
  *   Permission is hereby granted, free of charge, to any person obtaining
  *   a copy of this software and associated documentation files (the
  *   "Software"), to deal in the Software without restriction, including
@@ -28,51 +27,78 @@
  *   OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Authors:
- *   Joachim Wuttke, Forschungszentrum Jülich, 2018
- *
- * Website:
- *   http://apps.jcns.fz-juelich.de/libcerf
- *
- * Revision history:
- *   ../CHANGELOG
- *
- * Man pages:
- *   voigt_fwhm(3)
  */
 
 #include "cerf.h"
-#include <assert.h>
 #include <math.h>
 
-double dvoigt(double x, double sigma, double gamma, double v0)
-{
-    return voigt(x, sigma, gamma)/v0 - .5;
-}
+#ifndef DBL_EPSILON
+#define DBL_EPSILON 2.2204460492503131E-16
+#endif
 
-double voigt_hwhm(double sigma, double gamma)
+double
+voigt_hwhm(double sigma, double gamma)
 {
+    double HM, fwhm, hwhm;
+    double fG, fL;
+    double a, b, c;		/* 3 points used by regula falsi */
+    double del_a, del_b, del_c;
+    int k;
+    int side = 0;
+
     if (sigma==0 && gamma==0)
-        return 0;
+	return 0;
     if (isnan(sigma) || isnan(gamma))
-        return NAN;
-    const double eps = 1e-14;
-    // start from an excellent approximation [Olivero & Longbothum, J Quant Spec Rad Transf 1977]:
-    const double hwhm0 = .5*(1.06868*gamma+sqrt(0.86743*gamma*gamma+4*2*log(2)*sigma*sigma));
-     const double del = eps*hwhm0;
-    double ret = hwhm0;
-    const double v0 = voigt(0, sigma, gamma);
-    for(int i=0; i<30; ++i) {
-        double val = dvoigt(ret, sigma, gamma, v0);
-        if (fabs(val)<1e-15)
-            return ret;
-        double step = -del/(dvoigt(ret+del, sigma, gamma, v0)/val-1);
-        double nxt = ret + step;
-        assert(nxt>ret/3);
-        assert(nxt<2*ret);
-        if (fabs(ret-nxt)<del)
-            return nxt;
-        ret = nxt;
+	return NAN;
+
+    HM = voigt(0.0, sigma, gamma) / 2.0;
+
+    /* This approximation claims accuracy of 0.02%
+     * Olivero & Longbothum [1977]
+     * Journal of Quantitative Spectroscopy and Radiative Transfer. 17:233
+     */
+    fG = 2. * sigma * sqrt(2.*log(2.));
+    fL = 2. * gamma;
+    fwhm = 0.5346 * fL + sqrt( 0.2166*fL*fL + fG*fG);
+
+    /* Choose initial points a,b that bracket the expected root */
+    a = fwhm/2. * 0.995;
+    b = fwhm/2. * 1.005;
+    del_a = voigt(a, sigma, gamma) - HM;
+    del_b = voigt(b, sigma, gamma) - HM;
+
+    /* Iteration using regula falsi (Illinois variant).
+     * Empirically, this takes <5 iterations to converge to FLT_EPSILON
+     * and <10 iterations to converge to DBL_EPSILON.
+     */
+    for (k=0; k<100; k++) {
+	c = (b*del_a - a*del_b) / (del_a - del_b);
+	if (fabs(b-a) < 2. * DBL_EPSILON * fabs(b+a))
+	    break;
+	del_c = voigt(c, sigma, gamma) - HM;
+
+	if (del_b * del_c > 0) {
+	    b = c; del_b = del_c;
+	    if (side < 0)
+		del_a /= 2.;
+	    side = -1;
+	} else if (del_a * del_c > 0) {
+	    a = c; del_a = del_c;
+	    if (side > 0)
+		del_b /= 2.;
+	    side = 1;
+	} else {
+	    break;
+	}
     }
-    assert(0);
+
+    hwhm = c;
+
+    /* This should not be possible;
+     * I have never seen convergence worse than k = 15.
+     */
+    if (k > 50)
+	hwhm = NAN;
+
+    return hwhm;
 }
