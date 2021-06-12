@@ -2,7 +2,7 @@
 
 libcerf-1.15, released 10jun21:
   - Use assertion in voigt_hwhm to check for impossible situations
-      (to avoid fprintf and exit, as suggested by Etham A Merrit)
+      (to avoid fprintf and exit, as suggested by Ethan A Merritt)
   - Added widthtest, which tests voigt_hwhm for numerous ratios gamma/sigma
   - libcerf.pc.in: correct prefix (as suggested by Alexander Grund)
   - CMake install
