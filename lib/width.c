@@ -32,7 +32,6 @@
 #include "cerf.h"
 #include <math.h>
 #include <assert.h>
-#include <stdio.h>
 
 #ifndef DBL_EPSILON
 #define DBL_EPSILON 2.2204460492503131E-16
@@ -61,32 +60,44 @@ double voigt_hwhm(double sigma, double gamma)
     if (isnan(sigma) || isnan(gamma))
 	return NAN;
 
-    HM = voigt(0.0, sigma, gamma) / 2;
+    /* Reduce order of magnitude to prevent overflow */
+    double prefac = 1.;
+    double s = fabs(sigma);
+    double g = fabs(gamma);
+    while (s>1e100 || g>1e100) {
+        prefac *= 1e30;
+        s /= 1e30;
+        g /= 1e30;
+    }
+
+    /* Increase order of magnitude to prevent underflow */
+    while (s<1e-100 && g<1e-100) {
+        prefac /= 1e30;
+        s *= 1e30;
+        g *= 1e30;
+    }
+
+    HM = voigt(0.0, s, g) / 2;
 
     /* Choose initial points a,b that bracket the expected root */
-    c = hwhm0(sigma, gamma);
+    c = hwhm0(s, g);
     a = c * 0.995;
     b = c * 1.005;
-    del_a = voigt(a, sigma, gamma) - HM;
-    del_b = voigt(b, sigma, gamma) - HM;
+    del_a = voigt(a, s, g) - HM;
+    del_b = voigt(b, s, g) - HM;
 
     /* Iteration using regula falsi (Illinois variant).
      * Empirically, this takes <5 iterations to converge to FLT_EPSILON
      * and <10 iterations to converge to DBL_EPSILON.
-     * I have never seen convergence worse than k = 15.
+     * We have never seen convergence worse than k = 15.
      */
-    printf("START %25.16e %25.16e -> HM=%25.16e, approx=%25.16e\n", sigma, gamma, HM, c);
     for (k=0; k<30; k++) {
-        if (fabs(del_a-del_b) < 2 * DBL_EPSILON * HM) {
-            c = a/2+b/2;
-            printf("%25.16e %25.16e %25.16e -> %25.16e %25.16e [early]\n", a, c, b, del_a, del_b);
-            return c;
-        }
+        if (fabs(del_a-del_b) < 2 * DBL_EPSILON * HM)
+            return prefac*(a+b)/2;
 	c = (b*del_a - a*del_b) / (del_a - del_b);
-        printf("%25.16e %25.16e %25.16e -> %25.16e %25.16e\n", a, c, b, del_a, del_b);
 	if (fabs(b-a) < 2 * DBL_EPSILON * fabs(b+a))
-	    return c;
-	del_c = voigt(c, sigma, gamma) - HM;
+	    return prefac*c;
+	del_c = voigt(c, s, g) - HM;
 
 	if (del_b * del_c > 0) {
 	    b = c; del_b = del_c;
@@ -99,8 +110,8 @@ double voigt_hwhm(double sigma, double gamma)
 		del_b /= 2;
 	    side = 1;
 	} else {
-	    return c;
+	    return prefac*c;
 	}
     }
-    assert(0); /* we should never arrive here */
+    assert(0); /* One should never arrive here */
 }
