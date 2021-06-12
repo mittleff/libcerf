@@ -215,6 +215,6 @@ int main()
         result, 1e-13, cerfcx(C(1.234, 0.5678)),
         C(0.3382187479799972294747793561190487832579, -0.1116077470811648467464927471872945833154));
 
-    printf("%i/%i tests failed", result.failed, result.total);
+    printf("%i/%i tests failed\n", result.failed, result.total);
     return result.failed;
 }

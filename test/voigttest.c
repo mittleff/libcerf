@@ -45,6 +45,6 @@ int main()
     RTEST(result, 1e-12, voigt(1, .2, 5), 0.06113399719916219);
     RTEST(result, 1e-12, voigt(1, 5, .2), 0.07582140674553575);
 
-    printf("%i/%i tests failed", result.failed, result.total);
+    printf("%i/%i tests failed\n", result.failed, result.total);
     return result.failed ? 1 : 0;
 }

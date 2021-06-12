@@ -44,6 +44,6 @@ int main()
         RTEST(result, 1e-2, voigt_hwhm(1., gamma), hwhm0(1.,gamma));
     }
 
-    printf("%i/%i tests failed", result.failed, result.total);
+    printf("%i/%i tests failed\n", result.failed, result.total);
     return result.failed ? 1 : 0;
 }

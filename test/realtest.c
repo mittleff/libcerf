@@ -77,6 +77,6 @@ int main(void)
     xTest(&result, "dawson", cdawson, dawson, 1e-20, 1e-300, 1e150);
     iTest(&result, "dawson", cdawson, dawson);
 
-    printf("%i/%i tests failed", result.failed, result.total);
+    printf("%i/%i tests failed\n", result.failed, result.total);
     return result.failed;
 }

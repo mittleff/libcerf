@@ -233,6 +233,6 @@ int main()
     ZTEST(result, 1e-13, w_of_z(C(NaN, Inf)), C(NaN, NaN));
     ZTEST(result, 1e-13, w_of_z(C(Inf, NaN)), C(NaN, NaN));
 
-    printf("%i/%i tests failed", result.failed, result.total);
+    printf("%i/%i tests failed\n", result.failed, result.total);
     return result.failed;
 }

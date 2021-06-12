@@ -157,6 +157,6 @@ int main()
           -1.20000000000000000000000001800000000000000000e-42));
     ZTEST(result, 1e-13, cdawson(C(1e300, 2.4e-303)), C(5e-301, 0));
 
-    printf("%i/%i tests failed", result.failed, result.total);
+    printf("%i/%i tests failed\n", result.failed, result.total);
     return result.failed;
 }
