@@ -54,7 +54,7 @@ void widtest(result_t* result, double limit, double sigma, double gamma)
 int main()
 {
     result_t result;
-    const int N = 37;
+    const int N = 5;
     const int M = 2;
     for (int i = 0; i<=N; ++i ) {
         const double sigma = pow(10., 180*(i-N/2)/(N/2));

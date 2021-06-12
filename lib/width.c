@@ -32,6 +32,7 @@
 #include "cerf.h"
 #include <math.h>
 #include <assert.h>
+#include <stdio.h>
 
 #ifndef DBL_EPSILON
 #define DBL_EPSILON 2.2204460492503131E-16
@@ -73,8 +74,12 @@ voigt_hwhm(double sigma, double gamma)
      * and <10 iterations to converge to DBL_EPSILON.
      * I have never seen convergence worse than k = 15.
      */
+    printf("START %25.16e %25.16e -> HM=%25.16e, approx=%25.16e\n", sigma, gamma, HM, fwhm);
     for (k=0; k<30; k++) {
+        if (fabs(del_a-del_b) < 2 * DBL_EPSILON * HM)
+            return a/2+b/2;
 	c = (b*del_a - a*del_b) / (del_a - del_b);
+        printf("%25.16e %25.16e %25.16e -> %25.16e %25.16e\n", a, c, b, del_a, del_b);
 	if (fabs(b-a) < 2 * DBL_EPSILON * fabs(b+a))
 	    return c;
 	del_c = voigt(c, sigma, gamma) - HM;
