@@ -31,6 +31,7 @@
 
 #include "cerf.h"
 #include <math.h>
+#include <assert.h>
 
 #ifndef DBL_EPSILON
 #define DBL_EPSILON 2.2204460492503131E-16
@@ -39,7 +40,7 @@
 double
 voigt_hwhm(double sigma, double gamma)
 {
-    double HM, fwhm, hwhm;
+    double HM, fwhm;
     double fG, fL;
     double a, b, c;		/* 3 points used by regula falsi */
     double del_a, del_b, del_c;
@@ -51,54 +52,46 @@ voigt_hwhm(double sigma, double gamma)
     if (isnan(sigma) || isnan(gamma))
 	return NAN;
 
-    HM = voigt(0.0, sigma, gamma) / 2.0;
+    HM = voigt(0.0, sigma, gamma) / 2;
 
     /* This approximation claims accuracy of 0.02%
      * Olivero & Longbothum [1977]
      * Journal of Quantitative Spectroscopy and Radiative Transfer. 17:233
      */
-    fG = 2. * sigma * sqrt(2.*log(2.));
-    fL = 2. * gamma;
-    fwhm = 0.5346 * fL + sqrt( 0.2166*fL*fL + fG*fG);
+    fG = 2 * sigma * sqrt(2*log(2.));
+    fL = 2 * gamma;
+    fwhm = 0.5346 * fL + sqrt(0.2166*fL*fL + fG*fG);
 
     /* Choose initial points a,b that bracket the expected root */
-    a = fwhm/2. * 0.995;
-    b = fwhm/2. * 1.005;
+    a = fwhm/2 * 0.995;
+    b = fwhm/2 * 1.005;
     del_a = voigt(a, sigma, gamma) - HM;
     del_b = voigt(b, sigma, gamma) - HM;
 
     /* Iteration using regula falsi (Illinois variant).
      * Empirically, this takes <5 iterations to converge to FLT_EPSILON
      * and <10 iterations to converge to DBL_EPSILON.
+     * I have never seen convergence worse than k = 15.
      */
-    for (k=0; k<100; k++) {
+    for (k=0; k<30; k++) {
 	c = (b*del_a - a*del_b) / (del_a - del_b);
-	if (fabs(b-a) < 2. * DBL_EPSILON * fabs(b+a))
-	    break;
+	if (fabs(b-a) < 2 * DBL_EPSILON * fabs(b+a))
+	    return c;
 	del_c = voigt(c, sigma, gamma) - HM;
 
 	if (del_b * del_c > 0) {
 	    b = c; del_b = del_c;
 	    if (side < 0)
-		del_a /= 2.;
+		del_a /= 2;
 	    side = -1;
 	} else if (del_a * del_c > 0) {
 	    a = c; del_a = del_c;
 	    if (side > 0)
-		del_b /= 2.;
+		del_b /= 2;
 	    side = 1;
 	} else {
-	    break;
+	    return c;
 	}
     }
-
-    hwhm = c;
-
-    /* This should not be possible;
-     * I have never seen convergence worse than k = 15.
-     */
-    if (k > 50)
-	hwhm = NAN;
-
-    return hwhm;
+    assert(0); /* we should never arrive here */
 }
