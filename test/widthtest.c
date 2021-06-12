@@ -38,10 +38,14 @@ double hwhm0(double sigma, double gamma)
 int main()
 {
     result_t result;
-    const int N = 100000;
+    const int N = 30;
+    const int M = 30000;
     for (int i = 0; i<N; ++i ) {
-        const double gamma = pow(10., 180*(i-N/2)/N);
-        RTEST(result, 1e-2, voigt_hwhm(1., gamma), hwhm0(1.,gamma));
+        const double sigma = pow(10., 180*(i-N/2)/(N/2));
+        for (int j = 0; j<M; ++j ) {
+            const double gamma = sigma * pow(10., 17*(j-M/2)/(M/2));
+            RTEST(result, 1e-2, voigt_hwhm(sigma, gamma), hwhm0(sigma,gamma));
+        }
     }
 
     printf("%i/%i tests failed\n", result.failed, result.total);
