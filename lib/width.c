@@ -5,7 +5,7 @@
  *   Modified from code originally written for gnuplot.
  *
  * Copyright:
- *   Ethan A Merritt 2020, 2021
+ *   Ethan A Merritt 2020, 2021; Joachim Wuttke 2021
  *
  * License:
  *   Permission is hereby granted, free of charge, to any person obtaining
@@ -38,11 +38,19 @@
 #define DBL_EPSILON 2.2204460492503131E-16
 #endif
 
-double
-voigt_hwhm(double sigma, double gamma)
+/* This approximation claims accuracy of 0.02%
+ * Olivero & Longbothum [1977]
+ * Journal of Quantitative Spectroscopy and Radiative Transfer. 17:233
+ */
+double hwhm0(double sigma, double gamma)
 {
-    double HM, fwhm;
-    double fG, fL;
+    return .5*(1.06868*gamma+sqrt(0.86743*gamma*gamma+4*2*log(2)*sigma*sigma));
+}
+
+
+double voigt_hwhm(double sigma, double gamma)
+{
+    double HM;
     double a, b, c;		/* 3 points used by regula falsi */
     double del_a, del_b, del_c;
     int k;
@@ -55,17 +63,10 @@ voigt_hwhm(double sigma, double gamma)
 
     HM = voigt(0.0, sigma, gamma) / 2;
 
-    /* This approximation claims accuracy of 0.02%
-     * Olivero & Longbothum [1977]
-     * Journal of Quantitative Spectroscopy and Radiative Transfer. 17:233
-     */
-    fG = 2 * sigma * sqrt(2*log(2.));
-    fL = 2 * gamma;
-    fwhm = 0.5346 * fL + sqrt(0.2166*fL*fL + fG*fG);
-
     /* Choose initial points a,b that bracket the expected root */
-    a = fwhm/2 * 0.995;
-    b = fwhm/2 * 1.005;
+    c = hwhm0(sigma, gamma);
+    a = c * 0.995;
+    b = c * 1.005;
     del_a = voigt(a, sigma, gamma) - HM;
     del_b = voigt(b, sigma, gamma) - HM;
 
@@ -74,10 +75,13 @@ voigt_hwhm(double sigma, double gamma)
      * and <10 iterations to converge to DBL_EPSILON.
      * I have never seen convergence worse than k = 15.
      */
-    printf("START %25.16e %25.16e -> HM=%25.16e, approx=%25.16e\n", sigma, gamma, HM, fwhm);
+    printf("START %25.16e %25.16e -> HM=%25.16e, approx=%25.16e\n", sigma, gamma, HM, c);
     for (k=0; k<30; k++) {
-        if (fabs(del_a-del_b) < 2 * DBL_EPSILON * HM)
-            return a/2+b/2;
+        if (fabs(del_a-del_b) < 2 * DBL_EPSILON * HM) {
+            c = a/2+b/2;
+            printf("%25.16e %25.16e %25.16e -> %25.16e %25.16e [early]\n", a, c, b, del_a, del_b);
+            return c;
+        }
 	c = (b*del_a - a*del_b) / (del_a - del_b);
         printf("%25.16e %25.16e %25.16e -> %25.16e %25.16e\n", a, c, b, del_a, del_b);
 	if (fabs(b-a) < 2 * DBL_EPSILON * fabs(b+a))
