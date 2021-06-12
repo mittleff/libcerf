@@ -53,7 +53,7 @@ void widtest(result_t* result, double limit, double sigma, double gamma)
 
 int main()
 {
-    result_t result;
+    result_t result = {0, 0};
     const int N = 100;
     const int M = 10000;
     for (int i = 0; i<=N; ++i ) {
