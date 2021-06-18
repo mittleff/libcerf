@@ -81,6 +81,7 @@ __BEGIN_DECLS
 #define EXPORT
 #endif
 
+
 // compute w(z) = exp(-z^2) erfc(-iz), Faddeeva's scaled complex error function
 EXPORT _cerf_cmplx w_of_z(_cerf_cmplx z);
 EXPORT double im_w_of_x(double x); // special case Im[w(x)] of real x
@@ -109,10 +110,6 @@ EXPORT double dawson(double x); // special case for real x
 EXPORT double voigt(double x, double sigma, double gamma);
 // compute the full width at half maximum of the Voigt function
 EXPORT double voigt_hwhm(double sigma, double gamma);
-
-// EXPERIMENTAL
-EXPORT double cerf_experimental_imw(double x, double y);
-EXPORT double cerf_experimental_rew(double x, double y);
 
 __END_DECLS
 #endif /* __CERF_H__ */

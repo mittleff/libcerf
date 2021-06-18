@@ -26,8 +26,6 @@
 
 #include "cerf.h"
 #include "testtool.h"
-#include <math.h>
-#include <stdio.h>
 
 // excellent approximation [Olivero & Longbothum, 1977], used as starting value in voigt_hwhm
 double hwhm0(double sigma, double gamma)

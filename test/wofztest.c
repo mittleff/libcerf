@@ -26,10 +26,6 @@
 #include "cerf.h"
 #include "testtool.h"
 
-#include <float.h>
-#include <math.h>
-#include <stdio.h>
-
 const double errBound = 1e-13;
 
 int main()

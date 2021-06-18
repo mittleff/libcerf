@@ -23,11 +23,18 @@
  *   ../CHANGELOG
  */
 
+#ifdef __cplusplus
+#include <cassert>
+#include <cmath>
+using std::isfinite;
+#else
+#include <assert.h>
+#include <math.h>
+#endif
 #include "defs.h" // defines _cerf_cmplx, CMPLX, NaN, Inf
 #include <float.h>
-#include <math.h>
 #include <stdio.h>
-#include <assert.h>
+
 
 typedef struct {
     int failed;

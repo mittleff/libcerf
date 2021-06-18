@@ -29,9 +29,15 @@
  *
  */
 
-#include "cerf.h"
-#include <math.h>
+#ifdef __cplusplus
+#include <cassert>
+#include <cmath>
+using std::isnan;
+#else
 #include <assert.h>
+#include <math.h>
+#endif
+#include "cerf.h"
 
 #ifndef DBL_EPSILON
 #define DBL_EPSILON 2.2204460492503131E-16

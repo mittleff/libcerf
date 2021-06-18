@@ -53,16 +53,5 @@ int main( int argc, char **argv )
 
     printf( "%25.19g %25.19g %3i %3i\n", v[0][0], v[0][1],
             faddeeva_algorithm, faddeeva_nofterms );
-/*
-    // requires activation of lib/experimental.c
-
-    // comparison with Fourier integration
-    v[1][0] = cerf_experimental_rew(x,y);
-    v[1][1] = cerf_experimental_imw(x,y);
-    printf( "%25.19g %25.19g\n", v[1][0], v[1][1] );
-    for( int i=0; i<2; ++i )
-        printf( "%25.19g ", (v[0][i]-v[1][i])/v[1][i] );
-    printf( "\n" );
-*/
     return 0;
 }

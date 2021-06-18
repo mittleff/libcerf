@@ -26,8 +26,6 @@
 
 #include "cerf.h"
 #include "testtool.h"
-#include <math.h>
-#include <stdio.h>
 
 int main()
 {

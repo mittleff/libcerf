@@ -26,8 +26,6 @@
 #include "cerf.h"
 #include "testtool.h"
 
-const double errBound = 1e-13;
-
 // For testing the Dawson and error functions for the special case of a real argument
 
 void xTest(

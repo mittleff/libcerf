@@ -1,11 +1,7 @@
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
-if(POLICY CMP0048)
-   cmake_policy(SET CMP0048 NEW)
-endif()
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(PreventInSourceBuilds)
-include(GNUInstallDirs)
 
 if(NOT DEFINED BUILD_SHARED_LIBS)
     option(BUILD_SHARED_LIBS "Build as shared library" ON)
@@ -38,6 +34,8 @@ endif()
 
 set(CERF_SOVERSION                  1) # API version
 set(CERF_VERSION ${CERF_SOVERSION}.15) # minor version
+
+include(GNUInstallDirs)
 
 if(MSVC)
     if (NOT CERF_CPP)
