@@ -1,7 +1,9 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
-libcerf-1.16, released 12jun21:
-  - voigt_hwhm: replaced Newton's method by Illinois regula falsi (contributed by Ethan A Merritt)
+libcerf-1.16, released 18jun21:
+  - voigt_hwhm: replaced Newton's method (which failed for a rare parameter combinations)
+      by Illinois regula falsi (contributed by Ethan A Merritt)
+  - Some internal cleanup, especially of include directives
 
 libcerf-1.15, released 10jun21:
   - Use assertion in voigt_hwhm to check for impossible situations
