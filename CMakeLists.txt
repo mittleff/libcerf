@@ -73,7 +73,7 @@ include(CTest)
 
 configure_file("libcerf.pc.in" "libcerf.pc" @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libcerf.pc"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}/pkgconfig/")
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
 
 add_subdirectory(lib)
 add_subdirectory(test)

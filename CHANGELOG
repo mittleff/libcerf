@@ -1,5 +1,8 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
+libcerf-1.17, released 29jun21:
+  - Correct pkgconfig installation directory (use GNU install dirs, install to LIBDIR/pkgconfig)
+
 libcerf-1.16, released 23jun21:
   - voigt_hwhm: replaced Newton's method (which failed for rare parameter combinations)
       by Illinois regula falsi (contributed by Ethan A Merritt)
