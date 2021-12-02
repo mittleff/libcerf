@@ -49,7 +49,7 @@ install(
 include(CMakePackageConfigHelpers)
 # GNUInstallDirs "DATADIR" wrong here; CMake search path wants "share".
 set(CMAKECONFIG_INSTALL_DIR "share/cmake/cerf")
-configure_package_config_file(${cerf_SOURCE_DIR}/cmake/cerfConfig.cmake.in
+configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/cerfConfig.cmake.in
   "${CMAKE_CURRENT_BINARY_DIR}/cerfConfig.cmake"
   INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR})
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/cerfConfigVersion.cmake
