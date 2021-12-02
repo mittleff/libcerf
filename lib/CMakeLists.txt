@@ -1,6 +1,8 @@
 set(lib cerf)
+set(intf "c_interface")
 if (${CERF_CPP})
     set(lib cerfcpp)
+    set(intf "cxx_interface")
 endif()
 message(STATUS
     "libcerf/lib: build library ${lib}, CERF_CPP=${CERF_CPP}, shared=${BUILD_SHARED_LIBS}")
@@ -29,8 +31,12 @@ if(NOT MSVC)
     target_link_libraries(${lib} m)
 endif()
 
+target_include_directories(${lib} INTERFACE
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
 install(
     TARGETS ${lib}
+    EXPORT ${intf}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -39,6 +45,23 @@ install(
     FILES ${inc_files}
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     COMPONENT Headers)
+
+include(CMakePackageConfigHelpers)
+# GNUInstallDirs "DATADIR" wrong here; CMake search path wants "share".
+set(CMAKECONFIG_INSTALL_DIR "share/cmake/cerf")
+configure_package_config_file(${cerf_SOURCE_DIR}/cmake/cerfConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/cerfConfig.cmake"
+  INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR})
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/cerfConfigVersion.cmake
+  VERSION ${CERF_VERSION}
+  COMPATIBILITY SameMajorVersion)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cerfConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/cerfConfigVersion.cmake
+  DESTINATION ${CMAKECONFIG_INSTALL_DIR})
+install(EXPORT ${intf}
+  NAMESPACE "cerf::"
+  FILE "cerfTargets.cmake"
+  DESTINATION ${CMAKECONFIG_INSTALL_DIR})
 
 set(CPACK_PACKAGE_VENDOR "Forschungszentrum Jülich GmbH")
 set(CPACK_PACKAGE_VERSION ${CERF_VERSION})
