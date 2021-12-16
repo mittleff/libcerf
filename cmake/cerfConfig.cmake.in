@@ -7,10 +7,6 @@
 # ::
 #
 #   cerf_FOUND - true if cerf and all required components found on the system
-#   cerf_INCLUDE_DIRS - Directory where cerf header is located.
-#   cerf_INCLUDE_DIR - same as DIRS
-#   cerf_LIBRARIES - cerf library to link against.
-#   cerf_LIBRARY - same as LIBRARIES
 #
 #
 # Available components: shared static
@@ -83,8 +79,6 @@ endif()
 list(FIND ${PN}_FIND_COMPONENTS "C" _seek_C)
 list(FIND ${PN}_FIND_COMPONENTS "CXX" _seek_CXX)
 
-set(${PN}_DEFINITIONS USING_${PN})
-
 check_required_components(${PN})
 
 #-----------------------------------------------------------------------------
@@ -96,14 +90,10 @@ if(NOT TARGET ${PN}::${_target})
     include("${CMAKE_CURRENT_LIST_DIR}/${PN}Targets.cmake")
 
     get_property(_loc TARGET ${PN}::${_target} PROPERTY LOCATION)
-    set(${PN}_LIBRARY ${_loc})
     get_property(_ill TARGET ${PN}::${_target} PROPERTY INTERFACE_LINK_LIBRARIES)
-    set(${PN}_LIBRARIES ${_ill})
 
     get_property(_id TARGET ${PN}::${_target} PROPERTY INCLUDE_DIRECTORIES)
-    set(${PN}_INCLUDE_DIR ${_id})
     get_property(_iid TARGET ${PN}::${_target} PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-    set(${PN}_INCLUDE_DIRS ${_iid})
 
     # message("cerf::${_target}")
     # message("loc ${_loc}")
