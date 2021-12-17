@@ -32,6 +32,7 @@ if(NOT MSVC)
 endif()
 
 target_include_directories(${lib} INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 install(
