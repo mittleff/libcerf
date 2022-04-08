@@ -12,6 +12,7 @@ mac:
     - make
     - ctest --output-on-failure
     - cpack .
+    - make install
   artifacts:
     paths:
     - build/*zip
@@ -53,6 +54,7 @@ native_Debian_clang:
     - cmake -DWERROR=ON ..
     - make -j6
     - ctest -j6 --output-on-failure
+    - make install
 
 # ## Dockerized:
 #
