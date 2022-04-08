@@ -1,14 +1,14 @@
 stages:
   - build
 
-mac:
+mac10_15:
   tags:
-  - MacOS
+  - macbuild3
   stage: build
-  script:
+  script: &macbuild
     - mkdir build
     - cd build
-    - cmake .. -DCERF_CPP=ON
+    - cmake ..
     - make
     - ctest --output-on-failure
     - cpack .
@@ -17,6 +17,12 @@ mac:
     paths:
     - build/*zip
     expire_in: 10 days
+
+mac12_2:
+  tags:
+  - scgmac4
+  stage: build
+  script: *macbuild
 
 windows:
   tags:
