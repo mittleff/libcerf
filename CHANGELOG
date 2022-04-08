@@ -1,5 +1,10 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
+libcerf-2.1, released 8apr22:
+  - provide cerfConfig.cmake (contributed by Lori A. Burns and Christoph Junghans)
+  - libcerf.pc: remove hard-coded lib/
+  - version number incremented to overcome upstream problems with withdrawn release 2.0
+
 libcerf-1.17, released 29jun21:
   - Correct pkgconfig installation directory (use GNU install dirs, install to LIBDIR/pkgconfig)
 
