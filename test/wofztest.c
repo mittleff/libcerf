@@ -233,6 +233,9 @@ int main()
     ZTEST(result, 1e-13, w_of_z(C(26.99999999999999, 0)), C(0, 0.0209102719931009));
     ZTEST(result, 1e-13, w_of_z(C(27.00000000000001, 0)), C(0, 0.0209102719931009));
 
+    // Where does real part of w_of_z(real) exceed 1e-300?
+    ZTEST(result, 1e-10, w_of_z(C(26.28260884878466, 0)), C(1e-300, +0.0214818418828509));
+
     printf("%i/%i tests failed\n", result.failed, result.total);
     return result.failed;
 }
