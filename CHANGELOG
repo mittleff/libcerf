@@ -2,7 +2,9 @@
 
 libcerf-2.2, released 7nov22:
   - No longer raise underflow error in w_of_z for large real arg (contributed by Ethan Merritt)
+  - In test suite, confound zero with values close to underflow
   - Remove some invisible files that had slipped in accidentally (noticed by Christoph Junghans)
+  - Windows binary now built with Visual Studio 17 2022
 
 libcerf-2.1, released 8apr22:
   - Provide cerfConfig.cmake (contributed by Lori A. Burns and Christoph Junghans)

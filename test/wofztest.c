@@ -229,6 +229,10 @@ int main()
     ZTEST(result, 1e-13, w_of_z(C(NaN, Inf)), C(NaN, NaN));
     ZTEST(result, 1e-13, w_of_z(C(Inf, NaN)), C(NaN, NaN));
 
+    // Continuity when exp(-x^2) runs into underflow
+    ZTEST(result, 1e-13, w_of_z(C(26.99999999999999, 0)), C(0, 0.0209102719931009));
+    ZTEST(result, 1e-13, w_of_z(C(27.00000000000001, 0)), C(0, 0.0209102719931009));
+
     printf("%i/%i tests failed\n", result.failed, result.total);
     return result.failed;
 }

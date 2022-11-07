@@ -41,7 +41,8 @@ typedef struct {
     int total;
 } result_t;
 
-// Compute relative error |b-a|/|a|, handling case of NaN and Inf,
+// Compute relative error |b-a|/|b+offs|, handling case of NaN and Inf.
+// The tiny offset offs ensures a resonable return value for a=(almost underflowing), b=0.
 static double relerr(double a, double b)
 {
     if (!isfinite(a))
@@ -50,9 +51,7 @@ static double relerr(double a, double b)
         assert(isfinite(a)); // implied by the above
         return Inf;
     }
-    if (a == 0)
-        return b == 0 ? 0 : Inf;
-    return fabs((b - a) / a);
+   return fabs((b - a)) / (fabs(b) + 1e-300);
 }
 
 // Test whether real numbers 'computed' and 'expected' agree within relative error bound 'limit'
