@@ -1,9 +1,13 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
+libcerf-2.2, released 7nov22:
+  - No longer raise underflow error in w_of_z for large real arg (contributed by Ethan Merritt)
+  - Remove some invisible files that had slipped in accidentally (noticed by Christoph Junghans)
+
 libcerf-2.1, released 8apr22:
-  - provide cerfConfig.cmake (contributed by Lori A. Burns and Christoph Junghans)
-  - libcerf.pc: remove hard-coded lib/
-  - version number incremented to overcome upstream problems with withdrawn release 2.0
+  - Provide cerfConfig.cmake (contributed by Lori A. Burns and Christoph Junghans)
+  - libcerf.pc: Remove hard-coded lib/
+  - Version number incremented to overcome upstream problems with withdrawn release 2.0
 
 libcerf-1.17, released 29jun21:
   - Correct pkgconfig installation directory (use GNU install dirs, install to LIBDIR/pkgconfig)
