@@ -168,8 +168,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z)
     if (cimag(z) == 0) {
         // Purely real input, complex output.
         // Avoid floating underflow for real term of large z.
-        _cerf_cmplx Wreal = fabs(creal(z)) > 27. ? 0. :  exp(-sqr(creal(z)));
-        _cerf_cmplx Wimag = im_w_of_x(creal(z));
+        const double Wreal = fabs(creal(z)) > 27. ? 0. :  exp(-sqr(creal(z)));
+        const double Wimag = im_w_of_x(creal(z));
         return C(Wreal, Wimag);
     }
 
