@@ -29,7 +29,7 @@ windows:
   - Windows
   stage: build
   script:
-    - New-Item -ItemType "directory" -Confirm:$false -Force:$true -Name "build"
+    - mkdir -Force "build"
     - cd build
     - cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 -DCERF_CPP=ON -DLIB_MAN=OFF -DCMAKE_INSTALL_PREFIX=C:\opt\x64 -B. ..
     - cmake --build . --config Release
