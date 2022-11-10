@@ -12,7 +12,7 @@ mac10_15:
     - make
     - ctest --output-on-failure
     - cpack .
-    - make install
+    - if [ "$CI_COMMIT_REF_NAME" == "main" ]; then make install; fi
   artifacts:
     paths:
     - build/*zip
@@ -37,8 +37,8 @@ windows:
     - dir
     - dir Release
     - ctest -C Release --output-on-failure
-    - cmake --install .
     - cpack .
+    - if ("$CI_COMMIT_REF_NAME" -eq "main") { cmake --install . ; }
   artifacts:
     paths:
     - build/*zip
@@ -59,7 +59,7 @@ native_Debian_clang:
     - cmake -DWERROR=ON ..
     - make -j6
     - ctest -j6 --output-on-failure
-    - make install
+    - if [ "$CI_COMMIT_REF_NAME" == "main" ]; then make install; fi
 
 # ## Dockerized:
 #
