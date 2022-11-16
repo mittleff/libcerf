@@ -223,8 +223,8 @@ int main()
     // change of algorithm at -6.1
     RTEST(result, 1e-13, erfcx(-6.10000000003), 2.89152976642548e+16);
     RTEST(result, 1e-13, erfcx(-6.10000000001), 2.89152976571995e+16);
-    RTEST(result, 1e-13, erfcx(-6.00000000009), 8.62246310354268e+15);
-    RTEST(result, 1e-13, erfcx(-6.00000000007), 8.62246310147329e+15);
+    RTEST(result, 1e-13, erfcx(-6.09999999999), 2.89152976501441e+16);
+    RTEST(result, 1e-13, erfcx(-6.09999999997), 2.89152976430888e+16);
 
     RTEST(result, 1e-13, erfcx(-3), 16205.9888539996);
     RTEST(result, 1e-13, erfcx(-1), 5.00898008076228);
@@ -279,9 +279,13 @@ int main()
         49.999999999999, 50.000000000001,
         2e2, 3e3, 5e4, 8e5, 1e7, 5e7, 5.0000000001e7, 1e8, 1e12, 1e25, 1e100, 1e220 };
 
-    for (int i=1; i<32; ++i)
+    for (int i=1; i<32; ++i) {
+        // The test for exact equality is trivial, because for purely real
+        // argument cerfcx calls w_of_z calls erfcx.
         ZTEST(result, 1e-13, C(erfcx(X[i]), 0.), cerfcx(C(X[i], 0.)));
-
+        // Hence it is more interesting to add a small imaginary part
+        RTEST(result, 1e-8, erfcx(X[i]), creal(cerfcx(C(X[i], X[i]*1e-8))));
+    }
 
     /***************   terminate   *****************/
 

@@ -1,5 +1,8 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
+libcerf-2.3, released :
+  - Add test coverage for erfcx
+
 libcerf-2.2, released 7nov22:
   - No longer raise underflow error in w_of_z for large real arg (contributed by Ethan Merritt)
   - In test suite, confound zero with values close to underflow
