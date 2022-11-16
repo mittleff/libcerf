@@ -30,7 +30,7 @@ int main()
 {
     result_t result = {0, 0};
 
-    /***************   erf   *****************/
+    /***************   cerf   *****************/
 
     /* reference values computed with Maple */
 
@@ -134,7 +134,7 @@ int main()
         C(0.07886723099940260286824654364807981336591,
           0.01235199327873258197931147306290916629654));
 
-    /***************   erfc   *****************/
+    /***************   cerfc   *****************/
 
     /* reference values computed with Maple */
 
@@ -189,18 +189,18 @@ int main()
     ZTEST(result, 1e-13, cerfc(C(Inf, NaN)), C(NaN, NaN));
     ZTEST(result, 1e-13, cerfc(C(88, 0)), C(0, 0));
 
-    /***************   erfi   *****************/
+    /***************   cerfi   *****************/
 
-    // since erfi just calls through to erf, one test is enough
+    // since cerfi just calls through to cerf, one test is enough
     // to make sure we didn't screw up the signs or something
 
     ZTEST(
         result, 1e-15, cerfi(C(1.234, 0.5678)),
         C(1.081032284405373149432716643834106923212, 1.926775520840916645838949402886591180834));
 
-    /***************   erfcx   *****************/
+    /***************   cerfcx   *****************/
 
-    // since erfcx just calls through to w_of_z, one test is enough
+    // since cerfcx just calls through to w_of_z, one test is enough
     // to make sure we didn't screw up the signs or something
 
     // reference value computed with Maple
