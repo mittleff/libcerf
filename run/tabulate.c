@@ -26,7 +26,7 @@
 static const double R6[6] = { 1.0, 1.5, 2.2, 3.3, 4.7, 6.8 };
 
 void tabulate(double x) {
-    printf( "    RTEST(result, 1e-13, dawson(%9.1e), %24.15e);\n", x, dawson(x) );
+    printf( "    RTEST(result, 1e-13, im_w_of_x(%24.15e), %24.15e);\n", x, im_w_of_x(x) );
 }
 
 int main()
@@ -52,5 +52,13 @@ int main()
             tabulate(x);
         }
     }
+    printf("\n    // integer steps for 100/(1+x) to test each Chebychev polynomial\n");
+    for (int i=0; i<=101; ++i) {
+        printf("    // i=%i\n", i);
+        tabulate(100./(i+1e-13) - 1);
+        tabulate(100./(i+.5) - 1);
+        tabulate(100./(i+1-1e-13) - 1);
+    }
+
     return 0;
 }
