@@ -137,20 +137,16 @@ double voigt( double x, double sigma, double gamma )
             return x ? 0 : Inf;
         } else {
             // It's a pure Gaussian
-            return exp( -x*x/2/(sig*sig) ) / s2pi / sig;
+            return exp( -(x/sig)*(x/sig)/2 ) / (s2pi * sig);
         }
     } else {
         if ( sig==0 ) {
             // It's a pure Lorentzian
-            return gam / pi / (x*x + gam*gam);
+            return gam / (pi * (x*x + gam*gam));
         } else {
             // Regular case, both parameters are nonzero
-            _cerf_cmplx z = C(x,gam) / sqrt(2) / sig;
-            return creal( w_of_z(z) ) / s2pi / sig;
-            // TODO: correct and activate the following:
-//            double w = sqrt(gam*gam+sig*sig); // to work in reduced units
-//            _cerf_cmplx z = C(x/w,gam/w) / sqrt(2) / (sig/w);
-//            return creal( w_of_z(z) ) / s2pi / (sig/w);
+            _cerf_cmplx z = C(x,gam) * sqrt(.5) / sig;
+            return creal( w_of_z(z) ) / (s2pi * sig);
         }
     }
 }
