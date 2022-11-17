@@ -30,7 +30,7 @@
 
 void xTest(
     result_t* result, const char* name, _cerf_cmplx (*F)(_cerf_cmplx), double (*FRE)(double),
-    double isc, double xmin, double xmax)
+    double xmin, double xmax)
 {
     char info[30];
     const int n=10000;
@@ -39,7 +39,9 @@ void xTest(
         if (x<xmin || x>xmax)
             continue;
         snprintf(info, 30, "%s(%g)", name, x);
-        rtest(result, 1e-13, creal(F(C(x, x * isc))), FRE(x), info);
+        rtest(result, 1e-13, creal(F(C(x, 0))), FRE(x), info);
+        rtest(result, 1e-10, creal(F(C(x, x * 1e-10))), FRE(x), info);
+        rtest(result, 1e-6, creal(F(C(x, x * 1e-6))), FRE(x), info);
     }
 }
 
@@ -60,19 +62,19 @@ int main(void)
 {
     result_t result = {0, 0};
 
-    xTest(&result, "erf", cerf, erf, 1e-20, 1e-300, 1e300);
+    xTest(&result, "erf", cerf, erf, 1e-300, 1e300);
     iTest(&result, "erf", cerf, erf);
 
-    xTest(&result, "erfi", cerfi, erfi, 0, 1e-300, 1e300);
+    xTest(&result, "erfi", cerfi, erfi, 1e-300, 1e300);
     iTest(&result, "erfi", cerfi, erfi);
 
-    xTest(&result, "erfc", cerfc, erfc, 1e-20, 1e-300, 1e300);
+    xTest(&result, "erfc", cerfc, erfc, 1e-300, 1e300);
     iTest(&result, "erfc", cerfc, erfc);
 
-    xTest(&result, "erfcx", cerfcx, erfcx, 0, 1e-300, 1e300);
+    xTest(&result, "erfcx", cerfcx, erfcx, 1e-300, 1e300);
     // iTest(&result, "erfcx", cerfcx, erfcx);
 
-    xTest(&result, "dawson", cdawson, dawson, 1e-20, 1e-300, 1e150);
+    xTest(&result, "dawson", cdawson, dawson, 1e-300, 1e150);
     iTest(&result, "dawson", cdawson, dawson);
 
     printf("%i/%i tests failed\n", result.failed, result.total);
