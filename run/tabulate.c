@@ -23,8 +23,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+static const double R6[6] = { 1.0, 1.5, 2.2, 3.3, 4.7, 6.8 };
+
 void tabulate(double x) {
-    printf( "    RTEST(result, 1e-13, im_w_of_x(%25.15g), %25.15g);\n", x, im_w_of_x(x) );
+    printf( "    RTEST(result, 1e-13, dawson(%9.1e), %24.15e);\n", x, dawson(x) );
 }
 
 int main()
@@ -43,10 +45,12 @@ int main()
         tabulate(x);
     }
     printf("\n    // fine logarithmic grid\n");
-    for (double i=-3; i<=3; i += 0.2) {
-        double x = pow(10., i);
-        tabulate(-x);
-        tabulate(x);
+    for (int i=-3; i<=3; ++i) {
+        for (int j=0; j<6; ++j) {
+            double x = pow(10., i) * R6[j];
+            tabulate(-x);
+            tabulate(x);
+        }
     }
     return 0;
 }
