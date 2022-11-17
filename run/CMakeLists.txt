@@ -2,6 +2,7 @@ set(apps
     runvoigt
     runfwhm
     run_w_of_z
+    tabulate
     )
 
 foreach(app ${apps})
