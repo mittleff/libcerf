@@ -47,6 +47,7 @@
 #include "cerf.h"
 #include <math.h>
 #include "defs.h" // defines _cerf_cmplx, NaN, C, cexp, ...
+#include <stdio.h> // DEBUG
 
 /******************************************************************************/
 /* Lookup for Chebyshev polynomials for smaller |x|                           */
@@ -193,10 +194,13 @@ static double w_im_y100(double y100, double x)
     const int iy = (int) y100;
     const double t = 2*y100 - (1 + 2*iy);
 
+    printf("DEBUG x=%g -> i=%i\n", x, iy);
+
     if (iy <= 41) {
         if (iy < 16) {
+            if (iy < 0)
+                return NaN;
             const double *const lut = lut_sdi1 + (8 * iy); // 0..4 & 5..15 [8]
-            if (iy < 0) return NaN;
             return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + (lut[6] + lut[7]
                                                              * t) * t) * t) * t) * t) * t) * t;
         }
@@ -207,12 +211,12 @@ static double w_im_y100(double y100, double x)
     // iy > 41
     if (iy < 76) {
         const double *const lut = lut_sdi3 + (8 * (iy - 42)); // 42..75 [8]
-        return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + (lut[6] - lut[7]
+        return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + (lut[6] + lut[7]
                                                          * t) * t) * t) * t) * t) * t) * t;
     }
     if (iy < 97) {
         const double *const lut = lut_sdi4 + (7 * (iy - 76)); // 76..96 [7]
-        return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] - lut[6]
+        return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + lut[6]
                                                     * t) * t) * t) * t) * t) * t;
     }
     if (iy <= 100) { // iy = 97..100
