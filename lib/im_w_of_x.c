@@ -198,41 +198,37 @@ static double w_im_y100(double y100, double x)
             const double *const lut = lut_sdi1 + (8 * iy); // 0..4 & 5..15 [8]
             if (iy < 0) return NaN;
             return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + (lut[6] + lut[7]
-                   * t) * t) * t) * t) * t) * t) * t;
+                                                             * t) * t) * t) * t) * t) * t) * t;
         }
-        else
-        {
-            const double *const lut = lut_sdi2 + (9 * (iy - 16)); // 16..41 [9]
-            return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + (lut[6] +
-                   (lut[7] + lut[8] * t) * t) * t) * t) * t) * t) * t) * t;
-        }
+        const double *const lut = lut_sdi2 + (9 * (iy - 16)); // 16..41 [9]
+        return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + (lut[6] + (lut[7]
+                                            + lut[8] * t) * t) * t) * t) * t) * t) * t) * t;
     }
-    else { // (iy > 41)
-        if (iy < 76) {
-            const double *const lut = lut_sdi3 + (8 * (iy - 42)); // 42..75 [8]
-            return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + (lut[6] - lut[7]
-                   * t) * t) * t) * t) * t) * t) * t;
-        }
-        if (iy < 97) {
-            const double *const lut = lut_sdi4 + (7 * (iy - 76)); // 76..96 [7]
-            return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] - lut[6]
-                   * t) * t) * t) * t) * t) * t;
-        }
-        if (iy <= 100) { // iy = 97..100
-            // use Taylor expansion for small x (|x| <= 0.0309...)
-            //  (2/sqrt(pi)) * (x - 2/3 x^3  + 4/15 x^5  - 8/105 x^7 + 16/945 x^9)
-            const double x2 = x * x;
-            return x * (1.1283791670955125739
+    // iy > 41
+    if (iy < 76) {
+        const double *const lut = lut_sdi3 + (8 * (iy - 42)); // 42..75 [8]
+        return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + (lut[6] - lut[7]
+                                                         * t) * t) * t) * t) * t) * t) * t;
+    }
+    if (iy < 97) {
+        const double *const lut = lut_sdi4 + (7 * (iy - 76)); // 76..96 [7]
+        return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] - lut[6]
+                                                    * t) * t) * t) * t) * t) * t;
+    }
+    if (iy <= 100) { // iy = 97..100
+        // use Taylor expansion for small x (|x| <= 0.0309...)
+        //  (2/sqrt(pi)) * (x - 2/3 x^3  + 4/15 x^5  - 8/105 x^7 + 16/945 x^9)
+        const double x2 = x * x;
+        return x * (1.1283791670955125739
                     - x2 * (0.75225277806367504925
                             - x2 * (0.30090111122547001970
                                     - x2 * (0.085971746064420005629
                                             - x2 * 0.016931216931216931217))));
-        }
     }
 
-    /* Since 0 <= y100 < 101, this is only reached if x is NaN,
-       in which case we should return NaN. */
+    // Since 0 <= y100 < 101, this is only reached if x is NaN, hence we should return NaN.
     return NaN;
+
 } // w_im_y100
 
 /******************************************************************************/
@@ -261,14 +257,14 @@ double im_w_of_x(double x)
         }
         return w_im_y100(100/(1+x), x);
     }
-    else { // = -im_w_of_x(-x)
-        if (x < -45) { // continued-fraction expansion is faster
-            if (x < -5e7) // 1-term expansion, important to avoid overflow
-                return ispi / x;
-            /* 5-term expansion (rely on compiler for CSE), simplified from:
+    // remaining case x<0: -im_w_of_x(-x)
+    if (x < -45) { // continued-fraction expansion is faster
+        if (x < -5e7) // 1-term expansion, important to avoid overflow
+            return ispi / x;
+        /* 5-term expansion (rely on compiler for CSE), simplified from:
                ispi / (x-0.5/(x-1/(x-1.5/(x-2/x))))  */
-            return ispi*((x*x) * (x*x-4.5) + 2) / (x * ((x*x) * (x*x-5) + 3.75));
-        }
-        return -w_im_y100(100/(1-x), -x);
+        return ispi*((x*x) * (x*x-4.5) + 2) / (x * ((x*x) * (x*x-5) + 3.75));
     }
+    return -w_im_y100(100/(1-x), -x);
+
 } // im_w_of_z
