@@ -209,69 +209,6 @@ int main()
         result, 1e-13, cerfcx(C(1.234, 0.5678)),
         C(0.3382187479799972294747793561190487832579, -0.1116077470811648467464927471872945833154));
 
-    /***************   erfcx   *****************/
-
-    // Not checked against external reference; just status quo from libcerf-2.2.
-    // Further tests, namely erfcx vs Re(cerfcx), are in realtest.c.
-
-    // change of algorithm at -26.7
-    RTEST(result, 1e-13, erfcx(-26.7000000001), Inf);
-    RTEST(result, 1e-13, erfcx(-26.6999999999), Inf);
-
-    RTEST(result, 1e-13, erfcx(-19.5), 2.76380080745855e+165);
-    RTEST(result, 1e-13, erfcx(-12.3), 1.01260988545376e+66);
-
-    // change of algorithm at -6.1
-    RTEST(result, 1e-13, erfcx(-6.10000000003), 2.89152976642548e+16);
-    RTEST(result, 1e-13, erfcx(-6.10000000001), 2.89152976571995e+16);
-    RTEST(result, 1e-13, erfcx(-6.09999999999), 2.89152976501441e+16);
-    RTEST(result, 1e-13, erfcx(-6.09999999997), 2.89152976430888e+16);
-
-    RTEST(result, 1e-13, erfcx(-3), 16205.9888539996);
-    RTEST(result, 1e-13, erfcx(-1), 5.00898008076228);
-
-    // change of algorithm at 0
-    RTEST(result, 1e-13, erfcx(-1e-1), 1.12364335419921);
-    RTEST(result, 1e-13, erfcx(-1e-4), 1.00011284791746);
-    RTEST(result, 1e-13, erfcx(-1e-8), 1.00000001128379);
-    RTEST(result, 1e-13, erfcx(-1e-12), 1.00000000000113);
-    RTEST(result, 1e-13, erfcx(-1e-20), 1);
-    RTEST(result, 1e-13, erfcx(0), 1);
-    RTEST(result, 1e-13, erfcx(1e-20), 1);
-    RTEST(result, 1e-13, erfcx(1e-12), 0.999999999998872);
-    RTEST(result, 1e-13, erfcx(1e-8), 0.999999988716208);
-    RTEST(result, 1e-13, erfcx(1e-4), 0.999887172082539);
-    RTEST(result, 1e-13, erfcx(1e-1), 0.896456979969127);
-
-    RTEST(result, 1e-13, erfcx(1), 0.427583576155807);
-    RTEST(result, 1e-13, erfcx(3), 0.17900115118139);
-    RTEST(result, 1e-13, erfcx(6), 0.0927765678005384);
-    RTEST(result, 1e-13, erfcx(10), 0.0561409927438226);
-    RTEST(result, 1e-13, erfcx(20), 0.0281743487410513);
-    RTEST(result, 1e-13, erfcx(30), 0.0187958888614168);
-
-    // change of algorithm at 50
-    RTEST(result, 1e-13, erfcx(49.99999999999), 0.011281536265326);
-    RTEST(result, 1e-13, erfcx(50.00000000001), 0.0112815362653215);
-
-    RTEST(result, 1e-13, erfcx(1e2), 0.00564161378298943);
-    RTEST(result, 1e-13, erfcx(1e3), 0.000564189301453388);
-    RTEST(result, 1e-13, erfcx(1e4), 5.64189580726808e-05);
-    RTEST(result, 1e-13, erfcx(1e5), 5.64189583519547e-06);
-    RTEST(result, 1e-13, erfcx(1e6), 5.64189583547474e-07);
-    RTEST(result, 1e-13, erfcx(1e7), 5.64189583547753e-08);
-
-    // change of algorithm at 5e7
-    RTEST(result, 1e-13, erfcx(5e7), 1.12837916709551e-08);
-    RTEST(result, 1e-13, erfcx(5.000000000001e7), 1.12837916709529e-08);
-
-    RTEST(result, 1e-13, erfcx(1e8), 5.64189583547756e-09);
-    RTEST(result, 1e-13, erfcx(1e20), 5.64189583547756e-21);
-    RTEST(result, 1e-13, erfcx(1e40), 5.64189583547756e-41);
-    RTEST(result, 1e-13, erfcx(1e80), 5.64189583547756e-81);
-    RTEST(result, 1e-13, erfcx(1e120), 5.64189583547756e-121);
-    RTEST(result, 1e-13, erfcx(1e160), 5.64189583547756e-161);
-
     /***************   terminate   *****************/
 
     printf("%i/%i tests failed\n", result.failed, result.total);
