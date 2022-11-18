@@ -136,8 +136,8 @@ double voigt( double x, double sigma, double gamma )
             // It's kind of a delta function
             return x ? 0 : Inf;
         } else {
-            // It's a pure Gaussian
-            return exp( -(x/sig)*(x/sig)/2 ) / (s2pi * sig);
+            // It's a pure Gaussian (optimized, only 1 run-time division)
+            return exp( -0.5*(x*(1/sig))*(x*(1/sig)) ) * (1/s2pi) * (1/sig);
         }
     } else {
         if ( sig==0 ) {
