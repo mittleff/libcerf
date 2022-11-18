@@ -145,8 +145,8 @@ double voigt( double x, double sigma, double gamma )
             return gam / (pi * (x*x + gam*gam));
         } else {
             // Regular case, both parameters are nonzero
-            _cerf_cmplx z = C(x,gam) * sqrt(.5) / sig;
-            return creal( w_of_z(z) ) / (s2pi * sig);
+            _cerf_cmplx z = C(x,gam) * sqrt(.5) * (1/sig);
+            return creal( w_of_z(z) ) * (1/s2pi) * (1/sig);
         }
     }
 }
