@@ -47,7 +47,6 @@
 #include "cerf.h"
 #include <math.h>
 #include "defs.h" // defines _cerf_cmplx, NaN, C, cexp, ...
-#include <stdio.h> // DEBUG
 
 /******************************************************************************/
 /* Lookup for Chebyshev polynomials for smaller |x|                           */
@@ -178,7 +177,7 @@ static const double lut_sdi4[] = {
 };
 // clang-format on
 
-static double w_im_y100(double y100, double x)
+static double w_im_y100(const double x) // x = [0..45]
 {
     // Steven G. Johnson, October 2012.
 
@@ -191,14 +190,14 @@ static double w_im_y100(double y100, double x)
     // degree (about 1/30) compared to fitting the whole [0,1] interval
     // with a single polynomial.
 
-    const int iy = (int) y100;
+    const double y100 = 100 / (1+x);
+    const int iy = (int) y100; // im_w_of_x() gives 2..100
     const double t = 2*y100 - (1 + 2*iy);
-
-    printf("DEBUG x=%g -> i=%i\n", x, iy);
-
+    //printf("DEBUG x=%g -> i=%i\n", x, iy);
+    
     if (iy <= 41) {
         if (iy < 16) {
-            if (iy < 0)
+            if (x != x) // isnan(x) == (x!=x),  0 = (int)NAN
                 return NaN;
             const double *const lut = lut_sdi1 + (8 * iy); // 0..4 & 5..15 [8]
             return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + (lut[6] + lut[7]
@@ -219,16 +218,7 @@ static double w_im_y100(double y100, double x)
         return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + lut[6]
                                                     * t) * t) * t) * t) * t) * t;
     }
-    if (iy <= 100) { // iy = 97..100
-        // use Taylor expansion for small x (|x| <= 0.0309...)
-        //  (2/sqrt(pi)) * (x - 2/3 x^3  + 4/15 x^5  - 8/105 x^7 + 16/945 x^9)
-        const double x2 = x * x;
-        return x * (1.1283791670955125739
-                    - x2 * (0.75225277806367504925
-                            - x2 * (0.30090111122547001970
-                                    - x2 * (0.085971746064420005629
-                                            - x2 * 0.016931216931216931217))));
-    }
+    // should never happen, see use Taylor expansion in im_w_of_x()
 
     // Since 0 <= y100 < 101, this is only reached if x is NaN, hence we should return NaN.
     return NaN;
@@ -241,7 +231,6 @@ static double w_im_y100(double y100, double x)
 
 double im_w_of_x(double x)
 {
-
     // Steven G. Johnson, October 2012.
 
     // Uses methods similar to the erfcx calculation:
@@ -250,25 +239,26 @@ double im_w_of_x(double x)
     // and finally a Taylor expansion for |x|<0.01.
 
     const double ispi = 0.56418958354775628694807945156; // 1 / sqrt(pi)
+    const double ax = fabs(x); // very fast
 
-    if (x >= 0) {
-        if (x > 45) { // continued-fraction expansion is faster
-            if (x > 5e7) // 1-term expansion, important to avoid overflow
-                return ispi / x;
-            /* 5-term expansion (rely on compiler for CSE), simplified from:
-               ispi / (x-0.5/(x-1/(x-1.5/(x-2/x))))  */
-            return ispi*((x*x) * (x*x-4.5) + 2) / (x * ((x*x) * (x*x-5) + 3.75));
-        }
-        return w_im_y100(100/(1+x), x);
-    }
-    // remaining case x<0: -im_w_of_x(-x)
-    if (x < -45) { // continued-fraction expansion is faster
-        if (x < -5e7) // 1-term expansion, important to avoid overflow
+    if (ax > 45) { // continued-fraction expansion is faster
+        if (ax > 5e7) // 1-term expansion, important to avoid overflow
             return ispi / x;
         /* 5-term expansion (rely on compiler for CSE), simplified from:
                ispi / (x-0.5/(x-1/(x-1.5/(x-2/x))))  */
         return ispi*((x*x) * (x*x-4.5) + 2) / (x * ((x*x) * (x*x-5) + 3.75));
     }
-    return -w_im_y100(100/(1-x), -x);
+    
+    if (ax < 0.03092783506) { // (1/0.97)-1 + eps
+        // use Taylor expansion for small x (|x| <= 0.0309...)
+        //  (2/sqrt(pi)) * (x - 2/3 x^3  + 4/15 x^5  - 8/105 x^7 + 16/945 x^9)
+        const double x2 = x * x;
+        return x * (1.1283791670955125739
+                - x2 * (0.75225277806367504925
+                        - x2 * (0.30090111122547001970
+                                - x2 * (0.085971746064420005629
+                                        - x2 * 0.016931216931216931217))));
+    }
+    return (x >= 0) ? w_im_y100(x) : -w_im_y100(-x); // f(0.031..45)
 
 } // im_w_of_z
