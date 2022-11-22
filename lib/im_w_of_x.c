@@ -193,11 +193,10 @@ static double w_im_y100(const double x) // x = [0..45]
     const double y100 = 100 / (1+x);
     const int iy = (int) y100; // im_w_of_x() gives 2..100
     const double t = 2*y100 - (1 + 2*iy);
-    //printf("DEBUG x=%g -> i=%i\n", x, iy);
     
     if (iy <= 41) {
         if (iy < 16) {
-            if (x != x) // isnan(x) == (x!=x),  0 = (int)NAN
+            if (isnan(x))
                 return NaN;
             const double *const lut = lut_sdi1 + (8 * iy); // 0..4 & 5..15 [8]
             return lut[0] + (lut[1] + (lut[2] + (lut[3] + (lut[4] + (lut[5] + (lut[6] + lut[7]
@@ -220,7 +219,7 @@ static double w_im_y100(const double x) // x = [0..45]
     }
     // should never happen, see use Taylor expansion in im_w_of_x()
 
-    // Since 0 <= y100 < 101, this is only reached if x is NaN, hence we should return NaN.
+    // Since 0 <= y100 < 101, this is only reached if x < 0, hence we should return NaN.
     return NaN;
 
 } // w_im_y100
