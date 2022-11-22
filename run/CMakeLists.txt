@@ -3,6 +3,7 @@ set(apps
     runfwhm
     run_w_of_z
     tabulate
+    bigloop
     )
 
 foreach(app ${apps})
