@@ -1,6 +1,7 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
 libcerf-2.3, released :
+  - Fix compiler flags; use -O3 for Release
   - Add test coverage for erfcx
 
 libcerf-2.2, released 7nov22:
