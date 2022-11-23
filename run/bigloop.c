@@ -18,18 +18,38 @@
  *   http://apps.jcns.fz-juelich.de/libcerf
  */
 
+/*
+   Prevent temperature dependent variation of processor frequency.
+   Under Windows:
+       set SpeedStep and Turbo(boost).
+   Under Linux:
+       echo "1" > /sys/devices/system/cpu/intel_pstate/no_turbo
+*/
+
 #include "cerf.h"
 #include <stdio.h>
 #define size_t long int
 
 int main()
 {
-    const size_t N = (size_t)1e9;
-    const double step = 1./N;
+    const size_t N = 1<<29; // number of function calls
+    const size_t n = N>>7;  // number of sweeps through the x range
     double sum = 0;
 
-    for (size_t i=0; i<N; ++i)
-        sum += im_w_of_x(i*step*40);
-    printf("%g\n", sum/N);
-    return 0;
+    /* We run n times through the range x=0..1, each time with slightly different x values.
+       This is intended to prevent the function under test from keeping code for nearby x values
+       in the L1 cache.
+       To scan one single time in tiny steps through the range x=0..1, just exchange the order
+       of the following two for loops.
+    */
+
+    for (size_t j=0; j<n; ++j) {
+        for (size_t i=0; i<N; i += n) {
+            const double x = (i+j) * (1.0/N);
+            sum += erfcx(x*2.);
+            sum += erfcx(x*10.);
+            sum += erfcx(x*50.);
+        }
+    }
+    return (int)sum;
 }
