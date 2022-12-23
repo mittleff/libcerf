@@ -7,6 +7,7 @@ libcerf-2.3, released :
   - Add test coverage for erfcx, dawson, im_w_of_x (against nearby complex and status quo)
   - Avoid some divisions in function voigt (suggested by Alexander Kleinsorge)
   - Accelerate lookup in erfcx, im_w_of_x (avoid long switch, contributed by Alexander Kleinsorge)
+  - Work around clang bug https://github.com/llvm/llvm-project/issues/59681 (0+I*Inf->NaN)
 
 libcerf-2.2, released 7nov22:
   - No longer raise underflow error in w_of_z for large real arg (contributed by Ethan Merritt)

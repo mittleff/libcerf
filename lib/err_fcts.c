@@ -67,6 +67,11 @@ _cerf_cmplx cerfcx(_cerf_cmplx z)
     // the complex underflow-compensated complementary error function,
     // trivially related to Faddeeva's w_of_z.
 
+#if defined(__clang_major__)
+    // Work around clang bug: creal(0+I*inf)=>NaN
+    if (cimag(z)==0)
+        return erfcx(creal(z));
+#endif
     return w_of_z(C(-cimag(z), creal(z)));
 }
 
