@@ -161,11 +161,13 @@ _cerf_cmplx w_of_z(_cerf_cmplx z)
     // Steven G. Johnson, October 2012.
 
     if (creal(z) == 0.0) {
+        faddeeva_algorithm = 400;
         // Purely imaginary input, purely real output.
         // However, use creal(z) to give correct sign of 0 in cimag(w).
         return C(erfcx(cimag(z)), creal(z));
     }
     if (cimag(z) == 0) {
+        faddeeva_algorithm = 500;
         // Purely real input, complex output.
         // Avoid floating underflow for real term of large z.
         const double Wreal = fabs(creal(z)) > 27. ? 0. :  exp(-sqr(creal(z)));
