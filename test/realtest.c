@@ -51,11 +51,11 @@ void iTest(result_t* result, const char* name, _cerf_cmplx (*F)(_cerf_cmplx), do
 {
     char info[30];
     snprintf(info, 30, "%s(Inf)", name);
-    rtest(result, 1e-13, FRE(Inf), creal(F(C(Inf, 0.))), info );
+    rtest(result, 1e-13, creal(F(C(Inf, 0.))), FRE(Inf), info );
     snprintf(info, 30, "%s(-Inf)", name);
-    rtest(result, 1e-13, FRE(-Inf), creal(F(C(-Inf, 0.))), info);
+    rtest(result, 1e-13, creal(F(C(-Inf, 0.))), FRE(-Inf), info);
     snprintf(info, 30, "%s(NaN)", name);
-    rtest(result, 1e-13, FRE(NaN), creal(F(C(NaN, 0.))), info);
+    rtest(result, 1e-13, creal(F(C(NaN, 0.))), FRE(NaN), info);
 }
 
 int main(void)
