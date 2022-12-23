@@ -6,6 +6,7 @@ libcerf-2.3, released :
        PACKAGE MAINTAINERS: use -DPORTABLE=ON to override this !!
   - Add test coverage for erfcx, dawson, im_w_of_x (against nearby complex and status quo)
   - Avoid some divisions in function voigt (suggested by Alexander Kleinsorge)
+  - Accelerate lookup in erfcx, im_w_of_x (avoid long switch, contributed by Alexander Kleinsorge)
 
 libcerf-2.2, released 7nov22:
   - No longer raise underflow error in w_of_z for large real arg (contributed by Ethan Merritt)
