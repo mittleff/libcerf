@@ -72,7 +72,7 @@ int main(void)
     iTest(&result, "erfc", cerfc, erfc);
 
     xTest(&result, "erfcx", cerfcx, erfcx, 1e-300, 1e300);
-    // iTest(&result, "erfcx", cerfcx, erfcx);
+    iTest(&result, "erfcx", cerfcx, erfcx);
 
     xTest(&result, "dawson", cdawson, dawson, 1e-300, 1e150);
     iTest(&result, "dawson", cdawson, dawson);
