@@ -46,9 +46,9 @@ int main()
     for (size_t j=0; j<n; ++j) {
         for (size_t i=0; i<N; i += n) {
             const double x = (i+j) * (1.0/N);
-            sum += erfcx(x*2.);
-            sum += erfcx(x*10.);
-            sum += erfcx(x*50.);
+            sum += im_w_of_x(x*2.);
+            sum += im_w_of_x(x*10.);
+            sum += im_w_of_x(x*50.);
         }
     }
     return (int)sum;
