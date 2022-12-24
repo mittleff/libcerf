@@ -44,10 +44,10 @@ windows:
     - build/*zip
     expire_in: 10 days
 
-native_Debian_clang:
-  tags: &native
+Debian_clang:
+  tags:
   - Debian
-  before_script: &debian_clang
+  before_script:
     - export CC=clang; export CXX=clang++
     - cmake --version
     - clang --version
@@ -61,109 +61,18 @@ native_Debian_clang:
     - ctest -j6 --output-on-failure
     - if [ "$CI_COMMIT_REF_NAME" == "main" ]; then make install; fi
 
-# ## Dockerized:
-#
-# debS_clang:
-#   tags: &unix
-#   - Linux
-#   image: debian:stable
-#   before_script: &debian_clang
-#     - apt-get -y update
-#     - apt-get -y upgrade
-#     - apt-get -y install cmake perl
-#     - apt-get -y install clang
-#   stage: build
-#   script: &scr
-#     - mkdir build
-#     - cd build
-#     - cmake -DWERROR=ON ..
-#     - make
-#     - ctest --output-on-failure
-#
-# debS_gcc:
-#   tags: *unix
-#   image: debian:stable
-#   before_script: &debian_gcc
-#     - apt-get -y update
-#     - apt-get -y upgrade
-#     - apt-get -y install cmake perl
-#     - apt-get -y install g++
-#   stage: build
-#   script: *scr
-#
-# debT_clang:
-#   tags: *unix
-#   image: debian:testing
-#   before_script: *debian_clang
-#   stage: build
-#   script: *scr
-#
-# debT_gcc:
-#   tags: *unix
-#   image: debian:testing
-#   before_script: *debian_gcc
-#   stage: build
-#   script: *scr
-#
-# debU_gcc:
-#   tags: *unix
-#   image: debian:unstable
-#   before_script: *debian_gcc
-#   stage: build
-#   script: *scr
-#
-# debU_clang:
-#   tags: *unix
-#   image: debian:unstable
-#   before_script: *debian_clang
-#   stage: build
-#   script: *scr
-#
-# suse_gcc:
-#   tags: *unix
-#   image: opensuse/tumbleweed
-#   # rolling release with infinite life time
-#   before_script:
-#     - zypper -n patch || echo "do it again"
-#     - zypper -n patch
-#     - zypper -n ref
-#     - zypper -n up
-#     - zypper -n dup
-#     - zypper -n in cmake perl
-#     - zypper -n in gcc
-#   stage: build
-#   script: *scr
-#
-# centos8_clang:
-#   tags: *unix
-#   image: centos:centos8
-#   before_script:
-#     - yum -y update
-#     - yum -y install epel-release
-#     - yum repolist
-#     - yum -y install make cmake perl
-#     - yum -y install clang gcc glibc-devel
-#     - export CC=/usr/bin/clang
-#     - cmake --version
-#     - ctest --version
-#     - cpack --version
-#   stage: build
-#   script: *scr
-#
-# centos7_gcc:
-#   tags: *unix
-#   image: centos:centos7
-#   before_script:
-#     - yum -y update
-#     - yum -y install epel-release
-#     - yum repolist
-#     - yum -y install make cmake3 perl
-#     - yum -y install gcc
-#     - cmake3 --version
-#     - ctest3 --version
-#     - cpack3 --version
-#     - ln -s /usr/bin/cmake3 /usr/bin/cmake
-#     - ln -s /usr/bin/ctest3 /usr/bin/ctest
-#     - ln -s /usr/bin/cpack3 /usr/bin/cpack
-#   stage: build
-#   script: *scr
+Debian_gcc:
+  tags:
+  - Debian
+  before_script: &debian_clang
+    - export CC=gcc; export CXX=g++
+    - cmake --version
+    - clang --version
+  stage: build
+  script:
+    - pwd && ls
+    - mkdir build
+    - cd build
+    - cmake -DWERROR=ON ..
+    - make -j6
+    - ctest -j6 --output-on-failure
