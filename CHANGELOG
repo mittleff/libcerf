@@ -1,9 +1,10 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
-libcerf-2.3, released :
+libcerf-2.3, released 10jan23:
   - Fix compiler flags; use -O3 for Release
-  - Under gcc, use -march=native.
-       PACKAGE MAINTAINERS: use -DPORTABLE=ON to override this !!
+    - Introduce CERF_COMPILE_OPTIONS to let users overwrite the hard-coded compile options
+  - Under gcc, use -march=native
+    - PACKAGE MAINTAINERS: use -DPORTABLE=ON to override this !!
   - Add test coverage for erfcx, dawson, im_w_of_x (against nearby complex and status quo)
   - Avoid some divisions in function voigt (suggested by Alexander Kleinsorge)
   - Accelerate lookup in erfcx, im_w_of_x (avoid long switch, contributed by Alexander Kleinsorge)
