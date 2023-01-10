@@ -37,6 +37,9 @@ set(CERF_VERSION ${CERF_SOVERSION}.2) # minor version
 
 include(GNUInstallDirs)
 
+SET(CERF_COMPILE_OPTIONS "" CACHE
+    STRING "User-supplied compiler options, will be appended to hard-coded ones. Not for Windows.")
+
 if(MSVC)
     if (NOT CERF_CPP)
         message(FATAL_ERROR "Under MSVC, only CERF_CPP=ON is supported")
@@ -55,6 +58,9 @@ if(MSVC)
     endif()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+elseif(CERF_COMPILE_OPTIONS)
+    add_compile_options(${CERF_COMPILE_OPTIONS})
 
 else()
     option(PEDANTIC "Compile with pedantic warnings" ON)
