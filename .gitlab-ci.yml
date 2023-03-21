@@ -1,14 +1,15 @@
 stages:
   - build
 
-mac10_15:
+mac_x64:
   tags:
-  - macbuild3
+  - mac_x64
   stage: build
   script: &macbuild
+    - OPTDIR=/Users/Shared/Software
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake -DCMAKE_INSTALL_PREFIX="$OPTDIR" -DCMAKE_BUILD_TYPE=Release -S..
     - make
     - ctest --output-on-failure
     - cpack .
@@ -18,9 +19,9 @@ mac10_15:
     - build/*zip
     expire_in: 10 days
 
-mac12_2:
+mac_arm:
   tags:
-  - scgmac4
+  - mac_arm
   stage: build
   script: *macbuild
 
