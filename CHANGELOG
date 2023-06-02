@@ -1,5 +1,8 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
+libcerf-2.4, release date not yet set:
+  - CMake runtime destination corrected (bin, not lib)
+
 libcerf-2.3, released 10jan23:
   - Fix compiler flags; use -O3 for Release
     - Introduce CERF_COMPILE_OPTIONS to let users overwrite the hard-coded compile options
