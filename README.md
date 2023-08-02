@@ -67,12 +67,12 @@ The library has been developed using gcc-4.7. Reports about successful compilati
 ## Binary packages
 
   * Linux:
-    * [rpm package](https://build.opensuse.org/package/show/science/libcerf) by Christoph Junghans
-    * [Gentoo package](http://packages.gentoo.org/package/sci-libs/libcerf) by Christoph Junghans
     * [Debian package](https://packages.debian.org/jessie/libs/libcerf1) by Eugen Wintersberger
+    * [Gentoo package](http://packages.gentoo.org/package/sci-libs/libcerf) by Christoph Junghans
+    * [rpm package](https://build.opensuse.org/package/show/science/libcerf) by Christoph Junghans
   * OS X:
-    * [MacPorts::libcerf](http://www.macports.org/ports.php?by=name&substr=libcerf), by Mojca Miklavec
     * [Homebrew/homebrew-science/libcerf.rb](https://formulae.brew.sh/formula/libcerf), by Roman Garnett
+    * [MacPorts::libcerf](http://www.macports.org/ports.php?by=name&substr=libcerf), by Mojca Miklavec
   * Cross platform:
     * [vcpkg CMake packager](https://github.com/microsoft/vcpkg/tree/master/ports/libcerf), by Alexander Täschner
 
