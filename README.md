@@ -67,7 +67,7 @@ The library has been developed using gcc-4.7. Reports about successful compilati
 ## Binary packages
 
   * Linux:
-    * [Debian package](https://packages.debian.org/jessie/libs/libcerf1) by Eugen Wintersberger
+    * [Debian package](https://buildd.debian.org/status/package.php?p=bornagain) by Eugen Wintersberger
     * [Gentoo package](http://packages.gentoo.org/package/sci-libs/libcerf) by Christoph Junghans
     * [rpm package](https://build.opensuse.org/package/show/science/libcerf) by Christoph Junghans
   * OS X:
