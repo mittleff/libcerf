@@ -1,7 +1,8 @@
 set(apps
-    runvoigt
-    runfwhm
-    run_w_of_z
+    run_fwhm
+    run_imwx
+    run_voigt
+    run_wofz
     tabulate
     bigloop
     )

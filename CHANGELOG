@@ -1,6 +1,7 @@
 == Revision history of libcerf, maintained by Joachim Wuttke ==
 
 libcerf-2.5
+  - Reworked numerics of im_w_of_x to achieve an accuracy of 4 epsilon.
   - Minor optimization of width.c (contributed by Alexander Kleinsorge)
   - For arbitrary numeric constants, choose powers of 2 (suggested by Alexander Kleinsorge)
 
