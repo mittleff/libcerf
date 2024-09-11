@@ -73,6 +73,11 @@ def test(asu, bsu, C):
             raise Exception("test failed: i=%i t=%e x=%+22.18f yr=%f err=%+22.18f relerr=%e\n%s" % (i, t, x, yr, ye-yr, r, msg))
         mp.dps = 48
 
+def subrange(a, b, S, s):
+    asu = ((S-s)*a + s*b) / S
+    bsu = ((S-s-1)*a + (s+1)*b) / S
+    return (asu, bsu)
+
 def polynomial_coefs(C):
     """
     Converts Chebyshev to power-series coefficients for faster computation in the final C code.
@@ -123,13 +128,16 @@ def print_clenshaw_code(irange, a, b, C, Nout):
     print("    static const int nSubranges = %i;" % (len(C)))
     print(f"    static const double invSubwidth = nSubranges / (bCheb{irange} - aCheb{irange});")
     print("    static const double ChebCoeffs[%i * %i] = {" % (len(C), Nout+1))
-    for Cs in C:
+    S = len(C)
+    for s in range(S):
+        Cs = C[s]
         print("       ", end="")
         for c in Cs:
             print(" %+22.16e," % c, end="")
         for i in range(len(Cs), Nout+1):
             print(" 0,", end="")
-        print("")
+        asu, bsu = subrange(a, b, S, s)
+        print(" // x in (%g..%g)" % (asu, bsu))
     print("    };")
     print(f"    const int s = (int)((x-aCheb{irange})*invSubwidth); // index of subrange")
     print("    faddeeva_nofterms = s;")
@@ -154,14 +162,15 @@ def print_powerseries_code(irange, a, b, C, Nout):
     print("    static const int nSubranges = %i;" % (len(C)))
     print(f"    static const double invSubwidth = nSubranges / (bCheb{irange} - aCheb{irange});")
     print("    static const double Coeffs[%i * %i] = {" % (len(C), Nout+1))
-    for Cs in C:
-        P = polynomial_coefs(Cs)
+    for s in range(len(C)):
+        P = polynomial_coefs(C[s])
         print("       ", end="")
         for p in P:
             print(" %+22.16e," % p, end="")
         for i in range(len(P), Nout+1):
             print(" 0,", end="")
-        print("")
+        asu, bsu = subrange(a, b, len(C), s)
+        print(" // x in (%g..%g)" % (asu, bsu))
     print("    };")
     print(f"    const int s = (int)((x-aCheb{irange})*invSubwidth); // index of subrange")
     print("    faddeeva_nofterms = s;")
@@ -186,8 +195,7 @@ def chebcoef(irange, a, b, S):
     C = [[0 for n in range(Nout+1)] for s in range(S)]
 
     for s in range(S):
-        asu = ((S-s)*a + s*b) / S
-        bsu = ((S-s-1)*a + (s+1)*b) / S
+        asu, bsu = subrange(a, b, S, s)
 
         halfrange = (bsu - asu) / 2
         center = (bsu + asu) / 2
