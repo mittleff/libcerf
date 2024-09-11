@@ -27,47 +27,50 @@ def highprecision_imwx(x):
             raise Exception(f"mpmath inaccurate")
     return fz.imag
 
-def cheb(x, C, N):
+def cheb(t, C, N):
     """
-    Evaluates Chebyshev series at point x.
+    Evaluates Chebyshev series at point t (between -1 and +1).
     In contrast to our final C code, we here use the Clenshaw algorithm
     [e.g. Oliver, J Inst Maths Applics 20, 379 (1977].
     """
     u2 = 0
     u1 = C[N]
     for n in reversed(range(1,N)):
-        u = 2*x*u1 - u2 + C[n]
+        u = 2*t*u1 - u2 + C[n]
         u2 = u1
         u1 = u
-    return x*u1 - u2 + C[0]
+    return t*u1 - u2 + C[0]
 
 def test(asu, bsu, C):
     """
     Checks our Chebyshev interpolant against the target function,
-    for lots of random points within given subrange.
+    for lots of points within given subrange.
     """
     N = len(C) - 1
     halfrange = (bsu - asu) / 2
     center = (bsu + asu) / 2
     NT = 316 # NT+1 should be incommensurate with N+1
     for i in range(NT+1):
-        x = cos(i*pi/NT)
-        yr = highprecision_imwx(center+halfrange*x)
+        t = cos(i*pi/NT)
+        x = center+halfrange*t
+        yr = highprecision_imwx(x)
         mp.dps = 16
-        ye = cheb(x, C, N)
+        t = mpf(t)
+        C = [mpf(c) for c in C]
+        ye = cheb(t, C, N)
         r = abs((ye-yr)/yr)
         if r > 1.12e-16:
             u2 = 0
             u1 = C[N]
             msg = "%2i %+22.18f %+22.18f \n" % (N, C[N], u1)
             for n in reversed(range(1,N)):
-                u = 2*x*u1 - u2 + C[n]
+                u = 2*t*u1 - u2 + C[n]
                 msg += "%2i %+22.18f %+22.18f \n" % (n, C[n], u)
                 u2 = u1
                 u1 = u
-            msg += "%2i %+22.18f %+22.18f \n" % (0, C[0], x*u1 - u2 + C[0])
+            msg += "%2i %+22.18f %+22.18f \n" % (0, C[0], t*u1 - u2 + C[0])
             msg += "%2c %22c %+22.18f \n" % (' ', ' ', yr)
-            raise Exception("test failed: i=%i x=%e yr=%f err=%+22.18f relerr=%e\n%s" % (i, x, yr, ye-yr, r, msg))
+            raise Exception("test failed: i=%i t=%e x=%+22.18f yr=%f err=%+22.18f relerr=%e\n%s" % (i, t, x, yr, ye-yr, r, msg))
         mp.dps = 48
 
 def polynomial_coefs(C):
