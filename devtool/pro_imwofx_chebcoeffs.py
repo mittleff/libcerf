@@ -56,21 +56,21 @@ def test(asu, bsu, C):
         yr = highprecision_imwx(x)
         mp.dps = 16
         t = mpf(t)
-        C = [mpf(c) for c in C]
-        ye = cheb(t, C, N)
+        CD = [mpf("%+21.16e" % c) for c in C]
+        ye = cheb(t, CD, N)
         r = abs((ye-yr)/yr)
-        if r > 1.12e-16:
+        if r > 2.24e-16:
             u2 = 0
-            u1 = C[N]
-            msg = "%2i %+22.18f %+22.18f \n" % (N, C[N], u1)
+            u1 = CD[N]
+            msg = "%2i %+21.17f %+21.17f %+21.17f \n" % (N, CD[N], CD[N]-C[N], u1)
             for n in reversed(range(1,N)):
-                u = 2*t*u1 - u2 + C[n]
-                msg += "%2i %+22.18f %+22.18f \n" % (n, C[n], u)
+                u = 2*t*u1 - u2 + CD[n]
+                msg += "%2i %+21.17f %+21.17f %+21.17f \n" % (n, C[n], CD[n]-C[n], u)
                 u2 = u1
                 u1 = u
-            msg += "%2i %+22.18f %+22.18f \n" % (0, C[0], t*u1 - u2 + C[0])
-            msg += "%2c %22c %+22.18f \n" % (' ', ' ', yr)
-            raise Exception("test failed: i=%i t=%e x=%+22.18f yr=%f err=%+22.18f relerr=%e\n%s" % (i, t, x, yr, ye-yr, r, msg))
+            msg += "%2i %+21.17f %+21.17f %+21.17f \n" % (0, CD[0], CD[0]-C[0], t*u1 - u2 + CD[0])
+            msg += "%46c %+21.17f \n" % (' ', yr)
+            raise Exception("test failed: i=%i t=%e x=%+21.17f yr=%f err=%+21.17f relerr=%e\n%s" % (i, t, x, yr, ye-yr, r, msg))
         mp.dps = 48
 
 def subrange(a, b, S, s):
