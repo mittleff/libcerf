@@ -39,4 +39,5 @@ man/*.html
 # executables
 
 build/
+debug/
 __pycache__
