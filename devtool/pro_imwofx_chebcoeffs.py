@@ -52,11 +52,23 @@ def test(asu, bsu, C):
     NT = 316 # NT+1 should be incommensurate with N+1
     for i in range(NT+1):
         x = cos(i*pi/NT)
-        ye = cheb(x, C, N)
         yr = highprecision_imwx(center+halfrange*x)
+        mp.dps = 16
+        ye = cheb(x, C, N)
         r = abs((ye-yr)/yr)
         if r > 1.12e-16:
-            raise Exception("test failed: i=%i x=%e yr=%f relerr=%e" % (i, x, yr, r))
+            u2 = 0
+            u1 = C[N]
+            msg = "%2i %+22.18f %+22.18f \n" % (N, C[N], u1)
+            for n in reversed(range(1,N)):
+                u = 2*x*u1 - u2 + C[n]
+                msg += "%2i %+22.18f %+22.18f \n" % (n, C[n], u)
+                u2 = u1
+                u1 = u
+            msg += "%2i %+22.18f %+22.18f \n" % (0, C[0], x*u1 - u2 + C[0])
+            msg += "%2c %22c %+22.18f \n" % (' ', ' ', yr)
+            raise Exception("test failed: i=%i x=%e yr=%f err=%+22.18f relerr=%e\n%s" % (i, x, yr, ye-yr, r, msg))
+        mp.dps = 48
 
 def polynomial_coefs(C):
     """
