@@ -12,7 +12,7 @@ mp.dps = 48
 mp.pretty = True
 
 tuning = True
-final = True
+final = False # Extra checks, to be turned on in final production run
 
 def dawson_kernel(t):
     return exp(t**2)
@@ -21,6 +21,7 @@ def highprecision_imwx(x):
     fz = exp(-x**2)*erfc(mpc(0, -x))
     result = fz.imag
     if final:
+        # Check mpmath-computed reference value against mpmath-based brute-force integration
         r2 = 2/sqrt(pi) * exp(-x**2) * quad(dawson_kernel, [0, x])
         if abs(result-r2)/result > 1e-17:
             raise Exception(f"mpmath inaccurate")
