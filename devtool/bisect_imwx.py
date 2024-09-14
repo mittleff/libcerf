@@ -4,7 +4,7 @@
 Check correctness of im_w_of_x, especially at argument values where the algorithm changes.
 """
 
-import subprocess
+import subprocess, sys
 from mpmath import *
 
 mp.dps = 48
@@ -25,15 +25,19 @@ def compute_at(r):
     return cerf_imwx(r)
 
 def check_at(locus, r):
+    global mode, worst_x, worst_relerr
     rr, f, a , n = compute_at(r)
-    f2 = highprecision_imwx(r)
+    f2 = highprecision_imwx(rr)
     F = '%2i %3i %3i  %12g %12g  %8e'
-    #if abs(wr2-wr) > 3e-15 * wr2:
-    print(F % (locus, a, n, r, f, abs(f2-f)/f2))
+    relerr = abs(f2-f)/f2
+    if relerr > worst_relerr:
+        worst_x = rr
+        worst_relerr = relerr
+    if 't' in mode:
+        print(F % (locus, a, n, rr, f, relerr))
 
 def bisect(r0, a0, n0, r2, a2, n2):
     if abs(r2-r0)<2e-15*(abs(r0)+abs(r2)):
-        # print(f'jump {a0}/{n0} -> {a2}/{n2} after {r0}')
         check_at(-1, r0)
         check_at(1, r2)
         return
@@ -45,13 +49,26 @@ def bisect(r0, a0, n0, r2, a2, n2):
         bisect(r1, a1, n1, r2, a2, n2)
 
 if __name__ == '__main__':
-    global s
+    global mode, worst_x, worst_relerr
+    worst_relerr = 0
+    worst_x = 0
+
+    if len(sys.argv)<5:
+        print(f"Usage: {sys.argv[0]} <mode> <N> <from> <to>")
+        print(f"   where <mode> is any of t (tabulate) w(print_worst)")
+        sys.exit(-1)
+    mode = sys.argv[1]
+    Ni = int(sys.argv[2])
+    x_fr = float(sys.argv[3])
+    x_to = float(sys.argv[4])
+    step = log10(x_to/x_fr)/(Ni-1)
+
     r0 = None
     a0 = None
     n0 = None
-    Ni = 13241
+
     for i in range(Ni):
-        r2 = mpf('10')**((i-Ni/2.)*2/Ni*8)
+        r2 = x_fr * 10**(i*step)
         wr, wi, a2, n2 = compute_at(r2)
         check_at(0, r2)
         if i > 0 and (a2 != a0 or n2 != n0):
@@ -59,3 +76,5 @@ if __name__ == '__main__':
         r0 = r2
         a0 = a2
         n0 = n2
+    if 'w' in mode:
+        print("worst: at x=%21.15g relerr=%8e" % (worst_x, worst_relerr))
