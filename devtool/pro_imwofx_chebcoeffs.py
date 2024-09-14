@@ -48,13 +48,14 @@ def test(asu, bsu, C):
     N = len(C) - 1
     halfrange = (bsu - asu) / 2
     center = (bsu + asu) / 2
-    for i in range(100):
-        x = random.uniform(-1, 1)
+    NT = 316 # NT+1 should be incommensurate with N+1
+    for i in range(NT+1):
+        x = cos(i*pi/NT)
         ye = cheb(x, C, N)
         yr = highprecision_imwx(center+halfrange*x)
         r = abs((ye-yr)/yr)
-        if r > 1.2e-16:
-            print("test failed:", asu, yr, r)
+        if r > 1.12e-16:
+            raise Exception("test failed: i=%i x=%e yr=%f relerr=%e" % (i, x, yr, r))
 
 def polynomial_coefs(C, N):
     """
