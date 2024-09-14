@@ -36,6 +36,6 @@ int main( int argc, char **argv )
     double x = atof( argv[1] );
 
     double y = im_w_of_x(x);
-    printf( "%25.19g %25.19g %3i %3i\n", x, y, faddeeva_algorithm, faddeeva_nofterms);
+    printf( "%21.16g %21.16g %3i %3i\n", x, y, faddeeva_algorithm, faddeeva_nofterms);
     return 0;
 }
