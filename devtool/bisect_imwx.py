@@ -40,12 +40,12 @@ def check_at(locus, r):
     rr, f, a , n = compute_at(r)
     f2 = highprecision_imwx(rr)
     F = '%2i %3i %3i  %21.16e %21.16e  %8e %8e'
-    relerr = abs(f2-f)/f2
+    relerr = abs(f-f2)/f2
     if relerr > worst_relerr:
         worst_x = rr
         worst_relerr = relerr
     if 't' in mode:
-        print(F % (locus, a, n, rr, f, (f2-f)/f2, relerr))
+        print(F % (locus, a, n, rr, f, (f-f2)/f2, relerr))
 
 def bisect(r0, a0, n0, r2, a2, n2):
     if abs(r2-r0)<2e-15*(abs(r0)+abs(r2)):
