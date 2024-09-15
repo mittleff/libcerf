@@ -277,7 +277,70 @@ double im_w_of_x(double x)
     const double ispi = 0.56418958354775628694807945156; // 1 / sqrt(pi)
     const double ax = fabs(x); // very fast
 
-    if (ax > bCheb4) {
+    if (ax < aCheb1) {
+        // Use Taylor expansion (2/sqrt(pi)) * (x - 2/3 x^3  + 4/15 x^5  - 8/105 x^7 + ...)
+
+	faddeeva_algorithm = 500;
+	const double x2 = x*x;
+	if (ax < 0.016) {
+	    faddeeva_nofterms = 4;
+	    return (((( - 0.085971746064420005629 ) * x2// x^7
+		      + 0.30090111122547001970 ) * x2 // x^5
+		     - 0.75225277806367504925 ) * x2 // x^3
+		    + 1.1283791670955125739 ) * x;
+	}
+	if (ax < .29) {
+	    faddeeva_nofterms = 9;
+	    return ((((((((( + 8.38275934019361123956e-6 ) * x2 // x^17
+			   - 7.1253454391645686483238e-5 ) * x2 // x^15
+			  + 0.00053440090793734269229 ) * x2 // x^13
+			 - 0.0034736059015927275001 ) * x2 // x^11
+			+ 0.019104832458760001251 ) * x2 // x^9
+		       - 0.085971746064420005629 ) * x2 // x^7
+		      + 0.30090111122547001970 ) * x2 // x^5
+		     - 0.75225277806367504925 ) * x2 // x^3
+		    + 1.1283791670955125739 ) * x;
+	}
+	faddeeva_nofterms = 17;
+        return ((((((((((((((((( + 1.16774718055184835728293189e-14 ) * x2 // x^33
+			       - 1.92678284791054972871829131e-13 ) * x2 //x^31
+			      + 2.98651341426135223029374655e-12 ) * x2 // x^29
+			     - 4.33044445067896090883119155e-11 ) * x2 // x^27
+			    + 5.8461000084165966602290712e-10 ) * x2 // x^25
+			   - 7.30762501052074563638866034e-9 ) * x2 // x^23
+			  + 8.40376876209885782941868884e-8 ) * x2 // x^21
+			 - 8.82395720020380130481012927e-7 ) * x2 // x^19
+			+ 8.38275934019361123956e-6 ) * x2 // x^17
+		       - 7.1253454391645686483238e-5 ) * x2 // x^15
+		      + 0.00053440090793734269229 ) * x2 // x^13
+		     - 0.0034736059015927275001 ) * x2 // x^11
+		    + 0.019104832458760001251 ) * x2 // x^9
+		   - 0.085971746064420005629 ) * x2 // x^7
+		  + 0.30090111122547001970 ) * x2 // x^5
+		 - 0.75225277806367504925 ) * x2 // x^3
+		+ 1.1283791670955125739 ) * x;
+    }
+
+    if (ax < bCheb4) {
+        // Intermediate range: Use Chebyshev interpolants.
+
+        if (ax < bCheb2) {
+	    if (ax < bCheb1) {
+		faddeeva_algorithm = 510;
+		return copysign(chebInterpolant1(ax), x);
+	    }
+	    faddeeva_algorithm = 520;
+	    return copysign(chebInterpolant2(ax), x);
+        }
+	if (ax < bCheb3) {
+	    faddeeva_algorithm = 530;
+	    return copysign(chebInterpolant3(ax), x);
+	}
+	faddeeva_algorithm = 540;
+	return copysign(chebInterpolant4(ax), x);
+    }
+
+    /* else */ {
         // Use asymptotic expansion up to N = 0, 3, 6, or 10
 
 	faddeeva_algorithm = 550;
@@ -325,69 +388,4 @@ double im_w_of_x(double x)
 			   + 1);
     }
 
-    if (ax < aCheb1) {
-        // Use Taylor expansion (2/sqrt(pi)) * (x - 2/3 x^3  + 4/15 x^5  - 8/105 x^7 + ...)
-
-	faddeeva_algorithm = 500;
-	const double x2 = x*x;
-	if (ax < 0.016) {
-	    faddeeva_nofterms = 4;
-	    return (((( - 0.085971746064420005629 ) * x2// x^7
-		      + 0.30090111122547001970 ) * x2 // x^5
-		     - 0.75225277806367504925 ) * x2 // x^3
-		    + 1.1283791670955125739 ) * x;
-	}
-	if (ax < .29) {
-	    faddeeva_nofterms = 9;
-	    return ((((((((( + 8.38275934019361123956e-6 ) * x2 // x^17
-			   - 7.1253454391645686483238e-5 ) * x2 // x^15
-			  + 0.00053440090793734269229 ) * x2 // x^13
-			 - 0.0034736059015927275001 ) * x2 // x^11
-			+ 0.019104832458760001251 ) * x2 // x^9
-		       - 0.085971746064420005629 ) * x2 // x^7
-		      + 0.30090111122547001970 ) * x2 // x^5
-		     - 0.75225277806367504925 ) * x2 // x^3
-		    + 1.1283791670955125739 ) * x;
-	}
-	faddeeva_nofterms = 17;
-        return ((((((((((((((((( + 1.16774718055184835728293189e-14 ) * x2 // x^33
-			       - 1.92678284791054972871829131e-13 ) * x2 //x^31
-			      + 2.98651341426135223029374655e-12 ) * x2 // x^29
-			     - 4.33044445067896090883119155e-11 ) * x2 // x^27
-			    + 5.8461000084165966602290712e-10 ) * x2 // x^25
-			   - 7.30762501052074563638866034e-9 ) * x2 // x^23
-			  + 8.40376876209885782941868884e-8 ) * x2 // x^21
-			 - 8.82395720020380130481012927e-7 ) * x2 // x^19
-			+ 8.38275934019361123956e-6 ) * x2 // x^17
-		       - 7.1253454391645686483238e-5 ) * x2 // x^15
-		      + 0.00053440090793734269229 ) * x2 // x^13
-		     - 0.0034736059015927275001 ) * x2 // x^11
-		    + 0.019104832458760001251 ) * x2 // x^9
-		   - 0.085971746064420005629 ) * x2 // x^7
-		  + 0.30090111122547001970 ) * x2 // x^5
-		 - 0.75225277806367504925 ) * x2 // x^3
-		+ 1.1283791670955125739 ) * x;
-    }
-
-    // Remaining intermediate range:
-    // Use Chebyshev interpolants.
-
-    if (ax < bCheb2) {
-	if (ax < bCheb1) {
-	    faddeeva_algorithm = 510;
-	    return copysign(chebInterpolant1(ax), x);
-	}
-	faddeeva_algorithm = 520;
-	return copysign(chebInterpolant2(ax), x);
-    }
-    if (ax < bCheb4) {
-	if (ax < bCheb3) {
-	    faddeeva_algorithm = 530;
-	    return copysign(chebInterpolant3(ax), x);
-	}
-	faddeeva_algorithm = 540;
-	return copysign(chebInterpolant4(ax), x);
-    }
-
-    return NaN;
 } // im_w_of_z
