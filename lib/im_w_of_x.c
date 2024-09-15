@@ -342,50 +342,49 @@ double im_w_of_x(double x)
 
     /* else */ {
         // Use asymptotic expansion up to N = 0, 3, 6, or 10
+	// With N=15 or 20 we could extend the range down to 7.73 or 6.72,
+	// but we expect Chebyshev to be faster.
+	const double r = 1/x;
 
 	faddeeva_algorithm = 550;
-	// With N=15 or 20 we could extend the range to 7.73 or 6.72,
-	// but we expect Chebyshev to be faster.
-	if (ax > 150) {
-	    if (ax > 6.9e7) { // 1-term expansion, important to avoid overflow
-		faddeeva_nofterms = 1; // N = 0
-		return ispi / x;
+	if (ax < 150) {
+	    if (ax < 23.2) {
+		faddeeva_nofterms = 11; // N=10
+		return ispi * r * (((((((((((
+						+ 639383.8623046875 ) * (r*r)
+					    + 67303.564453125 ) * (r*r)
+					   + 7918.06640625 ) * (r*r)
+					  + 1055.7421875 ) * (r*r)
+					 + 162.421875 ) * (r*r)
+					+ 29.53125 ) * (r*r)
+				       + 6.5625 ) * (r*r)
+				      + 1.875 ) * (r*r)
+				     + 0.75 ) * (r*r)
+				    + 0.5 ) * (r*r)
+				   + 1);
 	    }
-	    faddeeva_nofterms = 4; // N = 3
-	    const double r = 1/x;
-	    const double r2 = r*r;
-	    return ispi * r * ((((
-				     + 1.875) * r2 // coefficient (2N-1)!!/2^N
-				 + 0.75) * r2
-				+ 0.5) * r2
-			       + 1);
-	}
-	const double r = 1/x;
-	const double r2 = r*r;
-	if (ax > 23.2) {
 	    faddeeva_nofterms = 7; // N=6
 	    return ispi * r * (((((((
-					+ 162.421875 ) * r2
-				    + 29.53125 ) * r2
-				   + 6.5625 ) * r2
-				  + 1.875 ) * r2
-				 + 0.75 ) * r2
-				+ 0.5 ) * r2
+					+ 162.421875 ) * (r*r)
+				    + 29.53125 ) * (r*r)
+				   + 6.5625 ) * (r*r)
+				  + 1.875 ) * (r*r)
+				 + 0.75 ) * (r*r)
+				+ 0.5 ) * (r*r)
 			       + 1);
 	}
-	faddeeva_nofterms = 11; // N=10
-	return ispi * r * (((((((((((
-					+ 639383.8623046875 ) * r2
-				    + 67303.564453125 ) * r2
-				   + 7918.06640625 ) * r2
-				  + 1055.7421875 ) * r2
-				 + 162.421875 ) * r2
-				+ 29.53125 ) * r2
-			       + 6.5625 ) * r2
-			      + 1.875 ) * r2
-			     + 0.75 ) * r2
-			    + 0.5 ) * r2
-			   + 1);
+
+	if (ax < 6.9e7) {
+	    faddeeva_nofterms = 4; // N = 3
+	    return ispi * r * ((((
+				     + 1.875) * (r*r) // coefficient (2N-1)!!/2^N
+				 + 0.75) * (r*r)
+				+ 0.5) * (r*r)
+			       + 1);
+	}
+
+	faddeeva_nofterms = 1; // N = 0: 1-term expansion, important to avoid overflow
+	return ispi / x;
     }
 
 } // im_w_of_z
