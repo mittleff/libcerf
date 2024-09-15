@@ -39,7 +39,7 @@ def check_at(locus, r):
     global mode, worst_x, worst_relerr
     rr, f, a , n = compute_at(r)
     f2 = highprecision_imwx(rr)
-    F = '%2i %3i %3i  %12g %12g  %8e %8e'
+    F = '%2i %3i %3i  %21.16e %21.16e  %8e %8e'
     relerr = abs(f2-f)/f2
     if relerr > worst_relerr:
         worst_x = rr
