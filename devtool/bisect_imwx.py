@@ -23,13 +23,17 @@ def highprecision_imwx(x, doublecheck=False):
             raise Exception(f"mpmath inaccurate")
     return fz.imag
 
-def cerf_imwx(x):
-    result = subprocess.run(['run/run_imwx', f'{x}'], stdout=subprocess.PIPE)
-    a = result.stdout.decode('utf-8').split()
-    return (mpf(a[0]), mpf(a[1]), int(a[2]), int(a[3]))
-
 def compute_at(r):
-    return cerf_imwx(r)
+    mp.bps = 53
+    x = mpf(r)
+    xs = "%22.16e" % x
+    a1 = subprocess.run(['run/run_imwx', xs], stdout=subprocess.PIPE)
+    a2 = a1.stdout.decode('utf-8').split()
+    a3 = (mpf(a2[0]), mpf(a2[1]), int(a2[2]), int(a2[3]))
+    if a3[0] != mpf(xs):
+        raise Exception(f"failed double-string cycle {r} -> {x} -> {xs} -> {a3[0]} ({(r-a3[0])/r})")
+    mp.dps = 48
+    return a3
 
 def check_at(locus, r):
     global mode, worst_x, worst_relerr
@@ -84,7 +88,7 @@ if __name__ == '__main__':
         a0 = a2
         n0 = n2
     if 'w' in mode:
-        print("worst: at x=%21.15g relerr=%8e" % (worst_x, worst_relerr))
+        print("worst: at x=%22.16e relerr=%8e" % (worst_x, worst_relerr))
         rr, f, a , n = compute_at(worst_x)
         print("   run_imwx:", f)
         f2 = highprecision_imwx(worst_x, True)
