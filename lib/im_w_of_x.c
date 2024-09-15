@@ -289,7 +289,7 @@ double im_w_of_x(double x)
 		     - 0.75225277806367504925 ) * x2 // x^3
 		    + 1.1283791670955125739 ) * x;
 	}
-	if (ax < .29) {
+	if (ax < .275) {
 	    faddeeva_nofterms = 9;
 	    return ((((((((( + 8.38275934019361123956e-6 ) * x2 // x^17
 			   - 7.1253454391645686483238e-5 ) * x2 // x^15
@@ -346,8 +346,8 @@ double im_w_of_x(double x)
 	faddeeva_algorithm = 550;
 	// With N=15 or 20 we could extend the range to 7.73 or 6.72,
 	// but we expect Chebyshev to be faster.
-	if (ax > 125) {
-	    if (ax > 6.6e7) { // 1-term expansion, important to avoid overflow
+	if (ax > 150) {
+	    if (ax > 6.9e7) { // 1-term expansion, important to avoid overflow
 		faddeeva_nofterms = 1; // N = 0
 		return ispi / x;
 	    }
@@ -362,7 +362,7 @@ double im_w_of_x(double x)
 	}
 	const double r = 1/x;
 	const double r2 = r*r;
-	if (ax > 22.7) {
+	if (ax > 23.2) {
 	    faddeeva_nofterms = 7; // N=6
 	    return ispi * r * (((((((
 					+ 162.421875 ) * r2
