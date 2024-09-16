@@ -10,31 +10,42 @@ from mpmath import *
 mp.dps = 48
 mp.pretty = True
 
-def highprecision_imwx(x):
-    z = mpc(x,0)
-    j = mpc('0', '1')
-    fz = exp(-z**2)*erfc(-j*z)
+def dawson_kernel(t):
+    return exp(t**2)
+
+def highprecision_imwx(x, doublecheck=False):
+    fz = exp(-x**2)*erfc(mpc(0, -x))
+    result = fz.imag
+    if doublecheck:
+        # Check mpmath-computed reference value against mpmath-based brute-force integration
+        r2 = 2/sqrt(pi) * exp(-x**2) * quad(dawson_kernel, [0, x])
+        if abs(result-r2)/result > 1e-17:
+            raise Exception(f"mpmath inaccurate")
     return fz.imag
 
-def cerf_imwx(x):
-    result = subprocess.run(['run/run_imwx', f'{x}'], stdout=subprocess.PIPE)
-    a = result.stdout.decode('utf-8').split()
-    return (mpf(a[0]), mpf(a[1]), int(a[2]), int(a[3]))
-
 def compute_at(r):
-    return cerf_imwx(r)
+    mp.bps = 53
+    x = mpf(r)
+    xs = "%22.16e" % x
+    a1 = subprocess.run(['run/run_imwx', xs], stdout=subprocess.PIPE)
+    a2 = a1.stdout.decode('utf-8').split()
+    a3 = (mpf(a2[0]), mpf(a2[1]), int(a2[2]), int(a2[3]))
+    if a3[0] != mpf(xs):
+        raise Exception(f"failed double-string cycle {r} -> {x} -> {xs} -> {a3[0]} ({(r-a3[0])/r})")
+    mp.dps = 48
+    return a3
 
 def check_at(locus, r):
     global mode, worst_x, worst_relerr
     rr, f, a , n = compute_at(r)
     f2 = highprecision_imwx(rr)
-    F = '%2i %3i %3i  %12g %12g  %8e %8e'
-    relerr = abs(f2-f)/f2
+    F = '%2i %3i %3i  %21.16e %21.16e  %8e %8e'
+    relerr = abs(f-f2)/f2
     if relerr > worst_relerr:
         worst_x = rr
         worst_relerr = relerr
     if 't' in mode:
-        print(F % (locus, a, n, rr, f, (f2-f)/f2, relerr))
+        print(F % (locus, a, n, rr, f, (f-f2)/f2, relerr))
 
 def bisect(r0, a0, n0, r2, a2, n2):
     if abs(r2-r0)<2e-15*(abs(r0)+abs(r2)):
@@ -77,4 +88,11 @@ if __name__ == '__main__':
         a0 = a2
         n0 = n2
     if 'w' in mode:
-        print("worst: at x=%21.15g relerr=%8e" % (worst_x, worst_relerr))
+        print("worst: at x=%22.16e relerr=%8e" % (worst_x, worst_relerr))
+        rr, f, a , n = compute_at(worst_x)
+        print("   run_imwx:", f)
+        f2 = highprecision_imwx(worst_x, True)
+        print("   highprec:", f2)
+        print("   dx_rel:  ", (rr-worst_x)/worst_x)
+        print("   dy_rel:  ", (f-f2)/f2)
+        print("   algo:    ", a, n)
