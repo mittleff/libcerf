@@ -50,6 +50,10 @@
 #include <math.h>
 #include "defs.h" // defines _cerf_cmplx, NaN, C, cexp, ...
 
+// for analysing the algorithm:
+IMPORT extern int faddeeva_algorithm;
+IMPORT extern int faddeeva_nofterms;
+
 /******************************************************************************/
 /* Lookup for Chebyshev polynomials for smaller |x|                           */
 /******************************************************************************/
@@ -223,15 +227,26 @@ double erfcx(double x)
     if (x >= 0) {
         if (x > 50) { // continued-fraction expansion is faster
             const double ispi = 0.56418958354775628694807945156; // 1 / sqrt(pi)
-            if (x > 5e7) // 1-term expansion, important to avoid overflow
+            if (x > 5e7) { // 1-term expansion, important to avoid overflow
+		faddeeva_algorithm = 690;
                 return ispi / x;
+	    }
             /* 5-term expansion (rely on compiler for CSE), simplified from:
                ispi / (x+0.5/(x+1/(x+1.5/(x+2/x))))  */
+	    faddeeva_algorithm = 680;
             return ispi*((x*x) * (x*x+4.5) + 2) / (x * ((x*x) * (x*x+5) + 3.75));
         }
+	faddeeva_algorithm = 650;
         return erfcx_y100(400/(4+x));
     }
-    else
-        return x < -26.7 ? HUGE_VAL : (x < -6.1 ? 2*exp(x*x)
-                                       : 2*exp(x*x) - erfcx_y100(400/(4-x)));
+    if (x < -26.7) {
+	faddeeva_algorithm = 620;
+	return HUGE_VAL;
+    }
+    if (x < -6.1) {
+	faddeeva_algorithm = 610;
+	return 2*exp(x*x);
+    }
+    faddeeva_algorithm = 600;
+    return 2*exp(x*x) - erfcx_y100(400/(4-x));
 } // erfcx
