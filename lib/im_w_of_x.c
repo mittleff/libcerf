@@ -274,7 +274,6 @@ double im_w_of_x(double x)
     // - Chebyshev polynomials for medium |x|,
     // - Taylor (Maclaurin) series for small |x|.
 
-    const double ispi = 0.56418958354775628694807945156; // 1 / sqrt(pi)
     const double ax = fabs(x); // very fast
 
     if (ax < aCheb1) {
@@ -342,49 +341,53 @@ double im_w_of_x(double x)
 
     /* else */ {
         // Use asymptotic expansion up to N = 0, 3, 6, or 10
+	//
 	// With N=15 or 20 we could extend the range down to 7.73 or 6.72,
 	// but we expect Chebyshev to be faster.
+	//
+	// Coefficient are a_0 = 1/sqrt(pi), a_N = (2N-1)!!/2^N/sqrt(pi).
+
 	const double r = 1/x;
 
 	faddeeva_algorithm = 550;
 	if (ax < 150) {
 	    if (ax < 23.2) {
 		faddeeva_nofterms = 11; // N=10
-		return ispi * r * (((((((((((
-						+ 639383.8623046875 ) * (r*r)
-					    + 67303.564453125 ) * (r*r)
-					   + 7918.06640625 ) * (r*r)
-					  + 1055.7421875 ) * (r*r)
-					 + 162.421875 ) * (r*r)
-					+ 29.53125 ) * (r*r)
-				       + 6.5625 ) * (r*r)
-				      + 1.875 ) * (r*r)
-				     + 0.75 ) * (r*r)
-				    + 0.5 ) * (r*r)
-				   + 1);
+		return (((((((((((
+				     + 3.6073371500083758e+05 ) * (r*r)
+				 + 3.7971970000088164e+04 ) * (r*r)
+				+ 4.4672905882456671e+03 ) * (r*r)
+			       + 5.9563874509942218e+02 ) * (r*r)
+			      + 9.1636730015295726e+01 ) * (r*r)
+			     + 1.6661223639144676e+01 ) * (r*r)
+			    + 3.7024941420321507e+00 ) * (r*r)
+			   + 1.0578554691520430e+00 ) * (r*r)
+			  + 4.2314218766081724e-01 ) * (r*r)
+			 + 2.8209479177387814e-01 ) * (r*r)
+			+ 5.6418958354775628e-01 ) * r;
 	    }
 	    faddeeva_nofterms = 7; // N=6
-	    return ispi * r * (((((((
-					+ 162.421875 ) * (r*r)
-				    + 29.53125 ) * (r*r)
-				   + 6.5625 ) * (r*r)
-				  + 1.875 ) * (r*r)
-				 + 0.75 ) * (r*r)
-				+ 0.5 ) * (r*r)
-			       + 1);
+	    return (((((((
+			     + 9.1636730015295726e+01 ) * (r*r)
+			 + 1.6661223639144676e+01 ) * (r*r)
+			+ 3.7024941420321507e+00 ) * (r*r)
+		       + 1.0578554691520430e+00 ) * (r*r)
+		      + 4.2314218766081724e-01 ) * (r*r)
+		     + 2.8209479177387814e-01 ) * (r*r)
+		    + 5.6418958354775628e-01 ) * r;
 	}
 
 	if (ax < 6.9e7) {
 	    faddeeva_nofterms = 4; // N = 3
-	    return ispi * r * ((((
-				     + 1.875) * (r*r) // coefficient (2N-1)!!/2^N
-				 + 0.75) * (r*r)
-				+ 0.5) * (r*r)
-			       + 1);
+	    return ((((
+			  + 1.0578554691520430e+00 ) * (r*r)
+		      + 4.2314218766081724e-01 ) * (r*r)
+		     + 2.8209479177387814e-01 ) * (r*r)
+		    + 5.6418958354775628e-01 ) * r;
 	}
 
 	faddeeva_nofterms = 1; // N = 0: 1-term expansion, important to avoid overflow
-	return ispi / x;
+	return 0.56418958354775629 / x;
     }
 
 } // im_w_of_z
