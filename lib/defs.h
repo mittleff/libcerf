@@ -27,3 +27,9 @@
 #else
 #include "c.h"
 #endif
+
+#if (defined(__GNUC__) && !defined(__clang__)) // check for GCC compiler
+#define ALIGN(N) __attribute__((aligned(N))) // 64 byte is x64 cache line size
+#else
+#define ALIGN(N)
+#endif
