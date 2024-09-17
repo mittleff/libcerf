@@ -40,8 +40,14 @@ def compute_at(r):
     fname = run_fct_name
     xs = "%22.16e" % x
     a1 = subprocess.run(['run/run_' + fname, xs], stdout=subprocess.PIPE)
-    a2 = a1.stdout.decode('utf-8').split()
-    a3 = [mpf(a2[0]), mpf(a2[1]), int(a2[2]), int(a2[3])]
+    try:
+        a2 = a1.stdout.decode('utf-8').split()
+        a3 = [mpf(a2[0]), mpf(a2[1]), int(a2[2]), int(a2[3])]
+    except:
+        print("x:", x)
+        print("a:", a1)
+        print("Could not read back from C call")
+        sys.exit(1)
     if a3[0] != mpf(xs):
         raise Exception(f"failed double-string cycle {r} -> {x} -> {xs} -> {a3[0]} ({(r-a3[0])/r})")
     mp.dps = 48
