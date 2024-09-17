@@ -225,6 +225,29 @@ double erfcx(double x)
     // or Cody's CALERF function (from netlib.org/specfun), while
     // retaining near machine precision in accuracy.
 
+    double ax = fabs(x);
+
+    if (ax < .125){
+        // Use Taylor expansion
+	faddeeva_algorithm = 620;
+	return (((( ((((( (((((
+				  +1.9841269841269841e-04 ) * x
+			      -5.3440090793734269e-04 ) * x
+			     +1.3888888888888889e-03 ) * x
+			    -3.4736059015927274e-03 ) * x
+			   +8.3333333333333332e-03 ) * x
+			  -1.9104832458760001e-02 ) * x
+			+4.1666666666666664e-02 ) * x
+		       -8.5971746064419999e-02 ) * x
+		      +1.6666666666666666e-01 ) * x
+		     -3.0090111122547003e-01 ) * x
+		    +5.0000000000000000e-01 ) * x
+		  -7.5225277806367508e-01 ) * x
+		 +1.0000000000000000e+00 ) * x
+		-1.1283791670955126e+00 ) * x
+	    +1.0000000000000000e+00;
+    }
+
     if (x < 0) {
 	if (x < -26.7) {
 	    faddeeva_algorithm = 600;
