@@ -176,6 +176,7 @@ static double erfcx_y100(double y100)
     // compared to fitting the whole [0,1] interval with a single polynomial.
 
     const int iy = (int) y100;
+    faddeeva_nofterms = iy;
 
     if ((iy >= 0) && (iy < 100)) {
         const double t = 2*y100 - (1 + 2*iy);
@@ -224,29 +225,33 @@ double erfcx(double x)
     // or Cody's CALERF function (from netlib.org/specfun), while
     // retaining near machine precision in accuracy.
 
-    if (x >= 0) {
-        if (x > 50) { // continued-fraction expansion is faster
-            const double ispi = 0.56418958354775628694807945156; // 1 / sqrt(pi)
-            if (x > 5e7) { // 1-term expansion, important to avoid overflow
-		faddeeva_algorithm = 690;
-                return ispi / x;
-	    }
-            /* 5-term expansion (rely on compiler for CSE), simplified from:
-               ispi / (x+0.5/(x+1/(x+1.5/(x+2/x))))  */
-	    faddeeva_algorithm = 680;
-            return ispi*((x*x) * (x*x+4.5) + 2) / (x * ((x*x) * (x*x+5) + 3.75));
-        }
+    if (x < 0) {
+	if (x < -26.7) {
+	    faddeeva_algorithm = 600;
+	    return HUGE_VAL;
+	}
+	if (x < -6.1) {
+	    faddeeva_algorithm = 610;
+	    return 2*exp(x*x);
+	}
+	faddeeva_algorithm = 640;
+	return 2*exp(x*x) - erfcx_y100(400/(4-x));
+    }
+
+    if (x <= 50) {
 	faddeeva_algorithm = 650;
         return erfcx_y100(400/(4+x));
     }
-    if (x < -26.7) {
-	faddeeva_algorithm = 620;
-	return HUGE_VAL;
+
+    // continued-fraction expansion is faster
+    const double ispi = 0.56418958354775628694807945156; // 1 / sqrt(pi)
+    if (x > 5e7) { // 1-term expansion, important to avoid overflow
+	faddeeva_algorithm = 680;
+	return ispi / x;
     }
-    if (x < -6.1) {
-	faddeeva_algorithm = 610;
-	return 2*exp(x*x);
-    }
-    faddeeva_algorithm = 600;
-    return 2*exp(x*x) - erfcx_y100(400/(4-x));
+    /* 5-term expansion (rely on compiler for CSE), simplified from:
+       ispi / (x+0.5/(x+1/(x+1.5/(x+2/x))))  */
+    faddeeva_algorithm = 690;
+    return ispi*((x*x) * (x*x+4.5) + 2) / (x * ((x*x) * (x*x+5) + 3.75));
+
 } // erfcx
