@@ -34,6 +34,38 @@ from mpmath import *
 import sys
 
 ####################################################################################################
+# Conversions related to binary representation of floating-point numbers
+####################################################################################################
+
+def double2hexstring(x, nd=53):
+    """
+    Returns the hexagonal representation of x, rounded to nd binary digits.
+    """
+    if x==0:
+        return "0x0"
+    if x>0:
+        sign = ""
+    else:
+        sign = "-"
+        x= -x
+    m,e = frexp(x)
+    sm = int(nint(m*2**(nd))) # scaled mantissa
+    if sm == 2**nd:
+        dm = 2**(3+4*((nd-1)//4)) # displayed mantissa
+        return "%s0x0.%xp%i" % (sign, dm, e+1)
+    shift = 4*((nd-1)//4+1) - nd
+    dm = sm*2**shift # displayed mantissa
+    return "%s0x0.%0xp%i" % (sign, dm, e)
+
+def round2(x, nd=16):
+    """
+    Rounds x to nd binary digits.
+    """
+    m,e = frexp(x)
+    im = round(m * 2**nd)
+    return mpf(im * 2**(e-nd))
+
+####################################################################################################
 # Computations for Chebyshev polynomials
 ####################################################################################################
 
@@ -179,26 +211,6 @@ def chebcoef(R, Nout, hp_f, doublecheck):
 ####################################################################################################
 # Printout for Chebyshev polynomials
 ####################################################################################################
-
-def double2hexstring(x, nd=53):
-    """
-    Returns the hexagonal representation of x, rounded to nd binary digits.
-    """
-    if x==0:
-        return "0x0"
-    if x>0:
-        sign = ""
-    else:
-        sign = "-"
-        x= -x
-    m,e = frexp(x)
-    sm = int(nint(m*2**(nd))) # scaled mantissa
-    if sm == 2**nd:
-        dm = 2**(3+4*((nd-1)//4)) # displayed mantissa
-        return "%s0x0.%xp%i" % (sign, dm, e+1)
-    shift = 4*((nd-1)//4+1) - nd
-    dm = sm*2**shift # displayed mantissa
-    return "%s0x0.%0xp%i" % (sign, dm, e)
 
 def print_cheby_coeffs(C):
     for Cs in C:
