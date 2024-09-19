@@ -133,7 +133,7 @@ def check_cheb_interpolant(asu, bsu, C, hp_f, NT, limit):
             raise Exception("test failed: i=%i t=%e x=%+21.17f yr=%f err=%+21.17f relerr=%e\n%s" % (i, t, x, yr, ye-yr, r, msg))
         mp.dps = outside_dps
 
-def chebcoef(R, Nout, hp_f):
+def chebcoef(R, Nout, hp_f, doublecheck):
     """
     Computes Chebyshev coefficients that interpolate the high-precision function hp_f
     for the range (a,b).
@@ -149,7 +149,7 @@ def chebcoef(R, Nout, hp_f):
         center = (bsu + asu) / 2
 
         xx = [cos(n*pi/N) for n in range(N+1)]
-        yy = [hp_f(center+halfrange*xx[n]) for n in range(N+1)]
+        yy = [hp_f(center+halfrange*xx[n], doublecheck) for n in range(N+1)]
 
         for m in range(N+1):
             sum = (yy[0] + (-1)**m * yy[N]) / 2
