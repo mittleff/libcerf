@@ -6,6 +6,7 @@ Used to generate code sections in erfcx.c.
 """
 
 from mpmath import *
+import functool as fut
 import random, sys
 
 mp.dps = 48
@@ -26,20 +27,6 @@ def highprecision_erfcx(x):
             raise Exception(f"mpmath inaccurate")
     return result
 
-def cheb(t, C, N):
-    """
-    Evaluates Chebyshev series at point t (between -1 and +1).
-    In contrast to our final C code, we here use the Clenshaw algorithm
-    [e.g. Oliver, J Inst Maths Applics 20, 379 (1977].
-    """
-    u2 = 0
-    u1 = C[N]
-    for n in reversed(range(1,N)):
-        u = 2*t*u1 - u2 + C[n]
-        u2 = u1
-        u1 = u
-    return t*u1 - u2 + C[0]
-
 def test(asu, bsu, C):
     """
     Checks our Chebyshev interpolant against the target function,
@@ -56,7 +43,7 @@ def test(asu, bsu, C):
         mp.dps = 16
         t = mpf(t)
         CD = [mpf("%+21.16e" % c) for c in C]
-        ye = cheb(t, CD, N)
+        ye = fut.cheb(t, CD, N)
         r = abs((ye-yr)/yr)
         if r > 2.24e-16:
             u2 = 0
