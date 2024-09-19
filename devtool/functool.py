@@ -180,6 +180,26 @@ def chebcoef(R, Nout, hp_f, doublecheck):
 # Printout for Chebyshev polynomials
 ####################################################################################################
 
+def double2hexstring(x, nd=53):
+    """
+    Returns the hexagonal representation of x, rounded to nd binary digits.
+    """
+    if x==0:
+        return "0x0"
+    if x>0:
+        sign = ""
+    else:
+        sign = "-"
+        x= -x
+    m,e = frexp(x)
+    sm = int(nint(m*2**(nd))) # scaled mantissa
+    if sm == 2**nd:
+        dm = 2**(3+4*((nd-1)//4)) # displayed mantissa
+        return "%s0x0.%xp%i" % (sign, dm, e+1)
+    shift = 4*((nd-1)//4+1) - nd
+    dm = sm*2**shift # displayed mantissa
+    return "%s0x0.%0xp%i" % (sign, dm, e)
+
 def print_cheby_coeffs(C):
     for Cs in C:
         for coeff in Cs:
@@ -202,7 +222,7 @@ def print_clenshaw_code(R, C, Nout):
         Cs = C[irge]
         print("   ", end="")
         for c in Cs:
-            print(" %+22.16e," % c, end="")
+            print(" %s," % double2hexstring(c), end="")
         for i in range(len(Cs), Nout+1):
             print(" 0,", end="")
         asu, bsu, ir, js = R[irge]
@@ -229,7 +249,8 @@ def print_powerseries_code(R, C, Nout):
         for irge in range(nRge):
             asu, bsu, ir, js = R[irge]
             p8 = P[irge][8]
-            print("     %+22.16e, // x in subrange %i:%i (%g..%g)" % (p8, ir, js, asu, bsu))
+            print("     %s, // x in subrange %i:%i (%g..%g)" %
+                  (double2hexstring(p8), ir, js, asu, bsu))
         print("};")
         N2 -= 1
     elif N2 == 10:
@@ -237,8 +258,8 @@ def print_powerseries_code(R, C, Nout):
         print("   ", end="")
         for irge in range(nRge):
             asu, bsu, ir, js = R[irge]
-            print("     %+22.16e, %+22.16e, // x in subrange %i:%i (%g..%g)" %
-                  (P[irge][8], P[irge][9], ir, js, asu, bsu))
+            print("     %s, %s, // x in subrange %i:%i (%g..%g)" %
+                  (double2hexstring(P[irge][8]), double2hexstring(P[irge][9]), ir, js, asu, bsu))
         print("};")
         N2 -= 2
 
@@ -247,7 +268,7 @@ def print_powerseries_code(R, C, Nout):
         Cs = C[irge]
         Ps = P[irge]
         for p in Ps[0:N2]:
-            print(" %+22.16e," % p, end="")
+            print(" %s," % double2hexstring(p), end="")
         asu, bsu, ir, js = R[irge]
         print(" // x in subrange %i:%i (%g..%g)" % (ir, js, asu, bsu))
     print("};")
