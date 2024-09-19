@@ -50,7 +50,7 @@ def octavicRanges(a, b, n2e):
         for js in range(2**n2e):
             asu = (2**n2e+js) * 2**(ir-n2e)
             bsu = asu + 2.**(ir-n2e)
-            if bsu>=a and asu<=b:
+            if bsu>a and asu<b:
                 R.append((asu, bsu, ir-ea+1, js))
     return R
 
