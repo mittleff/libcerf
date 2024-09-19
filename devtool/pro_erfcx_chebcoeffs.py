@@ -31,17 +31,7 @@ if __name__ == '__main__':
 
     Nout = 9
 
-    n2e = 6
-    R = []
-
-    nOctaves = 7
-    iOctave0 = -3
-    for ir in range(nOctaves):
-        for js in range(2**n2e):
-            a = (2**n2e+js) * 2**(ir-n2e+iOctave0)
-            b = a + 2.**(ir-n2e+iOctave0)
-            # if b>=.5 and a<=12.:
-            R.append((a,b, ir, js))
+    R = fut.octavicRanges(.125, 16., 6)
     C = fut.chebcoef(R, Nout, highprecision_erfcx)
 
     # fut.print_cheby_coeffs(C)

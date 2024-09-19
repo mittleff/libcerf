@@ -37,6 +37,23 @@ import sys
 # Computations for Chebyshev polynomials
 ####################################################################################################
 
+def octavicRanges(a, b, n2e):
+    """
+    Divides range (a,b) into subranges, starting from octaves with boundaries at 2**m.
+    Each octave is divided into 2**n2e subranges.
+    Returns a list of tuples (a_subrange, b_subrange, index_of_octave, index_in_octave).
+    """
+    m, ea = frexp(a)
+    m, eb = frexp(b)
+    R = []
+    for ir in range(ea-1, eb):
+        for js in range(2**n2e):
+            asu = (2**n2e+js) * 2**(ir-n2e)
+            bsu = asu + 2.**(ir-n2e)
+            if bsu>=a and asu<=b:
+                R.append((asu, bsu, ir-ea+1, js))
+    return R
+
 def polynomial_coefs(C):
     """
     Converts Chebyshev to power-series coefficients for faster computation in the final C code.

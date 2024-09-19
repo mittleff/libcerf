@@ -32,14 +32,7 @@ if __name__ == '__main__':
 
     Nout = 8
 
-    n2e = 6
-    R = []
-    for ir in range(5):
-        for js in range(2**n2e):
-            a = (2**n2e+js) * 2**(ir-n2e-1)
-            b = a + 2.**(ir-n2e-1)
-            if b>=.5 and a<=12.:
-                R.append((a,b, ir, js))
+    R = fut.octavicRanges(.5, 12., 6)
     C = fut.chebcoef(R, Nout, highprecision_imwx)
 
     # fut.print_cheby_coeffs(C)
