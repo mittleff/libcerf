@@ -1,7 +1,6 @@
-#!/bin/env python
-
-# File pro_erfcx_chebcoeffs.py:
-#   Compute Chebyshev coefficients for erfcx, and write tables for use in erfcx.c.
+# File hp_funcs.py:
+#   Python module providing high-precision functions related to w(z),
+#   for use in code generation for libcerf.
 #
 # Copyright:
 #   (C) 2024 Forschungszentrum Jülich GmbH
@@ -29,29 +28,29 @@
 # Author:
 #   Joachim Wuttke, Forschungszentrum Jülich, 2024
 #
-# Website:
-#   http://apps.jcns.fz-juelich.de/libcerf
-#
 # Revision history:
-#   September 2024, initial version.
+#   Initial version published in libcerf/devtool.
 
 from mpmath import *
-import functool as fut
-import hp_funcs as hp
-import sys
 
-mp.dps = 48
-mp.pretty = True
+def erfcx(x, doublecheck=False):
+    result = exp(x**2)*erfc(x)
+    if doublecheck:
+        # Check mpmath-computed reference value against mpmath-based brute-force integration
+        if x<6:
+            r2 = exp(x**2) - 2/sqrt(pi) * quad(lambda t : exp(x**2-t**2), [0, x])
+        else:
+            r2 = 2/sqrt(pi) * quad(lambda t : exp(x**2-t**2), [x, mpf('inf')])
+        if abs(result-r2)/result > 1e-17:
+            raise Exception(f"mpmath inaccurate")
+    return result
 
-final = False # Extra checks, to be turned on in final production run
-
-if __name__ == '__main__':
-
-    Nout = 9
-
-    R = fut.octavicRanges(.125, 16, 6)
-    C = fut.chebcoef(R, Nout, hp.erfcx, final)
-
-    # fut.print_cheby_coeffs(C)
-    # fut.print_clenshaw_code(R, C, Nout)
-    fut.print_powerseries_code(R, C, Nout)
+def imwx(x, doublecheck=False):
+    fz = exp(-x**2)*erfc(mpc(0, -x))
+    result = fz.imag
+    if doublecheck:
+        # Check mpmath-computed reference value against mpmath-based brute-force integration
+        r2 = 2/sqrt(pi) * exp(-x**2) * quad(lambda t : exp(t**2), [0, x])
+        if abs(result-r2)/result > 1e-17:
+            raise Exception(f"mpmath inaccurate")
+    return result
