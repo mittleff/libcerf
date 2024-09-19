@@ -84,3 +84,46 @@ def check_cheb_interpolant(asu, bsu, C, hp_f, NT, limit):
             msg += "%46c %+21.17f \n" % (' ', yr)
             raise Exception("test failed: i=%i t=%e x=%+21.17f yr=%f err=%+21.17f relerr=%e\n%s" % (i, t, x, yr, ye-yr, r, msg))
         mp.dps = outside_dps
+
+def chebcoef(R, Nout, hp_f):
+    """
+    Computes Chebyshev coefficients that interpolate the high-precision function hp_f
+    for the range (a,b).
+    """
+    N = Nout
+
+    C = []
+    for rge in R:
+        Cs = [0 for n in range(Nout+1)]
+        asu, bsu, ir, js = rge
+
+        halfrange = (bsu - asu) / 2
+        center = (bsu + asu) / 2
+
+        xx = [cos(n*pi/N) for n in range(N+1)]
+        yy = [hp_f(center+halfrange*xx[n]) for n in range(N+1)]
+
+        for m in range(N+1):
+            sum = (yy[0] + (-1)**m * yy[N]) / 2
+            for n in range(1,N):
+                sum += yy[n] * chebyt(m, xx[n])
+            if m==0 or m==N+1:
+                sum *= 1./N
+            else:
+                sum *= 2./N
+
+            #if ((m > 1 and not final and not tuning) or m>Nout) and abs(sum) < 5e-17*abs(C[s][0]):
+            #    break
+            #if m > Nout:
+            #    raise Exception(f"N={Nout} exceeded")
+            Cs[m] = sum
+
+        # print('%3i %8e %8e %+8e %2i' % (s, asu, bsu, C[s][m-1]/C[s][0], m-1))
+        #for mm in range(m, Nout+1):
+        #    del C[s][-1]
+
+        check_cheb_interpolant(asu, bsu, Cs, hp_f, 316, 2**-52)
+
+        C.append(Cs)
+
+    return C
