@@ -27,38 +27,6 @@ def highprecision_erfcx(x):
             raise Exception(f"mpmath inaccurate")
     return result
 
-def test(asu, bsu, C):
-    """
-    Checks our Chebyshev interpolant against the target function,
-    for lots of points within given subrange.
-    """
-    N = len(C) - 1
-    halfrange = (bsu - asu) / 2
-    center = (bsu + asu) / 2
-    NT = 316 # NT+1 should be incommensurate with N+1
-    for i in range(NT+1):
-        t = cos(i*pi/NT)
-        x = center+halfrange*t
-        yr = highprecision_erfcx(x)
-        mp.dps = 16
-        t = mpf(t)
-        CD = [mpf("%+21.16e" % c) for c in C]
-        ye = fut.cheb(t, CD, N)
-        r = abs((ye-yr)/yr)
-        if r > 2.24e-16:
-            u2 = 0
-            u1 = CD[N]
-            msg = "%2i %+21.17f %+21.17f %+21.17f \n" % (N, CD[N], CD[N]-C[N], u1)
-            for n in reversed(range(1,N)):
-                u = 2*t*u1 - u2 + CD[n]
-                msg += "%2i %+21.17f %+21.17f %+21.17f \n" % (n, C[n], CD[n]-C[n], u)
-                u2 = u1
-                u1 = u
-            msg += "%2i %+21.17f %+21.17f %+21.17f \n" % (0, CD[0], CD[0]-C[0], t*u1 - u2 + CD[0])
-            msg += "%46c %+21.17f \n" % (' ', yr)
-            raise Exception("test failed: i=%i t=%e x=%+21.17f yr=%f err=%+21.17f relerr=%e\n%s" % (i, t, x, yr, ye-yr, r, msg))
-        mp.dps = 48
-
 def subrange(a, b, S, s):
     asu = ((S-s)*a + s*b) / S
     bsu = ((S-s-1)*a + (s+1)*b) / S
@@ -204,7 +172,7 @@ def chebcoef(R, Nout):
         #for mm in range(m, Nout+1):
         #    del C[s][-1]
 
-        test(asu, bsu, Cs)
+        fut.check_cheb_interpolant(asu, bsu, Cs, highprecision_erfcx, 316, 2**-52)
 
         C.append(Cs)
 
