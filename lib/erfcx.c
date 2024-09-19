@@ -48,7 +48,7 @@
  *   recomputed using a Python/mpmath script included in the source repository.
  *   For speed and accuracy, Chebychev subranges are 64th fractions of octaves.
  *   Lookup tables were aligned as as suggested by Alexander Kleinsorge.
- *   Altogether, an accuracy better than 3 epsilon was achieved.
+ *   As a result, inaccuracies for x>0 rarely exceed 3 epsilon.
  *
  *   See also ../CHANGELOG
  *
@@ -1015,7 +1015,7 @@ static double chebInterpolant(double x)
 double erfcx(double x)
 {
     // Steven G. Johnson, October 2012.
-    // Rewritten for relative accuracy better than 3 epsilon by Joachim Wuttke, Sept 2024.
+    // Rewritten for better accuracy by Joachim Wuttke, Sept 2024.
 
     // Uses the following methods:
     // - Asymptotic expansion for large positive x,

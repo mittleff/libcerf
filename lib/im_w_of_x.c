@@ -38,15 +38,16 @@
  *   http://apps.jcns.fz-juelich.de/libcerf
  *
  * Revision history:
- *   The numerics in this file has been entirely reworked by Joachim Wuttke
- *   in September 2024. For large |x|, continuous fractions were replaced with
- *   asymptotic expansions. The small |x| range where Taylor series is used was
- *   expanded. In the middle range, the subdivision in subranges was redone. To avoid
- *   a division, the transformation x -> 1/(1+x) was dropped. Chebyshev coefficients were
- *   recomputed using a Python/mpmath script included in the source repository.
+ *   The numerics in this file has been entirely reworked for greater accuracy
+ *   by Joachim Wuttke in September 2024. For large |x|, continuous fractions
+ *   were replaced with asymptotic expansions. The small |x| range where Taylor
+ *   series is used was expanded. In the middle range, the subdivision in subranges
+ *   was redone. To avoid a division, the transformation x -> 1/(1+x) was dropped.
  *   For speed and accuracy, Chebychev subranges are 64th fractions of octaves.
- *   Lookup tables were aligned as as suggested by Alexander Kleinsorge.
- *   Altogether, an accuracy better than 3 epsilon was achieved.
+ *   Chebyshev coefficients were recomputed using a Python/mpmath script included
+ *   in the source repository. Lookup tables were aligned as as suggested by
+ *   Alexander Kleinsorge.
+ *   As a result, inaccuracies rarely exceed 3 epsilon.
  *
  *   See also ../CHANGELOG
  *
@@ -688,7 +689,7 @@ static double chebInterpolant(double x)
 double im_w_of_x(double x)
 {
     // Steven G. Johnson, October 2012.
-    // Rewritten for relative accuracy better than 3 epsilon by Joachim Wuttke, Sept 2024.
+    // Rewritten for better accuracy by Joachim Wuttke, Sept 2024.
 
     // Uses three different methods:
     // - asymptotic expansion for large |x|,

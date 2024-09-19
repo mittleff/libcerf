@@ -2,17 +2,17 @@
  *   Compute complex error functions, based on a new implementation of
  *   Faddeeva's w_of_z. Also provide Dawson and Voigt functions.
  *
- * File voigttest.c:
+ * File erfcxtest.c:
  *   Test function erfcx
  *
  * Copyright:
- *   (C) 2013 Forschungszentrum Jülich GmbH
+ *   (C) 2024 Forschungszentrum Jülich GmbH
  *
  * Licence:
  *   ../LICENSE
  *
  * Authors:
- *   Joachim Wuttke, Forschungszentrum Jülich, 2013
+ *   Joachim Wuttke, Forschungszentrum Jülich, 2024
  *
  * Website:
  *   http://apps.jcns.fz-juelich.de/libcerf
