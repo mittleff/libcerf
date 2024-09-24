@@ -48,5 +48,5 @@ if __name__ == '__main__':
 
     Nout = 8
     R = fut.octavicRanges(.5, 12., 6)
-    C = fut.chebcoef(R, Nout, hp.imwx, final)
+    C = fut.chebcoeffs(R, Nout, hp.imwx, final)
     fut.print_powerseries_code(R, C, Nout)
