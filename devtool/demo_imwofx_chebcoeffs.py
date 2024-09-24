@@ -1,7 +1,7 @@
 #!/bin/env python
 
-# File pro_imwofx_chebcoeffs.py:
-#   Compute Chebyshev coefficients for Im w(x), and write tables for use in im_w_of_x.c.
+# File demo_imwofx_1cheb.py:
+#   Prints Chebyshev coefficients for Im w(x) for different ranges.
 #
 # Copyright:
 #   (C) 2024 Forschungszentrum Jülich GmbH
@@ -40,13 +40,9 @@ import functool as fut
 import hp_funcs as hp
 
 mp.dps = 48
-mp.pretty = True
-
-final = False # Extra checks, to be turned on in final production run
 
 if __name__ == '__main__':
 
-    Nout = 8
-    R = fut.octavicRanges(.5, 12., 6)
-    C = fut.chebcoef(R, Nout, hp.imwx, final)
-    fut.print_powerseries_code(R, C, Nout)
+    R = [(.5, 12, 0, 0), (.5, 1., 0, 0), (.5, .55, 0, 0), (.5, .505, 0, 0)]
+    C = fut.chebcoef(R, 65, hp.imwx, False, 2**-51)
+    fut.print_cheby_coeffs(R, C)
