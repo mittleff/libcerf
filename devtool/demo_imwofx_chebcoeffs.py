@@ -44,5 +44,5 @@ mp.dps = 48
 if __name__ == '__main__':
 
     R = [(.5, 12, 0, 0), (.5, 1., 0, 0), (.5, .55, 0, 0), (.5, .505, 0, 0)]
-    C = fut.chebcoef(R, 65, hp.imwx, False, 2**-51)
+    C = fut.chebcoeffs(R, 65, hp.imwx, False, 2**-51)
     fut.print_cheby_coeffs(R, C)

@@ -38,7 +38,6 @@
 from mpmath import *
 import functool as fut
 import hp_funcs as hp
-import sys
 
 mp.dps = 48
 mp.pretty = True
@@ -50,8 +49,5 @@ if __name__ == '__main__':
     Nout = 9
 
     R = fut.octavicRanges(.125, 16, 6)
-    C = fut.chebcoef(R, Nout, hp.erfcx, final)
-
-    # fut.print_cheby_coeffs(C)
-    # fut.print_clenshaw_code(R, C, Nout)
+    C = fut.chebcoeffs(R, Nout, hp.erfcx, final)
     fut.print_powerseries_code(R, C, Nout)
