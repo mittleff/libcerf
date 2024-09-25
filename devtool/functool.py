@@ -199,7 +199,7 @@ def chebcoeffs(R, Nout, hp_f, doublecheck, limit=2**-52):
             sum = (yy[0] + (-1)**n * yy[N]) / 2
             for j in range(1,N):
                 sum += yy[j] * chebyt(n, xx[j])
-            if n==0 or n==N+1:
+            if n==0 or n==N:
                 sum *= 1./N
             else:
                 sum *= 2./N
