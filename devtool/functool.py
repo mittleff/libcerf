@@ -195,16 +195,16 @@ def chebcoeffs(R, Nout, hp_f, doublecheck, limit=2**-52):
         xx = [cos(n*pi/N) for n in range(N+1)]
         yy = [hp_f(center+halfrange*xx[n], doublecheck) for n in range(N+1)]
 
-        for m in range(N+1):
-            sum = (yy[0] + (-1)**m * yy[N]) / 2
-            for n in range(1,N):
-                sum += yy[n] * chebyt(m, xx[n])
-            if m==0 or m==N+1:
+        for n in range(N+1):
+            sum = (yy[0] + (-1)**n * yy[N]) / 2
+            for j in range(1,N):
+                sum += yy[j] * chebyt(n, xx[j])
+            if n==0 or n==N+1:
                 sum *= 1./N
             else:
                 sum *= 2./N
 
-            Cs[m] = sum
+            Cs[n] = sum
 
         check_cheb_interpolant(asu, bsu, Cs, hp_f, 316, limit)
 
