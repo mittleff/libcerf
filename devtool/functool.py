@@ -204,15 +204,7 @@ def chebcoeffs(R, Nout, hp_f, doublecheck, limit=2**-52):
             else:
                 sum *= 2./N
 
-            #if ((m > 1 and not final and not tuning) or m>Nout) and abs(sum) < 5e-17*abs(C[s][0]):
-            #    break
-            #if m > Nout:
-            #    raise Exception(f"N={Nout} exceeded")
             Cs[m] = sum
-
-        # print('%3i %8e %8e %+8e %2i' % (s, asu, bsu, C[s][m-1]/C[s][0], m-1))
-        #for mm in range(m, Nout+1):
-        #    del C[s][-1]
 
         check_cheb_interpolant(asu, bsu, Cs, hp_f, 316, limit)
 
