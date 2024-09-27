@@ -666,9 +666,9 @@ static double chebInterpolant(double x)
     const double xm = frexp(x, &je); // from math.h; sets xm and je
 
     // Integer arithmetics to obtain t:
-    const int i = (int)ldexp(xm, M+1) & ((1 << M) - 1); // index in octave
-    const int lij = (je << M) + i - ((j0 << M) + l0); // index in lookup table
-    const int lc = (1 << (M+1)) + 1 + 2*i; // central index
+    const int ip = (int)ldexp(xm, M+1); // index in octave + 2^M
+    const int lij = (je << M) + ip - (((j0+1) << M) + l0); // index in lookup table
+    const int lc = 1 + 2*ip; // central index
     const double t = ldexp(xm, M + 2) - lc; // reduced coordinate t, between -1 and +1
 
     faddeeva_nofterms = lij;
