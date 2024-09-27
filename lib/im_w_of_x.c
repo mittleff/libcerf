@@ -656,18 +656,24 @@ static const double ChebCoeffs[288 * 8] ALIGN(64) = {
 
 static double chebInterpolant(double x)
 {
-    int ie;
-    double xm = frexp(x, &ie);
-    long long ix = ldexp(xm, 53);
+    // Application-specific constants:
+    static const int M = 6; // 2^M subranges
+    static const int j0 = 0; // first octave runs from 2^(j0-1) to 2^j0
+    static const int i0 = 0; // index of x_min in full first octave
 
-    static const int e2nranges = 6; // 2^6=64 Chebyshev interpolants per octave
-    static const int il0 = 0; // first index in first octave
-    int ir = ix >> (52 - e2nranges) & ((1 << e2nranges) - 1); // index of range
-    int il = ie * (1 << e2nranges) + ir - il0; // index in lookup table
+    // For given x, obtain binary mantissa ix and exponent ie:
+    int ie; // will be set in next line
+    const double xm = frexp(x, &ie); // from math.h; sets xm and ie
+    const long long ix = ldexp(xm, 53); // xm*2**53, rounded to long integer
+
+    // Integer arithmetics to obtain t:
+    const int ir = (ix >> (52 - M)) & ((1 << M) - 1); // index of range
+    const int il = ((ie - j0) << M) + ir - i0; // index in lookup table
+    const int ic = (1 << (M+1)) + 2*ir + 1; // proportional to center of subrange
+    const double t = ldexp(xm, M + 2) - ic; // reduced coordinate t, between -1 and +1
+
     faddeeva_nofterms = il;
-    int ic = (1 << (e2nranges+1)) + 2*ir+1; // proportional to center of subrange
-    double t = ldexp(xm, e2nranges + 2) - ic; // position within subrange, between -1 and +1
-    //printf("x=%22.16e -> range #%i, lookup #%i: ic=%i t=%g\n", x, ir, il, ic, t);
+
     const double *const P = ChebCoeffs + (il * 8);
 
     // hard-coded for N1cheb=9
