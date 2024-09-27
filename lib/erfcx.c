@@ -981,23 +981,22 @@ static double chebInterpolant(double x)
     // Application-specific constants:
     static const int M = 6; // 2^M subranges
     static const int j0 = -2; // first octave runs from 2^(j0-1) to 2^j0
-    static const int i0 = 0; // index of x_min in full first octave
+    static const int l0 = 0; // index of x_min in full first octave
 
-    // For given x, obtain binary mantissa ix and exponent ie:
-    int ie; // will be set in next line
-    const double xm = frexp(x, &ie); // from math.h; sets xm and ie
-    const long long ix = ldexp(xm, 53); // xm*2**53, rounded to long integer
+    // For given x, obtain mantissa xm and exponent je:
+    int je; // will be set in next line
+    const double xm = frexp(x, &je); // from math.h; sets xm and je
 
     // Integer arithmetics to obtain t:
-    const int ir = (ix >> (52 - M)) & ((1 << M) - 1); // index of range
-    const int il = ((ie - j0) << M) + ir - i0; // index in lookup table
-    const int ic = (1 << (M+1)) + 2*ir + 1; // proportional to center of subrange
-    const double t = ldexp(xm, M + 2) - ic; // reduced coordinate t, between -1 and +1
+    const int i = (int)ldexp(xm, M+1) & ((1 << M) - 1); // index in octave
+    const int lij = (je << M) + i - ((j0 << M) + l0); // index in lookup table
+    const int lc = (1 << (M+1)) + 1 + 2*i; // central index
+    const double t = ldexp(xm, M + 2) - lc; // reduced coordinate t, between -1 and +1
 
-    faddeeva_nofterms = il;
+    faddeeva_nofterms = lij;
 
-    const double *const P89 = ChebCoeffs89 + (il * 2);
-    const double *const P = ChebCoeffs + (il * 8);
+    const double *const P89 = ChebCoeffs89 + (lij * 2);
+    const double *const P = ChebCoeffs + (lij * 8);
 
     // hard-coded for N1cheb=10
     return (((((((( P89[1] * t
