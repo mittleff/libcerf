@@ -120,4 +120,5 @@ double voigt_hwhm(double sigma, double gamma)
 	}
     }
     assert(0); /* One should never arrive here */
+    return 0;
 }
