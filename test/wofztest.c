@@ -28,7 +28,7 @@
 
 const double errBound = 1e-13;
 
-int main()
+int main(void)
 {
     result_t result = {0, 0};
     /* w(z), computed with WolframAlpha
