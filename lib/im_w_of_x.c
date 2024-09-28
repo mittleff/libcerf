@@ -670,8 +670,7 @@ static double chebInterpolant(double x)
     // Integer arithmetics to obtain reduced coordinate t:
     const int ip = (int)ldexp(xm, M+1); // index in octave + 2^M
     const int lij = je * (1 << M) + ip - loff; // index in lookup table
-    const int lc = 1 + 2*ip; // central index
-    const double t = ldexp(xm, M + 2) - lc;
+    const double t = ldexp(xm, M + 2) - 1 - 2*ip;
 
     faddeeva_nofterms = lij;
 
