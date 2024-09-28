@@ -5,6 +5,8 @@ libcerf-2.5
   - Reworked numerics of erfcx and im_w_of_x to achieve an accuracy of a few epsilon.
   - Minor optimization of width.c (contributed by Alexander Kleinsorge)
   - For arbitrary numeric constants, choose powers of 2 (suggested by Alexander Kleinsorge)
+  - Provide compiler switch CERF_INTROSPECT to activate or suppress introspection
+	variables cerf_algorithm and cerf_nofterms (not thread-safe)
 
 libcerf-2.4, released 2aug23:
   - CMake: runtime destination corrected (bin, not lib)

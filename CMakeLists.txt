@@ -12,6 +12,9 @@ endif()
 if(NOT DEFINED LIB_RUN)
     option(LIB_RUN "Build executables for command-line computation" ON)
 endif()
+if(NOT DEFINED CERF_INTROSPECT)
+    option(CERF_INTROSPECT "Provide variables cerf_algorithm and cerf_nofterms to inform about used computation" OFF)
+endif()
 if(NOT DEFINED CERF_CPP)
     option(CERF_CPP "Build libcerf as native C++" OFF)
 endif()
@@ -32,8 +35,16 @@ else()
     set(CMAKE_C_STANDARD 11)
 endif()
 
+if (CERF_INTROSPECT)
+    if(MSVC)
+        add_compile_options(/DCERF_INTROSPECT)
+    else()
+        add_compile_options(-DCERF_INTROSPECT)
+    endif()
+endif()
+
 set(CERF_SOVERSION                 2) # API version
-set(CERF_VERSION ${CERF_SOVERSION}.4) # minor version
+set(CERF_VERSION ${CERF_SOVERSION}.5) # minor version
 
 include(GNUInstallDirs)
 
