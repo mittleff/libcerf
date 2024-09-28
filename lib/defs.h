@@ -28,8 +28,6 @@
 #include "c.h"
 #endif
 
-#if (defined(__GNUC__))
-#define ALIGN(N) __attribute__((aligned(N))) // 64 byte is x64 cache line size
-#else
-#define ALIGN(N)
+#ifndef CERF_AS_CPP
+#define alignas _Alignas // C23 will do this for us
 #endif
