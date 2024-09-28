@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-IMPORT extern int faddeeva_algorithm;
+IMPORT extern int cerf_algorithm;
 IMPORT extern int cerf_nofterms;
 
 int main(int argc, char **argv) {
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
   v[0][0] = creal(w);
   v[0][1] = cimag(w);
 
-  printf("%25.19g %25.19g %3i %3i\n", v[0][0], v[0][1], faddeeva_algorithm,
+  printf("%25.19g %25.19g %3i %3i\n", v[0][0], v[0][1], cerf_algorithm,
          cerf_nofterms);
   return 0;
 }

@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-IMPORT extern int faddeeva_algorithm;
+IMPORT extern int cerf_algorithm;
 IMPORT extern int cerf_nofterms;
 
 int main(int argc, char **argv) {
@@ -39,6 +39,6 @@ int main(int argc, char **argv) {
   g = atof(argv[3]);
 
   double y = voigt(x, s, g);
-  printf("%25.19g %3i %3i\n", y, faddeeva_algorithm, cerf_nofterms);
+  printf("%25.19g %3i %3i\n", y, cerf_algorithm, cerf_nofterms);
   return 0;
 }
