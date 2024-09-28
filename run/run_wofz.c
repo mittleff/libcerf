@@ -23,8 +23,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef CERF_INTROSPECT
 IMPORT extern int cerf_algorithm;
 IMPORT extern int cerf_nofterms;
+#endif
 
 int main(int argc, char **argv) {
   double x, y;
@@ -44,7 +46,10 @@ int main(int argc, char **argv) {
   v[0][0] = creal(w);
   v[0][1] = cimag(w);
 
-  printf("%25.19g %25.19g %3i %3i\n", v[0][0], v[0][1], cerf_algorithm,
-         cerf_nofterms);
+#ifdef CERF_INTROSPECT
+  printf("%25.19g %25.19g %3i %3i\n", v[0][0], v[0][1], cerf_algorithm, cerf_nofterms);
+#else
+  printf("%25.19g %25.19g\n", v[0][0], v[0][1]);
+#endif
   return 0;
 }

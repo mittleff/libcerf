@@ -22,8 +22,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef CERF_INTROSPECT
 IMPORT extern int cerf_algorithm;
 IMPORT extern int cerf_nofterms;
+#endif
 
 int main(int argc, char **argv) {
   double x, s, g;
@@ -39,6 +41,11 @@ int main(int argc, char **argv) {
   g = atof(argv[3]);
 
   double y = voigt(x, s, g);
+
+#ifdef CERF_INTROSPECT
   printf("%25.19g %3i %3i\n", y, cerf_algorithm, cerf_nofterms);
+#else
+  printf("%25.19g\n", y);
+#endif
   return 0;
 }
