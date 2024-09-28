@@ -996,7 +996,9 @@ static double chebInterpolant(double x) {
   const int lij = je * (1 << M) + ip - loff; // index in lookup table
   const double t = ldexp(xm, M + 2) - 1 - 2 * ip;
 
+#ifdef CERF_INTROSPECT
   cerf_nofterms = lij;
+#endif
 
   const double *const P89 = ChebCoeffs89 + (lij * 2);
   const double *const P = ChebCoeffs + (lij * 8);
@@ -1104,7 +1106,9 @@ double erfcx(double x) {
 #endif
     if (x < 150) {
       if (x < 23.2) {
+#ifdef CERF_INTROSPECT
         cerf_nofterms = 11; // N=10
+#endif
         return (((((((((((+3.6073371500083758e+05) * (r * r) -
                          3.7971970000088164e+04) *
                             (r * r) +
@@ -1127,7 +1131,9 @@ double erfcx(double x) {
                 5.6418958354775628e-01) *
                r;
       }
+#ifdef CERF_INTROSPECT
       cerf_nofterms = 7; // N=6
+#endif
       return (((((((+9.1636730015295726e+01) * (r * r) -
                    1.6661223639144676e+01) *
                       (r * r) +
@@ -1144,7 +1150,9 @@ double erfcx(double x) {
     }
 
     if (x < 6.9e7) {
+#ifdef CERF_INTROSPECT
       cerf_nofterms = 4; // N = 3
+#endif
       return ((((-1.0578554691520430e+00) * (r * r) + 4.2314218766081724e-01) *
                    (r * r) -
                2.8209479177387814e-01) *
@@ -1153,7 +1161,9 @@ double erfcx(double x) {
              r;
     }
 
+#ifdef CERF_INTROSPECT
     cerf_nofterms = 1; // N = 0: 1-term expansion, important to avoid overflow
+#endif
     return 0.56418958354775629 / x;
   }
 
