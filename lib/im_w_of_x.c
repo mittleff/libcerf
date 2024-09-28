@@ -661,7 +661,7 @@ static double chebInterpolant(double x)
     static const int M = 6; // 2^M subranges
     static const int j0 = 0; // first octave runs from 2^(j0-1) to 2^j0
     static const int l0 = 0; // index of x_min in full first octave
-    static const int loff = ((j0+1) * (1 << M)) + l0; // precomputed offset
+    static const int loff = (j0+1) * (1<<M) + l0; // precomputed offset
 
     // For given x, obtain mantissa xm and exponent je:
     int je; // will be set in next line
@@ -669,7 +669,7 @@ static double chebInterpolant(double x)
 
     // Integer arithmetics to obtain reduced coordinate t:
     const int ip = (int)ldexp(xm, M+1); // index in octave + 2^M
-    const int lij = je * (1 << M) + ip - loff; // index in lookup table
+    const int lij = je * (1<<M) + ip - loff; // index in lookup table
     const double t = ldexp(xm, M + 2) - 1 - 2*ip;
 
     faddeeva_nofterms = lij;
