@@ -18,28 +18,27 @@
  *   http://apps.jcns.fz-juelich.de/libcerf
  */
 
+#include "cerf.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "cerf.h"
 
 IMPORT extern int faddeeva_algorithm;
-IMPORT extern int faddeeva_nofterms;
+IMPORT extern int cerf_nofterms;
 
-int main( int argc, char **argv )
-{
-    double x, s, g;
+int main(int argc, char **argv) {
+  double x, s, g;
 
-    if( argc!=4 ){
-        fprintf( stderr,  "usage:\n" );
-        fprintf( stderr,  "   run_voigt <x> <sigma> <gamma>\n" );
-        exit(-1);
-    }
+  if (argc != 4) {
+    fprintf(stderr, "usage:\n");
+    fprintf(stderr, "   run_voigt <x> <sigma> <gamma>\n");
+    exit(-1);
+  }
 
-    x = atof( argv[1] );
-    s = atof( argv[2] );
-    g = atof( argv[3] );
+  x = atof(argv[1]);
+  s = atof(argv[2]);
+  g = atof(argv[3]);
 
-    double y = voigt(x,s,g);
-    printf( "%25.19g %3i %3i\n", y, faddeeva_algorithm, faddeeva_nofterms );
-    return 0;
+  double y = voigt(x, s, g);
+  printf("%25.19g %3i %3i\n", y, faddeeva_algorithm, cerf_nofterms);
+  return 0;
 }

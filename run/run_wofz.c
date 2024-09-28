@@ -18,34 +18,33 @@
  *   http://apps.jcns.fz-juelich.de/libcerf
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "cerf.h"
 #include "defs.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 IMPORT extern int faddeeva_algorithm;
-IMPORT extern int faddeeva_nofterms;
+IMPORT extern int cerf_nofterms;
 
-int main( int argc, char **argv )
-{
-    double x, y;
+int main(int argc, char **argv) {
+  double x, y;
 
-    if( argc!=3 ){
-        fprintf( stderr,  "usage:\n" );
-        fprintf( stderr,  "   run_wofz <x> <y>\n" );
-        exit(-1);
-    }
+  if (argc != 3) {
+    fprintf(stderr, "usage:\n");
+    fprintf(stderr, "   run_wofz <x> <y>\n");
+    exit(-1);
+  }
 
-    x = atof( argv[1] );
-    y = atof( argv[2] );
+  x = atof(argv[1]);
+  y = atof(argv[2]);
 
-    _cerf_cmplx w = w_of_z( C(x,y) );
+  _cerf_cmplx w = w_of_z(C(x, y));
 
-    double v[2][2];
-    v[0][0] = creal(w);
-    v[0][1] = cimag(w);
+  double v[2][2];
+  v[0][0] = creal(w);
+  v[0][1] = cimag(w);
 
-    printf( "%25.19g %25.19g %3i %3i\n", v[0][0], v[0][1],
-            faddeeva_algorithm, faddeeva_nofterms );
-    return 0;
+  printf("%25.19g %25.19g %3i %3i\n", v[0][0], v[0][1], faddeeva_algorithm,
+         cerf_nofterms);
+  return 0;
 }
