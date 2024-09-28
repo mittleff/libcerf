@@ -6,6 +6,7 @@ mac_x64:
   - mac_x64_cloud
   stage: build
   script: &macbuild
+    - uname -a
     - OPTDIR=/Users/Shared/Software/scg
     - mkdir build
     - cd build
@@ -66,6 +67,7 @@ Debian_gcc:
   tags:
   - Debian
   before_script: &debian_clang
+    - uname -a
     - export CC=gcc; export CXX=g++
     - cmake --version
     - clang --version
