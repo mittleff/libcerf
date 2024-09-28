@@ -35,8 +35,16 @@ else()
     set(CMAKE_C_STANDARD 11)
 endif()
 
+if (CERF_INTROSPECT)
+    if(MSVC)
+        add_compile_options(/DCERF_INTROSPECT)
+    else()
+        add_compile_options(-DCERF_INTROSPECT)
+    endif()
+endif()
+
 set(CERF_SOVERSION                 2) # API version
-set(CERF_VERSION ${CERF_SOVERSION}.4) # minor version
+set(CERF_VERSION ${CERF_SOVERSION}.5) # minor version
 
 include(GNUInstallDirs)
 
