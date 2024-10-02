@@ -37,7 +37,7 @@
  *
  * Authors:
  *   Steven G. Johnson, Massachusetts Institute of Technology, 2012, core author
- *   Joachim Wuttke, Forschungszentrum Jülich, 2013, package maintainer
+ *   Joachim Wuttke, Forschungszentrum Jülich, 2013, 2024
  *
  * Website:
  *   http://apps.jcns.fz-juelich.de/libcerf
@@ -159,8 +159,6 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     cerf_nofterms = 0;
 #endif
 
-    // Steven G. Johnson, October 2012.
-
     if (creal(z) == 0.0) {
 #ifdef CERF_INTROSPECT
         cerf_algorithm = 400;
@@ -185,11 +183,122 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     const double c = 0.329973702884629072537;  // (2/pi) * a;
     const double a2 = 0.268657157075235951582; // a^2
 
+    const double xs = creal(z);
     const double x = fabs(creal(z));
     const double y = cimag(z);
     const double ya = fabs(y);
+    const double z2 = xs*xs + y*y;
 
     _cerf_cmplx ret = 0.; // return value
+
+    if (z2 > 49) {
+	/*
+	   Use asymptotic expansion for |z| > 7.
+	*/
+
+#ifdef CERF_INTROSPECT
+        cerf_algorithm = 700;
+#endif
+	const _cerf_cmplx r = C(xs/z2, -ya/z2); // 1/z. Using z2, which we already have.
+
+	if (z2 > 22500) {
+	    if (z2 > 4.8e15) {
+#ifdef CERF_INTROSPECT
+		cerf_nofterms = 1;
+#endif
+                /*
+		   Compute 1/z in differently scaled ways to avoid overflow.
+		*/
+                if (x > ya) {
+#ifdef CERF_INTROSPECT
+                    cerf_algorithm = 101;
+#endif
+                    const double yax = ya / xs;
+                    const double denom = 0.56418958354775629 / (xs + yax*ya);
+                    ret = C(denom*yax, denom);
+                } else if (isinf(ya)) {
+#ifdef CERF_INTROSPECT
+                    cerf_algorithm = 102;
+#endif
+                    return ((isnan(x) || y < 0) ? C(NaN, NaN) : C(0, 0));
+                } else {
+#ifdef CERF_INTROSPECT
+                    cerf_algorithm = 103;
+#endif
+                    const double xya = xs / ya;
+                    const double denom = 0.56418958354775629 / (xya*xs + ya);
+                    ret = C(denom, denom*xya);
+                }
+
+	    } else {
+#ifdef CERF_INTROSPECT
+		cerf_nofterms = 4;
+#endif
+		ret = ((((
+		  + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
+		 + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
+		+ C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
+	       + C(0, 5.6418958354775628e-01) ) * r; // n=0
+	    }
+
+	} else {
+	    if (z2 > 540) {
+#ifdef CERF_INTROSPECT
+		cerf_nofterms = 11;
+#endif
+		ret = ((((((((((((
+				     + C(0, 3.7877040075087948e+06) ) * (r*r) // n=11
+				 + C(0, 3.6073371500083758e+05) ) * (r*r) // n=10
+				+ C(0, 3.7971970000088164e+04) ) * (r*r) // n=9
+			       + C(0, 4.4672905882456671e+03) ) * (r*r) // n=8
+			      + C(0, 5.9563874509942218e+02) ) * (r*r) // n=7
+			     + C(0, 9.1636730015295726e+01) ) * (r*r) // n=6
+			    + C(0, 1.6661223639144676e+01) ) * (r*r) // n=5
+			   + C(0, 3.7024941420321507e+00) ) * (r*r) // n=4
+			  + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
+			 + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
+			+ C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
+		       + C(0, 5.6418958354775628e-01) ) * r; // n=0
+
+	    } else {
+#ifdef CERF_INTROSPECT
+		cerf_nofterms = 19;
+#endif
+	ret = ((((((((((((((((((((
+				     + C(0, 8.8249260943025370e+15) ) * (r*r) // n=19
+				 + C(0, 4.7702303212446150e+14) ) * (r*r) // n=18
+				+ C(0, 2.7258458978540656e+13) ) * (r*r) // n=17
+			       + C(0, 1.6520278168812520e+12) ) * (r*r) // n=16
+			      + C(0, 1.0658243979879044e+11) ) * (r*r) // n=15
+			     + C(0, 7.3505130895717545e+09) ) * (r*r) // n=14
+			    + C(0, 5.4448245107938921e+08) ) * (r*r) // n=13
+			   + C(0, 4.3558596086351141e+07) ) * (r*r) // n=12
+			  + C(0, 3.7877040075087948e+06) ) * (r*r) // n=11
+			 + C(0, 3.6073371500083758e+05) ) * (r*r) // n=10
+			+ C(0, 3.7971970000088164e+04) ) * (r*r) // n=9
+		       + C(0, 4.4672905882456671e+03) ) * (r*r) // n=8
+		      + C(0, 5.9563874509942218e+02) ) * (r*r) // n=7
+		     + C(0, 9.1636730015295726e+01) ) * (r*r) // n=6
+		    + C(0, 1.6661223639144676e+01) ) * (r*r) // n=5
+		   + C(0, 3.7024941420321507e+00) ) * (r*r) // n=4
+		  + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
+		 + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
+		+ C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
+	       + C(0, 5.6418958354775628e-01) ) * r; // n=0
+	    }
+	}
+        if (y < 0) {
+            /*
+	       use w(z) = 2.0*exp(-z*z) - w(-z),
+               but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
+	    */
+#ifdef CERF_INTROSPECT
+            cerf_algorithm += 10;
+#endif
+            return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
+        } else
+            return ret;
+    }
 
     double sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0;
 

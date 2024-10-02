@@ -4,7 +4,7 @@ libcerf-2.5
   - Required C standard now C11 instead of C99
   - Reworked numerics of erfcx and im_w_of_x to achieve an accuracy of a few epsilon.
   - Minor optimization of width.c (contributed by Alexander Kleinsorge)
-  - For arbitrary numeric constants, choose powers of 2 (suggested by Alexander Kleinsorge)
+  - Prefer look-up tables over long switch statements (advocated by Alexander Kleinsorge)
   - Provide compiler switch CERF_INTROSPECT to activate or suppress introspection
 	variables cerf_algorithm and cerf_nofterms (not thread-safe)
 
