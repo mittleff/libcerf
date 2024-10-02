@@ -92,3 +92,16 @@ def bisect(range_mode, r0, a0, n0, r2, a2, n2):
         bisect(range_mode, r0, a0, n0, r1, a1, n1)
     if (a1 != a2 or n1 != n2):
         bisect(range_mode, r1, a1, n1, r2, a2, n2)
+
+# Reporting.
+
+def print_conclusion():
+    if 'w' in this.output_mode:
+        print("this.worst: at x=%22.16e relerr=%8e" % (this.worst_x, this.worst_relerr))
+        rr, f, a , n = this.compute_at(this.worst_x)
+        print("   f(x):", f)
+        f2 = this.hp_f(this.worst_x, True)
+        print("   highprec:", f2)
+        print("   dx_rel:  %g" % ((rr-this.worst_x)/this.worst_x))
+        print("   dy_rel:  %g" % ((f-f2)/f2))
+        print("   algo:    ", a, n)

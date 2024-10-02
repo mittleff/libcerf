@@ -64,12 +64,5 @@ if __name__ == '__main__':
         r0 = r2
         a0 = a2
         n0 = n2
-    if 'w' in rt.output_mode:
-        print("rt.worst: at x=%22.16e relerr=%8e" % (rt.worst_x, rt.worst_relerr))
-        rr, f, a , n = rt.compute_at(rt.worst_x)
-        print("   f(x):", f)
-        f2 = rt.hp_f(rt.worst_x, True)
-        print("   highprec:", f2)
-        print("   dx_rel:  %g" % ((rr-rt.worst_x)/rt.worst_x))
-        print("   dy_rel:  %g" % ((f-f2)/f2))
-        print("   algo:    ", a, n)
+
+    rt.print_conclusion()
