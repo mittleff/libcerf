@@ -12,6 +12,8 @@ import runtool as rt
 mp.dps = 48
 mp.pretty = True
 
+rt.f_ext = rt.external_function1d
+
 if __name__ == '__main__':
     rt.worst_relerr = 0
     rt.worst_x = 0
@@ -24,13 +26,13 @@ if __name__ == '__main__':
         sys.exit(-1)
     if sys.argv[1] == 'i':
         rt.external_program = "run/run_imwx"
-        rt.hp_f = hp.imwx
+        rt.f_hp = hp.imwx
     elif sys.argv[1] == 'x':
         rt.external_program = "run/run_erfcx"
-        rt.hp_f = hp.erfcx
+        rt.f_hp = hp.erfcx
     else:
         raise Exception("Invalid fct")
-    range_mode = sys.argv[2]
+    rt.range_mode = sys.argv[2]
     Ni = int(sys.argv[3])
     x_fr = float(sys.argv[4])
     x_to = float(sys.argv[5])
@@ -38,31 +40,18 @@ if __name__ == '__main__':
 
     assert(x_fr < x_to)
 
-    if range_mode == 'l':
+    if rt.range_mode == 'l':
         x_range = x_to-x_fr
         step = x_range/(Ni-1)
         X = [x_fr + i*step for i in range(Ni)]
-    elif range_mode == 'p':
+    elif rt.range_mode == 'p':
         assert(0 < x_fr)
         step = log10(x_to/x_fr)/(Ni-1)
         X = [x_fr * 10**(i*step) for i in range(Ni)]
-    elif range_mode == 'n':
+    elif rt.range_mode == 'n':
         assert(x_to < 0)
         step = log10(x_to/x_fr)/(Ni-1)
         X = [x_fr * 10**(i*step) for i in range(Ni)]
 
-    r0 = None
-    a0 = None
-    n0 = None
-
-    for i in range(Ni):
-        r2 = X[i]
-        wr, wi, a2, n2 = rt.external_computation(r2)
-        rt.check_at(0, r2)
-        if i > 0 and (a2 != a0 or n2 != n0):
-            rt.bisect(range_mode, r0, a0, n0, r2, a2, n2)
-        r0 = r2
-        a0 = a2
-        n0 = n2
-
+    rt.scan_and_bisect(X)
     rt.print_conclusion()

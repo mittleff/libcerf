@@ -37,17 +37,17 @@ import subprocess, sys
 
 this = sys.modules[__name__]
 
-### C function to be tested.
+### Run C function to be tested.
 
-def external_computation(r):
+def external_function1d(x):
     """
-    Computes function value f(r) by calling an external program.
+    Evaluates a one-dimensional real function f(x) by calling an external program.
     Rounds r to 53 binary digits to avoid loss of precision in external program.
-    Returns tuple (r, f(r), algorithm_number, number_of_terms).
+    Returns tuple (x, f(x), algorithm_number, number_of_terms).
     """
     mp.bps = 53
-    x = mpf(r)
-    xs = "%22.16e" % x
+    xhp = mpf(x)
+    xs = "%22.16e" % xhp
     a1 = subprocess.run([this.external_program, xs], stdout=subprocess.PIPE)
     try:
         a2 = a1.stdout.decode('utf-8').split()
@@ -58,15 +58,15 @@ def external_computation(r):
         print("Could not read back from C call")
         sys.exit(1)
     if a3[0] != mpf(xs):
-        raise Exception(f"failed double-string cycle {r} -> {x} -> {xs} -> {a3[0]} ({(r-a3[0])/r})")
+        raise Exception(f"failed double-string cycle {x} -> {xhp} -> {xs} -> {a3[0]} ({(r-a3[0])/r})")
     mp.dps = 48
     return a3
 
 ### Bisection.
 
 def check_at(locus, r):
-    rr, f, a , n = external_computation(r)
-    f2 = this.hp_f(rr)
+    rr, f, a , n = this.f_ext(r)
+    f2 = this.f_hp(rr)
     F = '%2i %3i %3i  %21.16e %21.16e  %8e %8e'
     relerr = abs(f-f2)/f2
     if relerr > this.worst_relerr:
@@ -91,20 +91,39 @@ def bisect(range_mode, r0, a0, n0, r2, a2, n2):
         r1 = sqrt(r0*r2)
     elif range_mode == 'n':
         r1 = -sqrt(r0*r2)
-    wr, wi, a1, n1 = external_computation(r1)
+    wr, wi, a1, n1 = this.f_ext(r1)
     if (a0 != a1 or n0 != n1):
         bisect(range_mode, r0, a0, n0, r1, a1, n1)
     if (a1 != a2 or n1 != n2):
         bisect(range_mode, r1, a1, n1, r2, a2, n2)
+
+def scan_and_bisect(X):
+    """
+    Computes relative accuracy for all x in X.
+    Furthermore, does a bisection whenever algorithm or number of terms has changed.
+    """
+    r0 = None
+    a0 = None
+    n0 = None
+
+    for i in range(len(X)):
+        r2 = X[i]
+        wr, wi, a2, n2 = f_ext(r2)
+        check_at(0, r2)
+        if i > 0 and (a2 != a0 or n2 != n0):
+            bisect(range_mode, r0, a0, n0, r2, a2, n2)
+        r0 = r2
+        a0 = a2
+        n0 = n2
 
 # Reporting.
 
 def print_conclusion():
     if 'w' in this.output_mode:
         print("this.worst: at x=%22.16e relerr=%8e" % (this.worst_x, this.worst_relerr))
-        rr, f, a , n = this.external_computation(this.worst_x)
+        rr, f, a , n = this.this.f_ext(this.worst_x)
         print("   f(x):", f)
-        f2 = this.hp_f(this.worst_x, True)
+        f2 = this.f_hp(this.worst_x, True)
         print("   highprec:", f2)
         print("   dx_rel:  %g" % ((rr-this.worst_x)/this.worst_x))
         print("   dy_rel:  %g" % ((f-f2)/f2))
