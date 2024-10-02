@@ -183,11 +183,10 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     const double c = 0.329973702884629072537;  // (2/pi) * a;
     const double a2 = 0.268657157075235951582; // a^2
 
-    const double xs = creal(z);
     const double x = fabs(creal(z));
     const double y = cimag(z);
     const double ya = fabs(y);
-    const double z2 = xs*xs + y*y;
+    const double z2 = x*x + y*y;
 
     _cerf_cmplx ret = 0.; // return value
 
@@ -200,7 +199,6 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 #ifdef CERF_INTROSPECT
         cerf_algorithm = 550;
 #endif
-
         if (z2 < .00689) {
             if (z2 < 4e-7) {
 #ifdef CERF_INTROSPECT
@@ -302,6 +300,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 #ifdef CERF_INTROSPECT
         cerf_algorithm = 700;
 #endif
+	const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
         const _cerf_cmplx r = C(xs/z2, -ya/z2); // 1/z. Using z2, which we already have.
 
         if (z2 > 22500) {
