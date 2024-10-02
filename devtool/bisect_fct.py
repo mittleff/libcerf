@@ -1,7 +1,15 @@
 #!/bin/env python
 
 """
-Check correctness of certain functions, especially at argument values where the algorithm changes.
+Computes accuracy of external implementation of selected function
+by comparison with an internal high-precision function.
+
+The comparison is done for x from a linear or logarithmic grid,
+and for additional points obtained by bisection around points
+where the employed algorithm or number of terms has changed.
+
+Output is either a table with one line for each x,
+or a report on the worst case (the x with largest inaccuracy of f(x)).
 """
 
 from mpmath import *
