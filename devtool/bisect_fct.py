@@ -23,10 +23,10 @@ if __name__ == '__main__':
         print(f"   where <output_mode> is any of t (tabulate) w(print_worst)")
         sys.exit(-1)
     if sys.argv[1] == 'i':
-        rt.run_fct_name = "imwx"
+        rt.external_program = "run/run_imwx"
         rt.hp_f = hp.imwx
     elif sys.argv[1] == 'x':
-        rt.run_fct_name = "erfcx"
+        rt.external_program = "run/run_erfcx"
         rt.hp_f = hp.erfcx
     else:
         raise Exception("Invalid fct")
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     for i in range(Ni):
         r2 = X[i]
-        wr, wi, a2, n2 = rt.compute_at(r2)
+        wr, wi, a2, n2 = rt.external_computation(r2)
         rt.check_at(0, r2)
         if i > 0 and (a2 != a0 or n2 != n0):
             rt.bisect(range_mode, r0, a0, n0, r2, a2, n2)

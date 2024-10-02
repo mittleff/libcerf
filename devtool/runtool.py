@@ -39,12 +39,16 @@ this = sys.modules[__name__]
 
 ### C function to be tested.
 
-def compute_at(r):
+def external_computation(r):
+    """
+    Computes function value f(r) by calling an external program.
+    Rounds r to 53 binary digits to avoid loss of precision in external program.
+    Returns tuple (r, f(r), algorithm_number, number_of_terms).
+    """
     mp.bps = 53
     x = mpf(r)
-    fname = this.run_fct_name
     xs = "%22.16e" % x
-    a1 = subprocess.run(['run/run_' + fname, xs], stdout=subprocess.PIPE)
+    a1 = subprocess.run([this.external_program, xs], stdout=subprocess.PIPE)
     try:
         a2 = a1.stdout.decode('utf-8').split()
         a3 = [mpf(a2[0]), mpf(a2[1]), int(a2[2]), int(a2[3])]
@@ -61,7 +65,7 @@ def compute_at(r):
 ### Bisection.
 
 def check_at(locus, r):
-    rr, f, a , n = compute_at(r)
+    rr, f, a , n = external_computation(r)
     f2 = this.hp_f(rr)
     F = '%2i %3i %3i  %21.16e %21.16e  %8e %8e'
     relerr = abs(f-f2)/f2
@@ -87,7 +91,7 @@ def bisect(range_mode, r0, a0, n0, r2, a2, n2):
         r1 = sqrt(r0*r2)
     elif range_mode == 'n':
         r1 = -sqrt(r0*r2)
-    wr, wi, a1, n1 = compute_at(r1)
+    wr, wi, a1, n1 = external_computation(r1)
     if (a0 != a1 or n0 != n1):
         bisect(range_mode, r0, a0, n0, r1, a1, n1)
     if (a1 != a2 or n1 != n2):
@@ -98,7 +102,7 @@ def bisect(range_mode, r0, a0, n0, r2, a2, n2):
 def print_conclusion():
     if 'w' in this.output_mode:
         print("this.worst: at x=%22.16e relerr=%8e" % (this.worst_x, this.worst_relerr))
-        rr, f, a , n = this.compute_at(this.worst_x)
+        rr, f, a , n = this.external_computation(this.worst_x)
         print("   f(x):", f)
         f2 = this.hp_f(this.worst_x, True)
         print("   highprec:", f2)
