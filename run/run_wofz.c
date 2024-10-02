@@ -47,9 +47,10 @@ int main(int argc, char **argv) {
   v[0][1] = cimag(w);
 
 #ifdef CERF_INTROSPECT
-  printf("%25.19g %25.19g %3i %3i\n", v[0][0], v[0][1], cerf_algorithm, cerf_nofterms);
+  printf("%21.16e %21.16e  %22.17e %22.17e  %3i %3i\n",
+	 x, y, v[0][0], v[0][1], cerf_algorithm, cerf_nofterms);
 #else
-  printf("%25.19g %25.19g\n", v[0][0], v[0][1]);
+  printf("%21.16e %21.16e  %22.17e %22.17e\n", x, y, v[0][0], v[0][1]);
 #endif
   return 0;
 }

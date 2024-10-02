@@ -58,7 +58,33 @@ def external_function1d(x):
         print("Could not read back from C call")
         sys.exit(1)
     if a3[0] != mpf(xs):
-        raise Exception(f"failed double-string cycle {x} -> {xhp} -> {xs} -> {a3[0]} ({(r-a3[0])/r})")
+        raise Exception(f"failed double-string cycle {x} -> {xhp} -> {xs} -> {a3[0]} ({(x-a3[0])/x})")
+    mp.dps = 48
+    return a3
+
+def external_function2d(x, y):
+    """
+    Evaluates a two-dimensional complex function f(z) by calling an external program.
+    Rounds Re z and Im z to 53 binary digits to avoid loss of precision in external program.
+    Returns tuple (z, f(z), algorithm_number, number_of_terms).
+    """
+    mp.bps = 53
+    xhp, yhp = mpf(x), mpf(y)
+    xs, ys = "%22.16e" % xhp, "%22.16e" % yhp
+    a1 = subprocess.run([external_program, xs, ys], stdout=subprocess.PIPE)
+    try:
+        a2 = a1.stdout.decode('utf-8').split()
+        a3 = [mpc(a2[0], a2[1]), mpc(a2[2], a2[3]), int(a2[4]), int(a2[5])]
+    except:
+        print("x:", x)
+        print("y:", y)
+        print("a:", a1)
+        print("Could not read back from C call")
+        sys.exit(1)
+    if re(a3[0]) != mpf(xs):
+        raise Exception(f"failed double-string cycle x: {x} -> {xhp} -> {xs} -> {re(a3[0])} ({(x-re(a3[0]))/x})")
+    if im(a3[0]) != mpf(ys):
+        raise Exception(f"failed double-string cycle y: {y} -> {yhp} -> {ys} -> {im(a3[0])} ({(y-im(a3[0]))/y})")
     mp.dps = 48
     return a3
 
@@ -67,13 +93,12 @@ def external_function1d(x):
 def check_at(locus, r):
     rr, f, a , n = f_ext(r)
     f2 = f_hp(rr)
-    F = '%2i %3i %3i  %21.16e %21.16e  %8e %8e'
-    relerr = abs(f-f2)/f2
+    relerr = abs((f-f2)/f2)
     if relerr > this.worst_relerr:
         this.worst_x = rr
         this.worst_relerr = relerr
     if 't' in this.output_mode:
-        print(F % (locus, a, n, rr, f, (f-f2)/f2, relerr))
+        print_line(locus, a, n, rr, f, f2)
 
 def bisect(range_mode, r0, a0, n0, r2, a2, n2):
     assert(r0 < r2)
