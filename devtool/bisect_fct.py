@@ -6,30 +6,10 @@ Check correctness of certain functions, especially at argument values where the 
 
 from mpmath import *
 import subprocess, sys
+import hp_funcs as hp
 
 mp.dps = 48
 mp.pretty = True
-
-### Highprecision functions.
-
-def dawson_kernel(t):
-    return exp(t**2)
-
-def hp_imwx(x, doublecheck=False):
-    fz = exp(-x**2)*erfc(mpc(0, -x))
-    result = fz.imag
-    if doublecheck:
-        # Check mpmath-computed reference value against mpmath-based brute-force integration
-        r2 = 2/sqrt(pi) * exp(-x**2) * quad(dawson_kernel, [0, x])
-        if abs(result-r2)/result > 1e-17:
-            raise Exception(f"mpmath inaccurate")
-    return result
-
-def hp_erfcx(x, doublecheck=False):
-    result = exp(x**2)*erfc(x)
-    if doublecheck:
-        pass
-    return result
 
 ### C function to be tested.
 
@@ -103,13 +83,10 @@ if __name__ == '__main__':
         sys.exit(-1)
     if sys.argv[1] == 'i':
         run_fct_name = "imwx"
-        hp_f = hp_imwx
+        hp_f = hp.imwx
     elif sys.argv[1] == 'x':
         run_fct_name = "erfcx"
-        hp_f = hp_erfcx
-    elif sys.argv[1] == 'xm':
-        run_fct_name = "erfcxm"
-        hp_f = hp_erfcxm
+        hp_f = hp.erfcx
     else:
         raise Exception("Invalid fct")
     range_mode = sys.argv[2]
