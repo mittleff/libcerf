@@ -102,6 +102,9 @@ def scan_and_bisect(X):
     Computes relative accuracy for all x in X.
     Furthermore, does a bisection whenever algorithm or number of terms has changed.
     """
+    this.worst_relerr = 0
+    this.worst_x = 0
+
     r0 = None
     a0 = None
     n0 = None

@@ -23,9 +23,6 @@ mp.pretty = True
 rt.f_ext = rt.external_function1d
 
 if __name__ == '__main__':
-    rt.worst_relerr = 0
-    rt.worst_x = 0
-
     if len(sys.argv)<7:
         print(f"Usage: {sys.argv[0]} <fct> <range_mode> <N> <from> <to> <output_mode>")
         print(f"   where <fct>         is any of i (im_wofx) x (erfcx) xm(erfcx(-x))")
