@@ -220,8 +220,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 		    cerf_algorithm = 101;
 #endif
 		    const double yax = ya / xs;
-		    const double denom = ispi / (xs + yax * ya);
-		    ret = C(denom * yax, denom);
+		    const double denom = ispi / (xs + yax*ya);
+		    ret = C(denom*yax, denom);
 		} else if (isinf(ya)) {
 #ifdef CERF_INTROSPECT
 		    cerf_algorithm = 102;
@@ -229,19 +229,19 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 		    return ((isnan(x) || y < 0) ? C(NaN, NaN) : C(0, 0));
 		} else {
 #ifdef CERF_INTROSPECT
-		    cerf_algorithm= 103;
+		    cerf_algorithm = 103;
 #endif
 		    const double xya = xs / ya;
-		    const double denom = ispi / (xya * xs + ya);
-		    ret = C(denom, denom * xya);
+		    const double denom = ispi / (xya*xs + ya);
+		    ret = C(denom, denom*xya);
 		}
-	    } else { // nu == 2, w(z) = i/sqrt(pi) * z / (z*z - 0.5)
+	    } else { // nu == 2, w(z) = i/sqrt(pi)*z / (z*z - 0.5)
 #ifdef CERF_INTROSPECT
 		cerf_algorithm = 104;
 #endif
-		const double dr = xs * xs - ya * ya - 0.5, di = 2 * xs * ya;
-		const double denom = ispi / (dr * dr + di * di);
-		ret = C(denom * (xs * di - ya * dr), denom * (xs * dr + ya * di));
+		const double dr = xs*xs - ya*ya - 0.5, di = 2*xs*ya;
+		const double denom = ispi / (dr*dr + di*di);
+		ret = C(denom * (xs*di - ya*dr), denom * (xs*dr + ya*di));
 	    }
 	} else { // compute nu(z) estimate and do general continued fraction
 #ifdef CERF_INTROSPECT
@@ -249,18 +249,18 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 #endif
 	    const double c0 = 3.9, c1 = 11.398, c2 = 0.08254, c3 = 0.1421,
 		c4 = 0.2023; // fit
-	    double nu = floor(c0 + c1 / (c2 * x + c3 * ya + c4));
+	    double nu = floor(c0 + c1 / (c2*x + c3*ya + c4));
 	    double wr = xs;
 	    double wi = ya;
 	    for (nu = 0.5 * (nu - 1); nu > 0.4; nu -= 0.5) {
 		// w <- z - nu/w:
-		double denom = nu / (wr * wr + wi * wi);
-		wr = xs - wr * denom;
-		wi = ya + wi * denom;
+		double denom = nu / (wr*wr + wi*wi);
+		wr = xs - wr*denom;
+		wi = ya + wi*denom;
 	    }
 	    { // w(z) = i/sqrt(pi) / w:
-		double denom = ispi / (wr * wr + wi * wi);
-		ret = C(denom * wi, denom * wr);
+		double denom = ispi / (wr*wr + wi*wi);
+		ret = C(denom*wi, denom*wr);
 	    }
 	}
 	if (y < 0) {
@@ -270,7 +270,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	    // use w(z) = 2.0*exp(-z*z) - w(-z),
 	    // but be careful of overflow in exp(-z*z)
 	    //                                = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
-	    return 2.0 * cexp(C((ya - xs) * (xs + ya), 2 * xs * y)) - ret;
+	    return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
 	} else
 	    return ret;
     }
@@ -304,8 +304,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 #ifdef CERF_INTROSPECT
 	    cerf_algorithm = 201;
 #endif
-	    const double x2 = x * x;
-	    expx2 = 1 - x2 * (1 - 0.5 * x2); // exp(-x*x) via Taylor
+	    const double x2 = x*x;
+	    expx2 = 1 - x2 * (1 - 0.5*x2); // exp(-x*x) via Taylor
 	    // compute exp(2*a*x) and exp(-2*a*x) via Taylor, to double precision
 	    const double ax2 = 1.036642960860171859744 * x; // 2*a*x
 	    const double exp2ax =
@@ -313,7 +313,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	    const double expm2ax =
 		1 - ax2 * (1 - ax2 * (0.5 - 0.166666666666666666667 * ax2));
 	    for (int n = 1;; ++n) {
-		const double coef = expa2n2[n - 1] * expx2 / (a2 * (n * n) + y * y);
+		const double coef = expa2n2[n - 1] * expx2 / (a2 * (n*n) + y*y);
 		prod2ax *= exp2ax;
 		prodm2ax *= expm2ax;
 		sum1 += coef;
@@ -321,7 +321,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 		sum3 += coef * prod2ax;
 
 		// really = sum5 - sum4
-		sum5 += coef * (2 * a) * n * sinh_taylor((2 * a) * n * x);
+		sum5 += coef * (2*a) * n * sinh_taylor((2*a) * n * x);
 
 		// test convergence via sum3
 		if (coef * prod2ax < relerr * sum3) {
@@ -335,19 +335,19 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 #ifdef CERF_INTROSPECT
 	    cerf_algorithm = 202;
 #endif
-	    expx2 = exp(-x * x);
-	    const double exp2ax = exp((2 * a) * x), expm2ax = 1 / exp2ax;
+	    expx2 = exp(-x*x);
+	    const double exp2ax = exp((2*a) * x), expm2ax = 1 / exp2ax;
 	    for (int n = 1;; ++n) {
-		const double coef = expa2n2[n - 1] * expx2 / (a2 * (n * n) + y * y);
+		const double coef = expa2n2[n - 1] * expx2 / (a2 * (n*n) + y*y);
 		prod2ax *= exp2ax;
 		prodm2ax *= expm2ax;
 		sum1 += coef;
 		sum2 += coef * prodm2ax;
-		sum4 += (coef * prodm2ax) * (a * n);
+		sum4 += (coef * prodm2ax) * (a*n);
 		sum3 += coef * prod2ax;
-		sum5 += (coef * prod2ax) * (a * n);
+		sum5 += (coef * prod2ax) * (a*n);
 		// test convergence via sum5, since this sum has the slowest decay
-		if ((coef * prod2ax) * (a * n) < relerr * sum5) {
+		if ((coef * prod2ax) * (a*n) < relerr * sum5) {
 #ifdef CERF_INTROSPECT
 		    cerf_nofterms = n;
 #endif
@@ -358,25 +358,25 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	const double expx2erfcxy = // avoid spurious overflow for large negative y
 	    y > -6 // for y < -6, erfcx(y) = 2*exp(y*y) to double precision
             ? expx2 * erfcx(y)
-            : 2 * exp(y * y - x * x);
+            : 2 * exp(y*y - x*x);
 	if (y > 5) { // imaginary terms cancel
 #ifdef CERF_INTROSPECT
 	    cerf_algorithm += 10;
 #endif
-	    const double sinxy = sin(x * y);
-	    ret = (expx2erfcxy - c * y * sum1) * cos(2 * x * y) +
-		(c * x * expx2) * sinxy * sinc(x * y, sinxy);
+	    const double sinxy = sin(x*y);
+	    ret = (expx2erfcxy - c*y*sum1) * cos(2*x*y) +
+		(c*x*expx2) * sinxy * sinc(x*y, sinxy);
 	} else {
 #ifdef CERF_INTROSPECT
 	    cerf_algorithm += 20;
 #endif
 	    double xs = creal(z);
-	    const double sinxy = sin(xs * y);
-	    const double sin2xy = sin(2 * xs * y), cos2xy = cos(2 * xs * y);
-	    const double coef1 = expx2erfcxy - c * y * sum1;
-	    const double coef2 = c * xs * expx2;
-	    ret = C(coef1 * cos2xy + coef2 * sinxy * sinc(xs * y, sinxy),
-		    coef2 * sinc(2 * xs * y, sin2xy) - coef1 * sin2xy);
+	    const double sinxy = sin(xs*y);
+	    const double sin2xy = sin(2*xs*y), cos2xy = cos(2*xs*y);
+	    const double coef1 = expx2erfcxy - c*y*sum1;
+	    const double coef2 = c*xs*expx2;
+	    ret = C(coef1*cos2xy + coef2*sinxy*sinc(xs*y, sinxy),
+		    coef2*sinc(2*xs*y, sin2xy) - coef1*sin2xy);
 	}
     } else { // x large: only sum3 & sum5 contribute (see above note)
 
@@ -389,32 +389,32 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	if (isnan(y))
 	    return C(y, y);
 
-	ret = exp(-x * x); // |y| < 1e-10, so we only need exp(-x*x) term
+	ret = exp(-x*x); // |y| < 1e-10, so we only need exp(-x*x) term
 	// (round instead of ceil as in original paper; note that x/a > 1 here)
 	const double n0 = floor(x / a + 0.5); // sum in both directions, starting at n0
-	const double dx = a * n0 - x;
-	sum3 = exp(-dx * dx) / (a2 * (n0 * n0) + y * y);
-	sum5 = a * n0 * sum3;
-	const double exp1 = exp(4 * a * dx);
+	const double dx = a*n0 - x;
+	sum3 = exp(-dx*dx) / (a2 * (n0*n0) + y*y);
+	sum5 = a*n0*sum3;
+	const double exp1 = exp(4*a*dx);
 	double exp1dn = 1;
 	int dn;
 	for (dn = 1; n0 - dn > 0; ++dn) { // loop over n0-dn and n0+dn terms
 	    const double np = n0 + dn, nm = n0 - dn;
-	    double tp = exp(-sqr(a * dn + dx));
+	    double tp = exp(-sqr(a*dn + dx));
 	    double tm = tp * (exp1dn *= exp1); // trick to get tm from tp
-	    tp /= (a2 * (np * np) + y * y);
-	    tm /= (a2 * (nm * nm) + y * y);
+	    tp /= (a2 * (np*np) + y*y);
+	    tm /= (a2 * (nm*nm) + y*y);
 	    sum3 += tp + tm;
-	    sum5 += a * (np * tp + nm * tm);
-	    if (a * (np * tp + nm * tm) < relerr * sum5)
+	    sum5 += a * (np*tp + nm*tm);
+	    if (a * (np*tp + nm*tm) < relerr * sum5)
 		goto finish;
 	}
 	while (1) { // loop over n0+dn terms only (since n0-dn <= 0)
 	    const double np = n0 + dn++;
-	    const double tp = exp(-sqr(a * dn + dx)) / (a2 * (np * np) + y * y);
+	    const double tp = exp(-sqr(a*dn + dx)) / (a2 * (np*np) + y*y);
 	    sum3 += tp;
-	    sum5 += a * np * tp;
-	    if (a * np * tp < relerr * sum5)
+	    sum5 += a*np*tp;
+	    if (a*np*tp < relerr * sum5)
 		goto finish;
 	}
     }
