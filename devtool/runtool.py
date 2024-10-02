@@ -48,7 +48,7 @@ def external_function1d(x):
     mp.bps = 53
     xhp = mpf(x)
     xs = "%22.16e" % xhp
-    a1 = subprocess.run([this.external_program, xs], stdout=subprocess.PIPE)
+    a1 = subprocess.run([external_program, xs], stdout=subprocess.PIPE)
     try:
         a2 = a1.stdout.decode('utf-8').split()
         a3 = [mpf(a2[0]), mpf(a2[1]), int(a2[2]), int(a2[3])]
@@ -65,8 +65,8 @@ def external_function1d(x):
 ### Bisection.
 
 def check_at(locus, r):
-    rr, f, a , n = this.f_ext(r)
-    f2 = this.f_hp(rr)
+    rr, f, a , n = f_ext(r)
+    f2 = f_hp(rr)
     F = '%2i %3i %3i  %21.16e %21.16e  %8e %8e'
     relerr = abs(f-f2)/f2
     if relerr > this.worst_relerr:
@@ -82,7 +82,7 @@ def bisect(range_mode, r0, a0, n0, r2, a2, n2):
         check_at(1, r2)
         return
     if range_mode == 'l':
-        if r2-r0 < 1e-20 * this.x_range:
+        if r2-r0 < 1e-20 * x_range:
             check_at(-1, r0)
             check_at(1, r2)
             return
@@ -91,7 +91,7 @@ def bisect(range_mode, r0, a0, n0, r2, a2, n2):
         r1 = sqrt(r0*r2)
     elif range_mode == 'n':
         r1 = -sqrt(r0*r2)
-    wr, wi, a1, n1 = this.f_ext(r1)
+    wr, wi, a1, n1 = f_ext(r1)
     if (a0 != a1 or n0 != n1):
         bisect(range_mode, r0, a0, n0, r1, a1, n1)
     if (a1 != a2 or n1 != n2):
@@ -119,11 +119,11 @@ def scan_and_bisect(X):
 # Reporting.
 
 def print_conclusion():
-    if 'w' in this.output_mode:
+    if 'w' in output_mode:
         print("this.worst: at x=%22.16e relerr=%8e" % (this.worst_x, this.worst_relerr))
-        rr, f, a , n = this.this.f_ext(this.worst_x)
+        rr, f, a , n = this.f_ext(this.worst_x)
         print("   f(x):", f)
-        f2 = this.f_hp(this.worst_x, True)
+        f2 = f_hp(this.worst_x, True)
         print("   highprec:", f2)
         print("   dx_rel:  %g" % ((rr-this.worst_x)/this.worst_x))
         print("   dy_rel:  %g" % ((f-f2)/f2))
