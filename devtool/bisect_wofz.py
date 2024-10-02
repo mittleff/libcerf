@@ -8,6 +8,8 @@ The comparison is done for z=r2z(r,s) with r,s from some grids,
 and for additional points obtained by bisection around points r
 where the employed algorithm or number of terms has changed.
 
+The grids are hard-coded here, and are changed ad hoc during development.
+
 Output is either a table with one line for each r,
 or a report on the worst case (the r with largest inaccuracy of f(x)).
 """
@@ -64,11 +66,11 @@ if __name__ == '__main__':
     rt.range_mode = 'p'
     rt.output_mode = 't'
 
-    N, fr, to = 80, 0.01, 1e8
+    N, fr, to = 80, 1e-8, 1
     step = log10(to/fr)/(N-1)
     S = [fr * 10**(i*step) for i in range(N)]
 
-    N, fr, to = 80, 0.01, 1e8
+    N, fr, to = 81, 1e-8, 1
     step = log10(to/fr)/(N-1)
     R = [fr * 10**(i*step) for i in range(N)]
 

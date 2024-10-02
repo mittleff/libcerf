@@ -191,24 +191,127 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
     _cerf_cmplx ret = 0.; // return value
 
+
+    if (z2 < .26) {
+        /*
+          For |z| < 0.51, use Maclaurin expansion,
+          w(z) = (2/sqrt(pi)) * (z - 2/3 z^3  + 4/15 z^5  - 8/105 z^7 ...).
+        */
+#ifdef CERF_INTROSPECT
+        cerf_algorithm = 550;
+#endif
+
+        if (z2 < .00689) {
+            if (z2 < 4e-7) {
+#ifdef CERF_INTROSPECT
+                cerf_nofterms = 4;
+#endif
+                return ((((
+                              + C(+5.0000000000000000e-01, 0) ) * z // z^4
+                          + C(0, -7.5225277806367508e-01) ) * z // z^3
+                         + C(-1.0000000000000000e+00, 0) ) * z // z^2
+                        + C(0, +1.1283791670955126e+00) ) * z // z^1
+                    + 1;
+            }
+#ifdef CERF_INTROSPECT
+            cerf_nofterms = 13;
+#endif
+            return (((((((((((((
+                                   + C(0, +5.3440090793734269e-04) ) * z // z^13
+                               + C(+1.3888888888888889e-03, 0) ) * z // z^12
+                              + C(0, -3.4736059015927274e-03) ) * z // z^11
+                             + C(-8.3333333333333332e-03, 0) ) * z // z^10
+                            + C(0, +1.9104832458760001e-02) ) * z // z^9
+                           + C(+4.1666666666666664e-02, 0) ) * z // z^8
+                          + C(0, -8.5971746064419999e-02) ) * z // z^7
+                         + C(-1.6666666666666666e-01, 0) ) * z // z^6
+                        + C(0, +3.0090111122547003e-01) ) * z // z^5
+                       + C(+5.0000000000000000e-01, 0) ) * z // z^4
+                      + C(0, -7.5225277806367508e-01) ) * z // z^3
+                     + C(-1.0000000000000000e+00, 0) ) * z // z^2
+                    + C(0, +1.1283791670955126e+00) ) * z // z^1
+                + 1;
+        }
+        if (z2 < .074) {
+#ifdef CERF_INTROSPECT
+            cerf_nofterms = 19;
+#endif
+            return (((((((((((((((((((
+                                         + C(0, -8.8239572002038009e-07) ) * z // z^19
+                                     + C(-2.7557319223985893e-06, 0) ) * z // z^18
+                                    + C(0, +8.3827593401936105e-06) ) * z // z^17
+                                   + C(+2.4801587301587302e-05, 0) ) * z // z^16
+                                  + C(0, -7.1253454391645692e-05) ) * z // z^15
+                                 + C(-1.9841269841269841e-04, 0) ) * z // z^14
+                                + C(0, +5.3440090793734269e-04) ) * z // z^13
+                               + C(+1.3888888888888889e-03, 0) ) * z // z^12
+                              + C(0, -3.4736059015927274e-03) ) * z // z^11
+                             + C(-8.3333333333333332e-03, 0) ) * z // z^10
+                            + C(0, +1.9104832458760001e-02) ) * z // z^9
+                           + C(+4.1666666666666664e-02, 0) ) * z // z^8
+                          + C(0, -8.5971746064419999e-02) ) * z // z^7
+                         + C(-1.6666666666666666e-01, 0) ) * z // z^6
+                        + C(0, +3.0090111122547003e-01) ) * z // z^5
+                       + C(+5.0000000000000000e-01, 0) ) * z // z^4
+                      + C(0, -7.5225277806367508e-01) ) * z // z^3
+                     + C(-1.0000000000000000e+00, 0) ) * z // z^2
+                    + C(0, +1.1283791670955126e+00) ) * z // z^1
+                + 1;
+        }
+#ifdef CERF_INTROSPECT
+        cerf_nofterms = 25;
+#endif
+        return (((((((((((((((((((((((((
+                                           + C(0, +5.8461000084165970e-10) ) * z // z^25
+                                       + C(+2.0876756987868100e-09, 0) ) * z // z^24
+                                      + C(0, -7.3076250105207460e-09) ) * z // z^23
+                                     + C(-2.5052108385441720e-08, 0) ) * z // z^22
+                                    + C(0, +8.4037687620988577e-08) ) * z // z^21
+                                   + C(+2.7557319223985888e-07, 0) ) * z // z^20
+                                  + C(0, -8.8239572002038009e-07) ) * z // z^19
+                                 + C(-2.7557319223985893e-06, 0) ) * z // z^18
+                                + C(0, +8.3827593401936105e-06) ) * z // z^17
+                               + C(+2.4801587301587302e-05, 0) ) * z // z^16
+                              + C(0, -7.1253454391645692e-05) ) * z // z^15
+                             + C(-1.9841269841269841e-04, 0) ) * z // z^14
+                            + C(0, +5.3440090793734269e-04) ) * z // z^13
+                           + C(+1.3888888888888889e-03, 0) ) * z // z^12
+                          + C(0, -3.4736059015927274e-03) ) * z // z^11
+                         + C(-8.3333333333333332e-03, 0) ) * z // z^10
+                        + C(0, +1.9104832458760001e-02) ) * z // z^9
+                       + C(+4.1666666666666664e-02, 0) ) * z // z^8
+                      + C(0, -8.5971746064419999e-02) ) * z // z^7
+                     + C(-1.6666666666666666e-01, 0) ) * z // z^6
+                    + C(0, +3.0090111122547003e-01) ) * z // z^5
+                   + C(+5.0000000000000000e-01, 0) ) * z // z^4
+                  + C(0, -7.5225277806367508e-01) ) * z // z^3
+                 + C(-1.0000000000000000e+00, 0) ) * z // z^2
+                + C(0, +1.1283791670955126e+00) ) * z // z^1
+            + 1;
+    }
+
+
     if (z2 > 49) {
-	/*
-	   Use asymptotic expansion for |z| > 7.
-	*/
+        /*
+          For |z| > 7, use the asymptotic expansion.
+
+          Much simpler than the previously used continued fractions,
+          and more accurate.
+        */
 
 #ifdef CERF_INTROSPECT
         cerf_algorithm = 700;
 #endif
-	const _cerf_cmplx r = C(xs/z2, -ya/z2); // 1/z. Using z2, which we already have.
+        const _cerf_cmplx r = C(xs/z2, -ya/z2); // 1/z. Using z2, which we already have.
 
-	if (z2 > 22500) {
-	    if (z2 > 4.8e15) {
+        if (z2 > 22500) {
+            if (z2 > 4.8e15) {
 #ifdef CERF_INTROSPECT
-		cerf_nofterms = 1;
+                cerf_nofterms = 1;
 #endif
                 /*
-		   Compute 1/z in differently scaled ways to avoid overflow.
-		*/
+                  Compute 1/z in differently scaled ways to avoid overflow.
+                */
                 if (x > ya) {
 #ifdef CERF_INTROSPECT
                     cerf_algorithm = 101;
@@ -230,68 +333,68 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                     ret = C(denom, denom*xya);
                 }
 
-	    } else {
+            } else {
 #ifdef CERF_INTROSPECT
-		cerf_nofterms = 4;
+                cerf_nofterms = 4;
 #endif
-		ret = ((((
-		  + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
-		 + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
-		+ C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
-	       + C(0, 5.6418958354775628e-01) ) * r; // n=0
-	    }
+                ret = ((((
+                             + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
+                         + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
+                        + C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
+                       + C(0, 5.6418958354775628e-01) ) * r; // n=0
+            }
 
-	} else {
-	    if (z2 > 540) {
+        } else {
+            if (z2 > 540) {
 #ifdef CERF_INTROSPECT
-		cerf_nofterms = 11;
+                cerf_nofterms = 11;
 #endif
-		ret = ((((((((((((
-				     + C(0, 3.7877040075087948e+06) ) * (r*r) // n=11
-				 + C(0, 3.6073371500083758e+05) ) * (r*r) // n=10
-				+ C(0, 3.7971970000088164e+04) ) * (r*r) // n=9
-			       + C(0, 4.4672905882456671e+03) ) * (r*r) // n=8
-			      + C(0, 5.9563874509942218e+02) ) * (r*r) // n=7
-			     + C(0, 9.1636730015295726e+01) ) * (r*r) // n=6
-			    + C(0, 1.6661223639144676e+01) ) * (r*r) // n=5
-			   + C(0, 3.7024941420321507e+00) ) * (r*r) // n=4
-			  + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
-			 + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
-			+ C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
-		       + C(0, 5.6418958354775628e-01) ) * r; // n=0
+                ret = ((((((((((((
+                                     + C(0, 3.7877040075087948e+06) ) * (r*r) // n=11
+                                 + C(0, 3.6073371500083758e+05) ) * (r*r) // n=10
+                                + C(0, 3.7971970000088164e+04) ) * (r*r) // n=9
+                               + C(0, 4.4672905882456671e+03) ) * (r*r) // n=8
+                              + C(0, 5.9563874509942218e+02) ) * (r*r) // n=7
+                             + C(0, 9.1636730015295726e+01) ) * (r*r) // n=6
+                            + C(0, 1.6661223639144676e+01) ) * (r*r) // n=5
+                           + C(0, 3.7024941420321507e+00) ) * (r*r) // n=4
+                          + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
+                         + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
+                        + C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
+                       + C(0, 5.6418958354775628e-01) ) * r; // n=0
 
-	    } else {
+            } else {
 #ifdef CERF_INTROSPECT
-		cerf_nofterms = 19;
+                cerf_nofterms = 19;
 #endif
-	ret = ((((((((((((((((((((
-				     + C(0, 8.8249260943025370e+15) ) * (r*r) // n=19
-				 + C(0, 4.7702303212446150e+14) ) * (r*r) // n=18
-				+ C(0, 2.7258458978540656e+13) ) * (r*r) // n=17
-			       + C(0, 1.6520278168812520e+12) ) * (r*r) // n=16
-			      + C(0, 1.0658243979879044e+11) ) * (r*r) // n=15
-			     + C(0, 7.3505130895717545e+09) ) * (r*r) // n=14
-			    + C(0, 5.4448245107938921e+08) ) * (r*r) // n=13
-			   + C(0, 4.3558596086351141e+07) ) * (r*r) // n=12
-			  + C(0, 3.7877040075087948e+06) ) * (r*r) // n=11
-			 + C(0, 3.6073371500083758e+05) ) * (r*r) // n=10
-			+ C(0, 3.7971970000088164e+04) ) * (r*r) // n=9
-		       + C(0, 4.4672905882456671e+03) ) * (r*r) // n=8
-		      + C(0, 5.9563874509942218e+02) ) * (r*r) // n=7
-		     + C(0, 9.1636730015295726e+01) ) * (r*r) // n=6
-		    + C(0, 1.6661223639144676e+01) ) * (r*r) // n=5
-		   + C(0, 3.7024941420321507e+00) ) * (r*r) // n=4
-		  + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
-		 + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
-		+ C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
-	       + C(0, 5.6418958354775628e-01) ) * r; // n=0
-	    }
-	}
+                ret = ((((((((((((((((((((
+                                             + C(0, 8.8249260943025370e+15) ) * (r*r) // n=19
+                                         + C(0, 4.7702303212446150e+14) ) * (r*r) // n=18
+                                        + C(0, 2.7258458978540656e+13) ) * (r*r) // n=17
+                                       + C(0, 1.6520278168812520e+12) ) * (r*r) // n=16
+                                      + C(0, 1.0658243979879044e+11) ) * (r*r) // n=15
+                                     + C(0, 7.3505130895717545e+09) ) * (r*r) // n=14
+                                    + C(0, 5.4448245107938921e+08) ) * (r*r) // n=13
+                                   + C(0, 4.3558596086351141e+07) ) * (r*r) // n=12
+                                  + C(0, 3.7877040075087948e+06) ) * (r*r) // n=11
+                                 + C(0, 3.6073371500083758e+05) ) * (r*r) // n=10
+                                + C(0, 3.7971970000088164e+04) ) * (r*r) // n=9
+                               + C(0, 4.4672905882456671e+03) ) * (r*r) // n=8
+                              + C(0, 5.9563874509942218e+02) ) * (r*r) // n=7
+                             + C(0, 9.1636730015295726e+01) ) * (r*r) // n=6
+                            + C(0, 1.6661223639144676e+01) ) * (r*r) // n=5
+                           + C(0, 3.7024941420321507e+00) ) * (r*r) // n=4
+                          + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
+                         + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
+                        + C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
+                       + C(0, 5.6418958354775628e-01) ) * r; // n=0
+            }
+        }
         if (y < 0) {
             /*
-	       use w(z) = 2.0*exp(-z*z) - w(-z),
-               but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
-	    */
+              use w(z) = 2.0*exp(-z*z) - w(-z),
+              but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
+            */
 #ifdef CERF_INTROSPECT
             cerf_algorithm += 10;
 #endif
@@ -304,27 +407,27 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
     if (ya > 7 || (x > 6 && (ya > 0.1 || (x > 8 && ya > 1e-10) || x > 28))) {
         /*
-	   Continued-fraction expansion,
-           similar to those described by Gautschi (1970) and Poppe & Wijers (1990).
+          Continued-fraction expansion,
+          similar to those described by Gautschi (1970) and Poppe & Wijers (1990).
 
-           Prefered for large z because it is fast.
+          Prefered for large z because it is fast.
 
-           However, as pointed out by M. Zaghloul, the continued fraction seems to
-           give a large relative error in Re w(z) for |x| ~ 6 and small |y|.
-           In this region, excluded by the additional conditions in the if clause above,
-           we fall back to ACM algorithm 916 below.
+          However, as pointed out by M. Zaghloul, the continued fraction seems to
+          give a large relative error in Re w(z) for |x| ~ 6 and small |y|.
+          In this region, excluded by the additional conditions in the if clause above,
+          we fall back to ACM algorithm 916 below.
 
-           Poppe & Wijers suggest using a number of terms
-           nu = 3 + 1442 / (26*rho + 77)
-           where rho = sqrt((x/x0)^2 + (y/y0)^2) where x0=6.3, y0=4.4.
-           (They only use this expansion for rho >= 1, but rho a little less
-           than 1 seems okay too.)
-           Instead, I [SGJ] did my own fit to a slightly different function
-           that avoids the hypotenuse calculation, using NLopt to minimize
-           the sum of the squares of the errors in nu with the constraint
-           that the estimated nu be >= minimum nu to attain machine precision.
-           I also separate the regions where nu == 2 and nu == 1.
-	*/
+          Poppe & Wijers suggest using a number of terms
+          nu = 3 + 1442 / (26*rho + 77)
+          where rho = sqrt((x/x0)^2 + (y/y0)^2) where x0=6.3, y0=4.4.
+          (They only use this expansion for rho >= 1, but rho a little less
+          than 1 seems okay too.)
+          Instead, I [SGJ] did my own fit to a slightly different function
+          that avoids the hypotenuse calculation, using NLopt to minimize
+          the sum of the squares of the errors in nu with the constraint
+          that the estimated nu be >= minimum nu to attain machine precision.
+          I also separate the regions where nu == 2 and nu == 1.
+        */
 
         const double ispi = 0.56418958354775628694807945156; // 1 / sqrt(pi)
         const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
@@ -385,9 +488,9 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
         if (y < 0) {
             /*
-	       use w(z) = 2.0*exp(-z*z) - w(-z),
-               but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
-	    */
+              use w(z) = 2.0*exp(-z*z) - w(-z),
+              but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
+            */
 #ifdef CERF_INTROSPECT
             cerf_algorithm += 10;
 #endif
@@ -397,22 +500,22 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     }
 
     else if (x < 10) {
-	/*
-	   ACM algorithm 916 by Zaghloul & Ali (2011), which is generally competitive
-           at small |z|, and more accurate than the Poppe & Wijers expansion in some
-           regions, e.g. in the vicinity of z=1+i.
+/*
+  ACM algorithm 916 by Zaghloul & Ali (2011), which is generally competitive
+  at small |z|, and more accurate than the Poppe & Wijers expansion in some
+  regions, e.g. in the vicinity of z=1+i.
 
-       	   Applicability range: The paper seems to suggest x < sqrt(-log(DBL_MIN)),
-           about 26.6, since otherwise exp(-x^2) underflows to zero and sum1,sum2,sum4
-           are zero.  However, long before this occurs, the sum1,sum2,sum4 contributions
-           are negligible in double precision; I [SGJ] find that this happens for
-           x > about 6, for all y.  On the other hand, I find that the case
-       	   where we compute all of the sums is faster (at least with the
-       	   precomputed expa2n2 table) until about x=10.
-        */
+  Applicability range: The paper seems to suggest x < sqrt(-log(DBL_MIN)),
+  about 26.6, since otherwise exp(-x^2) underflows to zero and sum1,sum2,sum4
+  are zero.  However, long before this occurs, the sum1,sum2,sum4 contributions
+  are negligible in double precision; I [SGJ] find that this happens for
+  x > about 6, for all y.  On the other hand, I find that the case
+  where we compute all of the sums is faster (at least with the
+  precomputed expa2n2 table) until about x=10.
+*/
 
-	double prod2ax = 1, prodm2ax = 1;
-	double expx2;
+        double prod2ax = 1, prodm2ax = 1;
+        double expx2;
 
         if (isnan(y)) {
 #ifdef CERF_INTROSPECT
@@ -422,10 +525,10 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         }
 
         if (x < 5e-4) {
-	    /*
-	       compute sum4 and sum5 together as sum5-sum4
-               This special case is needed for accuracy.
-	    */
+            /*
+              compute sum4 and sum5 together as sum5-sum4
+              This special case is needed for accuracy.
+            */
 #ifdef CERF_INTROSPECT
             cerf_algorithm = 201;
 #endif
@@ -459,8 +562,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
         } else {
             /*
-	       x > 5e-4, compute sum4 and sum5 separately
-	    */
+              x > 5e-4, compute sum4 and sum5 separately
+            */
 
 #ifdef CERF_INTROSPECT
             cerf_algorithm = 202;
@@ -477,7 +580,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                 sum4 += (coef * prodm2ax) * (a*n);
                 sum5 += (coef * prod2ax) * (a*n);
                 // test convergence via sum5, since this sum has the slowest decay;
-		// for termination rely on coef[n_max] = 0
+// for termination rely on coef[n_max] = 0
                 if ((coef * prod2ax) * (a*n) < relerr * sum5) {
 #ifdef CERF_INTROSPECT
                     cerf_nofterms = n;
@@ -487,12 +590,12 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             }
         }
         const double expx2erfcxy = y < -6  ? 2*exp(y*y-x*x) : expx2*erfcx(y);
-           /*
-	      The second case has the exact expression.
-              In the first case, to avoid spurious overflow for large negative y,
-              we approximate erfcx(y) by 2*exp(y^2), which is accurate to double precision.
-	   */
-	   // TODO: check exact location of cross-over
+/*
+  The second case has the exact expression.
+  In the first case, to avoid spurious overflow for large negative y,
+  we approximate erfcx(y) by 2*exp(y^2), which is accurate to double precision.
+*/
+// TODO: check exact location of cross-over
 
         if (y > 5) { // imaginary terms cancel
 #ifdef CERF_INTROSPECT
@@ -515,17 +618,17 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         }
 
     } else {
-	/*
-	   Currently, this case cannot be reached.
+/*
+  Currently, this case cannot be reached.
 
-           Still ACM algorithm 916 by Zaghloul & Ali (2011), modified for large x.
+  Still ACM algorithm 916 by Zaghloul & Ali (2011), modified for large x.
 
-	   In the original algorithm, if we try to compute all of the sums for x > 20,
-           I [SGJ] find that we sometimes run into numerical problems because
-           underflow/overflow problems start to appear in the coefficients of some sums.
+  In the original algorithm, if we try to compute all of the sums for x > 20,
+  I [SGJ] find that we sometimes run into numerical problems because
+  underflow/overflow problems start to appear in the coefficients of some sums.
 
-           Here, only sum3 & sum5 contribute.
-	*/
+  Here, only sum3 & sum5 contribute.
+*/
 #ifdef CERF_INTROSPECT
         cerf_algorithm = 300;
 #endif
