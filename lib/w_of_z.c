@@ -36,8 +36,8 @@
  *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * Authors:
- *   Steven G. Johnson, Massachusetts Institute of Technology, 2012, core author
- *   Joachim Wuttke, Forschungszentrum Jülich, 2013, package maintainer
+ *   Steven G. Johnson, Massachusetts Institute of Technology, 2012
+ *   Joachim Wuttke, Forschungszentrum Jülich, 2013, 2024
  *
  * Website:
  *   http://apps.jcns.fz-juelich.de/libcerf
@@ -50,14 +50,14 @@
  */
 
 /*
-   Computes various error functions (erf, erfc, erfi, erfcx),
-   including the Dawson integral, in the complex plane, based
-   on algorithms for the computation of the Faddeeva function
-              w(z) = exp(-z^2) * erfc(-i*z).
-   Given w(z), the error functions are mostly straightforward
-   to compute, except for certain regions where we have to
-   switch to Taylor expansions to avoid cancellation errors
-   [e.g. near the origin for erf(z)].
+  Computes various error functions (erf, erfc, erfi, erfcx),
+  including the Dawson integral, in the complex plane, based
+  on algorithms for the computation of the Faddeeva function
+  w(z) = exp(-z^2) * erfc(-i*z).
+  Given w(z), the error functions are mostly straightforward
+  to compute, except for certain regions where we have to
+  switch to Taylor expansions to avoid cancellation errors
+  [e.g. near the origin for erf(z)].
 
 */
 
@@ -65,6 +65,7 @@
 #include "defs.h" // defines _cerf_cmplx, NaN, C, cexp, ...
 #include <float.h>
 #include <math.h>
+#include <assert.h>
 
 #ifdef CERF_INTROSPECT
 EXPORT int cerf_algorithm;
@@ -76,15 +77,15 @@ EXPORT int cerf_nofterms;
 /******************************************************************************/
 
 static inline double sinc(double x, double sinx) {
-  // return sinc(x) = sin(x)/x, given both x and sin(x)
-  // [since we only use this in cases where sin(x) has already been computed]
-  return fabs(x) < 1e-4 ? 1 - (0.1666666666666666666667) * x * x : sinx / x;
+    // return sinc(x) = sin(x)/x, given both x and sin(x)
+    // [since we only use this in cases where sin(x) has already been computed]
+    return fabs(x) < 1e-4 ? 1 - (0.1666666666666666666667) * x * x : sinx / x;
 }
 
 static inline double sinh_taylor(double x) {
-  // sinh(x) via Taylor series, accurate to machine precision for |x| < 1e-2
-  return x * (1 + (x * x) * (0.1666666666666666666667 +
-                             0.00833333333333333333333 * (x * x)));
+    // sinh(x) via Taylor series, accurate to machine precision for |x| < 1e-2
+    return x * (1 + (x * x) * (0.1666666666666666666667 +
+                               0.00833333333333333333333 * (x * x)));
 }
 
 static inline double sqr(double x) { return x * x; }
@@ -95,328 +96,531 @@ static inline double sqr(double x) { return x * x; }
 /******************************************************************************/
 
 static const double expa2n2[] = {
-    7.64405281671221563e-01,
-    3.41424527166548425e-01,
-    8.91072646929412548e-02,
-    1.35887299055460086e-02,
-    1.21085455253437481e-03,
-    6.30452613933449404e-05,
-    1.91805156577114683e-06,
-    3.40969447714832381e-08,
-    3.54175089099469393e-10,
-    2.14965079583260682e-12,
-    7.62368911833724354e-15,
-    1.57982797110681093e-17,
-    1.91294189103582677e-20,
-    1.35344656764205340e-23,
-    5.59535712428588720e-27,
-    1.35164257972401769e-30,
-    1.90784582843501167e-34,
-    1.57351920291442930e-38,
-    7.58312432328032845e-43,
-    2.13536275438697082e-47,
-    3.51352063787195769e-52,
-    3.37800830266396920e-57,
-    1.89769439468301000e-62,
-    6.22929926072668851e-68,
-    1.19481172006938722e-73,
-    1.33908181133005953e-79,
-    8.76924303483223939e-86,
-    3.35555576166254986e-92,
-    7.50264110688173024e-99,
-    9.80192200745410268e-106,
-    7.48265412822268959e-113,
-    3.33770122566809425e-120,
-    8.69934598159861140e-128,
-    1.32486951484088852e-135,
-    1.17898144201315253e-143,
-    6.13039120236180012e-152,
-    1.86258785950822098e-160,
-    3.30668408201432783e-169,
-    3.43017280887946235e-178,
-    2.07915397775808219e-187,
-    7.36384545323984966e-197,
-    1.52394760394085741e-206,
-    1.84281935046532100e-216,
-    1.30209553802992923e-226,
-    5.37588903521080531e-237,
-    1.29689584599763145e-247,
-    1.82813078022866562e-258,
-    1.50576355348684241e-269,
-    7.24692320799294194e-281,
-    2.03797051314726829e-292,
-    3.34880215927873807e-304,
-    0.0 // underflow (also prevents reads past array end, below)
-};      // expa2n2
+    7.6440528167122157e-1,
+    3.41424527166548419e-1,
+    8.91072646929412376e-2,
+    1.35887299055460053e-2,
+    1.21085455253437473e-3,
+    6.30452613933448798e-5,
+    1.91805156577114627e-6,
+    3.40969447714832129e-8,
+    3.54175089099468534e-10,
+    2.14965079583260701e-12,
+    7.62368911833724214e-15,
+    1.57982797110680523e-17,
+    1.91294189103582847e-20,
+    1.35344656764205201e-23,
+    5.59535712428587329e-27,
+    1.35164257972401336e-30,
+    1.90784582843499203e-34,
+    1.573519202914414e-38,
+    7.58312432328031747e-43,
+    2.13536275438697177e-47,
+    3.51352063787194301e-52,
+    3.37800830266396575e-57,
+    1.89769439468300171e-62,
+    6.22929926072660027e-68,
+    1.19481172006938479e-73,
+    1.33908181133006436e-79,
+    8.76924303483226468e-86,
+    3.35555576166253504e-92,
+    7.5026411068815959e-99,
+    9.80192200745400666e-106,
+    7.48265412822263025e-113,
+    3.33770122566805208e-120,
+    8.69934598159840512e-128,
+    1.3248695148408338e-135,
+    1.17898144201314251e-143,
+    6.13039120236156112e-152,
+    1.86258785950818541e-160,
+    3.30668408201430881e-169,
+    3.43017280887946632e-178,
+    2.07915397775808552e-187,
+    7.36384545323981754e-197,
+    1.52394760394083166e-206,
+    1.84281935046525516e-216,
+    1.30209553802992364e-226,
+    5.37588903521091667e-237,
+    1.29689584599760859e-247,
+    1.82813078022865549e-258,
+    1.50576355348675694e-269,
+    7.24692320799252486e-281,
+    2.03797051314725175e-292,
+    3.34880215927866455e-304,
+    0.0 // underflow (will force termination of loops, and thereby prevent reading past array end)
+}; // expa2n2
 
 /******************************************************************************/
 /*  w_of_z, Faddeeva's scaled complex error function                          */
 /******************************************************************************/
 
 _cerf_cmplx w_of_z(_cerf_cmplx z) {
-#ifdef CERF_INTROSPECT
-  cerf_algorithm = -1;
-  cerf_nofterms = 0;
-#endif
+    SET_INFO(-1, -1);
 
-  // Steven G. Johnson, October 2012.
+// ------------------------------------------------------------------------------
+// One-dimensional cases (pure imaginary or pure real)
+// ------------------------------------------------------------------------------
 
-  if (creal(z) == 0.0) {
-#ifdef CERF_INTROSPECT
-    cerf_algorithm = 400;
-#endif
-    // Purely imaginary input, purely real output.
-    // However, use creal(z) to give correct sign of 0 in cimag(w).
-    return C(erfcx(cimag(z)), creal(z));
-  }
-  if (cimag(z) == 0) {
-#ifdef CERF_INTROSPECT
-    cerf_algorithm = 500;
-#endif
-    // Purely real input, complex output.
-    // Avoid floating underflow for real term of large z.
-    const double Wreal = fabs(creal(z)) > 27. ? 0. : exp(-sqr(creal(z)));
-    const double Wimag = im_w_of_x(creal(z));
-    return C(Wreal, Wimag);
-  }
+// If x=0 or y=0, we can use the real functions erfcx or im_w_of_x that are
+// implemented in separate source files.
 
-  const double relerr = DBL_EPSILON;
-  const double a = 0.518321480430085929872;  // pi / sqrt(-log(eps*0.5))
-  const double c = 0.329973702884629072537;  // (2/pi) * a;
-  const double a2 = 0.268657157075235951582; // a^2
+    if (creal(z) == 0.0) {
+        // Purely imaginary input, purely real output.
+        // However, use creal(z) to give correct sign of 0 in cimag(w).
+        return C(erfcx(cimag(z)), creal(z));
+    }
+    if (cimag(z) == 0) {
+        // Purely real input, complex output.
+        // Avoid floating underflow for real term of large z.
+        const double Wreal = fabs(creal(z)) > 27. ? 0. : exp(-sqr(creal(z)));
+        const double Wimag = im_w_of_x(creal(z));
+        return C(Wreal, Wimag);
+    }
 
-  const double x = fabs(creal(z));
-  const double y = cimag(z);
-  const double ya = fabs(y);
+    const double x = creal(z);
+    const double xa = fabs(x);
+    const double y = cimag(z);
+    const double ya = fabs(y);
+    const double z2 = xa*xa + y*y;
 
-  _cerf_cmplx ret = 0.; // return value
+    const double ispi = 0.5641895835477562869; // 1 / sqrt(pi)
 
-  double sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0;
+// ------------------------------------------------------------------------------
+// Case |y| << |x|
+// ------------------------------------------------------------------------------
 
-  if (ya > 7 || (x > 6 // continued fraction is faster
-                 /* As pointed out by M. Zaghloul, the continued
-                    fraction seems to give a large relative error in
-                    Re w(z) for |x| ~ 6 and small |y|, so use
-                    algorithm 816 in this region: */
-                 && (ya > 0.1 || (x > 8 && ya > 1e-10) || x > 28))) {
+//   If |y| << |x|, we get |Re w| << |Im w|, which implies that an algorithm
+//   can be very accurate in terms of the complex norm, with relative error
+//   computed as |w - w_0| / |w_0|, and still Re w can be wrong by orders of
+//   magnitude. Therefore this special case is treated beforehand.
 
-    /* Poppe & Wijers suggest using a number of terms
-       nu = 3 + 1442 / (26*rho + 77)
-       where rho = sqrt((x/x0)^2 + (y/y0)^2) where x0=6.3, y0=4.4.
-       (They only use this expansion for rho >= 1, but rho a little less
-       than 1 seems okay too.)
-       Instead, I did my own fit to a slightly different function
-       that avoids the hypotenuse calculation, using NLopt to minimize
-       the sum of the squares of the errors in nu with the constraint
-       that the estimated nu be >= minimum nu to attain machine precision.
-       I also separate the regions where nu == 2 and nu == 1. */
-    const double ispi = 0.56418958354775628694807945156; // 1 / sqrt(pi)
-    double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
-    if (x + ya > 4000) {                      // nu <= 2
-      if (x + ya > 1e7) {                     // nu == 1, w(z) = i/sqrt(pi) / z
-        // scale to avoid overflow
-        if (x > ya) {
-#ifdef CERF_INTROSPECT
-          cerf_algorithm = 101;
-#endif
-          double yax = ya / xs;
-          double denom = ispi / (xs + yax * ya);
-          ret = C(denom * yax, denom);
-        } else if (isinf(ya)) {
-#ifdef CERF_INTROSPECT
-          cerf_algorithm = 102;
-#endif
-          return ((isnan(x) || y < 0) ? C(NaN, NaN) : C(0, 0));
+//   We start from the real axis where w(x) = exp(-x^2) + i*im_w_of_x(x).
+//   To compute w(x+iy) we assume that |y| is negligible when added to |x|.
+//   We obtain Re w = exp(-x^2) + 2 y (x Im w(x) - 1 / sqrt(pi)).
+
+    if (ya < 1e-16 * xa) {
+	const double wi = im_w_of_x(x);
+	SET_ALGO(cerf_algorithm + 300);
+	return C(exp(-xa*xa) + 2*y*(x*wi - ispi), wi);
+    }
+
+// ------------------------------------------------------------------------------
+// Case |z| -> 0: Maclaurin series
+// ------------------------------------------------------------------------------
+
+    if (z2 < .26) {
+        if (z2 < .00689) {
+            if (z2 < 4e-7) {
+		SET_INFO(210, 5);
+                return ((((
+                              + C(+5.0000000000000000e-01, 0) ) * z // z^4
+                          + C(0, -7.5225277806367508e-01) ) * z // z^3
+                         + C(-1.0000000000000000e+00, 0) ) * z // z^2
+                        + C(0, +1.1283791670955126e+00) ) * z // z^1
+                    + 1.;
+            }
+
+	    SET_INFO(210, 14);
+            return (((((((((((((
+                                   + C(0, +5.3440090793734269e-04) ) * z // z^13
+                               + C(+1.3888888888888889e-03, 0) ) * z // z^12
+                              + C(0, -3.4736059015927274e-03) ) * z // z^11
+                             + C(-8.3333333333333332e-03, 0) ) * z // z^10
+                            + C(0, +1.9104832458760001e-02) ) * z // z^9
+                           + C(+4.1666666666666664e-02, 0) ) * z // z^8
+                          + C(0, -8.5971746064419999e-02) ) * z // z^7
+                         + C(-1.6666666666666666e-01, 0) ) * z // z^6
+                        + C(0, +3.0090111122547003e-01) ) * z // z^5
+                       + C(+5.0000000000000000e-01, 0) ) * z // z^4
+                      + C(0, -7.5225277806367508e-01) ) * z // z^3
+                     + C(-1.0000000000000000e+00, 0) ) * z // z^2
+                    + C(0, +1.1283791670955126e+00) ) * z // z^1
+                + 1.;
+        }
+
+        if (z2 < .074) {
+	    SET_INFO(210, 20);
+            return (((((((((((((((((((
+                                         + C(0, -8.8239572002038009e-07) ) * z // z^19
+                                     + C(-2.7557319223985893e-06, 0) ) * z // z^18
+                                    + C(0, +8.3827593401936105e-06) ) * z // z^17
+                                   + C(+2.4801587301587302e-05, 0) ) * z // z^16
+                                  + C(0, -7.1253454391645692e-05) ) * z // z^15
+                                 + C(-1.9841269841269841e-04, 0) ) * z // z^14
+                                + C(0, +5.3440090793734269e-04) ) * z // z^13
+                               + C(+1.3888888888888889e-03, 0) ) * z // z^12
+                              + C(0, -3.4736059015927274e-03) ) * z // z^11
+                             + C(-8.3333333333333332e-03, 0) ) * z // z^10
+                            + C(0, +1.9104832458760001e-02) ) * z // z^9
+                           + C(+4.1666666666666664e-02, 0) ) * z // z^8
+                          + C(0, -8.5971746064419999e-02) ) * z // z^7
+                         + C(-1.6666666666666666e-01, 0) ) * z // z^6
+                        + C(0, +3.0090111122547003e-01) ) * z // z^5
+                       + C(+5.0000000000000000e-01, 0) ) * z // z^4
+                      + C(0, -7.5225277806367508e-01) ) * z // z^3
+                     + C(-1.0000000000000000e+00, 0) ) * z // z^2
+                    + C(0, +1.1283791670955126e+00) ) * z // z^1
+                + 1.;
+        }
+
+	SET_INFO(210, 26);
+        return (((((((((((((((((((((((((
+                                           + C(0, +5.8461000084165970e-10) ) * z // z^25
+                                       + C(+2.0876756987868100e-09, 0) ) * z // z^24
+                                      + C(0, -7.3076250105207460e-09) ) * z // z^23
+                                     + C(-2.5052108385441720e-08, 0) ) * z // z^22
+                                    + C(0, +8.4037687620988577e-08) ) * z // z^21
+                                   + C(+2.7557319223985888e-07, 0) ) * z // z^20
+                                  + C(0, -8.8239572002038009e-07) ) * z // z^19
+                                 + C(-2.7557319223985893e-06, 0) ) * z // z^18
+                                + C(0, +8.3827593401936105e-06) ) * z // z^17
+                               + C(+2.4801587301587302e-05, 0) ) * z // z^16
+                              + C(0, -7.1253454391645692e-05) ) * z // z^15
+                             + C(-1.9841269841269841e-04, 0) ) * z // z^14
+                            + C(0, +5.3440090793734269e-04) ) * z // z^13
+                           + C(+1.3888888888888889e-03, 0) ) * z // z^12
+                          + C(0, -3.4736059015927274e-03) ) * z // z^11
+                         + C(-8.3333333333333332e-03, 0) ) * z // z^10
+                        + C(0, +1.9104832458760001e-02) ) * z // z^9
+                       + C(+4.1666666666666664e-02, 0) ) * z // z^8
+                      + C(0, -8.5971746064419999e-02) ) * z // z^7
+                     + C(-1.6666666666666666e-01, 0) ) * z // z^6
+                    + C(0, +3.0090111122547003e-01) ) * z // z^5
+                   + C(+5.0000000000000000e-01, 0) ) * z // z^4
+                  + C(0, -7.5225277806367508e-01) ) * z // z^3
+                 + C(-1.0000000000000000e+00, 0) ) * z // z^2
+                + C(0, +1.1283791670955126e+00) ) * z // z^1
+            + 1.;
+    }
+
+    _cerf_cmplx ret = 0.; // return value
+
+// ------------------------------------------------------------------------------
+// Case |z| -> infty
+// ------------------------------------------------------------------------------
+
+    if (z2 > 49) {
+        /*
+          For |z| > 7, use the asymptotic expansion.
+
+          Much simpler than the previously used continued fractions,
+          and more accurate.
+        */
+
+	const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
+        const _cerf_cmplx r = C(xs/z2, -ya/z2); // 1/z. Using z2, which we already have.
+
+        if (z2 > 22500) {
+            if (z2 > 4.8e15) {
+                /*
+                  Compute 1/z in differently scaled ways to avoid overflow.
+                */
+                if (xa > ya) {
+		    SET_INFO(222, 1);
+                    const double yax = ya / xs;
+                    const double denom = 0.56418958354775629 / (xs + yax*ya);
+                    ret = C(denom*yax, denom);
+                } else if (isinf(ya)) {
+		    SET_INFO(200, 1);
+                    return ((isnan(xa) || y < 0) ? C(NaN, NaN) : C(0, 0));
+                } else {
+		    SET_INFO(224, 1);
+                    const double xya = xs / ya;
+                    const double denom = 0.56418958354775629 / (xya*xs + ya);
+                    ret = C(denom, denom*xya);
+                }
+
+            } else {
+		SET_INFO(220, 4);
+                ret = ((((
+                             + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
+                         + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
+                        + C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
+                       + C(0, 5.6418958354775628e-01) ) * r; // n=0
+            }
+
         } else {
-#ifdef CERF_INTROSPECT
-          cerf_algorithm= 103;
-#endif
-          double xya = xs / ya;
-          double denom = ispi / (xya * xs + ya);
-          ret = C(denom, denom * xya);
+            if (z2 > 540) {
+		SET_INFO(220, 12);
+                ret = ((((((((((((
+                                     + C(0, 3.7877040075087948e+06) ) * (r*r) // n=11
+                                 + C(0, 3.6073371500083758e+05) ) * (r*r) // n=10
+                                + C(0, 3.7971970000088164e+04) ) * (r*r) // n=9
+                               + C(0, 4.4672905882456671e+03) ) * (r*r) // n=8
+                              + C(0, 5.9563874509942218e+02) ) * (r*r) // n=7
+                             + C(0, 9.1636730015295726e+01) ) * (r*r) // n=6
+                            + C(0, 1.6661223639144676e+01) ) * (r*r) // n=5
+                           + C(0, 3.7024941420321507e+00) ) * (r*r) // n=4
+                          + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
+                         + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
+                        + C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
+                       + C(0, 5.6418958354775628e-01) ) * r; // n=0
+
+            } else {
+		SET_INFO(220, 20);
+                ret = ((((((((((((((((((((
+                                             + C(0, 8.8249260943025370e+15) ) * (r*r) // n=19
+                                         + C(0, 4.7702303212446150e+14) ) * (r*r) // n=18
+                                        + C(0, 2.7258458978540656e+13) ) * (r*r) // n=17
+                                       + C(0, 1.6520278168812520e+12) ) * (r*r) // n=16
+                                      + C(0, 1.0658243979879044e+11) ) * (r*r) // n=15
+                                     + C(0, 7.3505130895717545e+09) ) * (r*r) // n=14
+                                    + C(0, 5.4448245107938921e+08) ) * (r*r) // n=13
+                                   + C(0, 4.3558596086351141e+07) ) * (r*r) // n=12
+                                  + C(0, 3.7877040075087948e+06) ) * (r*r) // n=11
+                                 + C(0, 3.6073371500083758e+05) ) * (r*r) // n=10
+                                + C(0, 3.7971970000088164e+04) ) * (r*r) // n=9
+                               + C(0, 4.4672905882456671e+03) ) * (r*r) // n=8
+                              + C(0, 5.9563874509942218e+02) ) * (r*r) // n=7
+                             + C(0, 9.1636730015295726e+01) ) * (r*r) // n=6
+                            + C(0, 1.6661223639144676e+01) ) * (r*r) // n=5
+                           + C(0, 3.7024941420321507e+00) ) * (r*r) // n=4
+                          + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
+                         + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
+                        + C(0, 2.8209479177387814e-01) ) * (r*r) // n=1
+                       + C(0, 5.6418958354775628e-01) ) * r; // n=0
+            }
         }
-      } else { // nu == 2, w(z) = i/sqrt(pi) * z / (z*z - 0.5)
-#ifdef CERF_INTROSPECT
-        cerf_algorithm = 104;
-#endif
-        double dr = xs * xs - ya * ya - 0.5, di = 2 * xs * ya;
-        double denom = ispi / (dr * dr + di * di);
-        ret = C(denom * (xs * di - ya * dr), denom * (xs * dr + ya * di));
-      }
-    } else { // compute nu(z) estimate and do general continued fraction
-#ifdef CERF_INTROSPECT
-      cerf_algorithm = 105;
-#endif
-      const double c0 = 3.9, c1 = 11.398, c2 = 0.08254, c3 = 0.1421,
-                   c4 = 0.2023; // fit
-      double nu = floor(c0 + c1 / (c2 * x + c3 * ya + c4));
-      double wr = xs, wi = ya;
-      for (nu = 0.5 * (nu - 1); nu > 0.4; nu -= 0.5) {
-        // w <- z - nu/w:
-        double denom = nu / (wr * wr + wi * wi);
-        wr = xs - wr * denom;
-        wi = ya + wi * denom;
-      }
-      { // w(z) = i/sqrt(pi) / w:
-        double denom = ispi / (wr * wr + wi * wi);
-        ret = C(denom * wi, denom * wr);
-      }
-    }
-    if (y < 0) {
-#ifdef CERF_INTROSPECT
-      cerf_algorithm += 10;
-#endif
-      // use w(z) = 2.0*exp(-z*z) - w(-z),
-      // but be careful of overflow in exp(-z*z)
-      //                                = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
-      return 2.0 * cexp(C((ya - xs) * (xs + ya), 2 * xs * y)) - ret;
-    } else
-      return ret;
-  }
-
-  /* Note: The test that seems to be suggested in the paper is x <
-     sqrt(-log(DBL_MIN)), about 26.6, since otherwise exp(-x^2)
-     underflows to zero and sum1,sum2,sum4 are zero.  However, long
-     before this occurs, the sum1,sum2,sum4 contributions are
-     negligible in double precision; I find that this happens for x >
-     about 6, for all y.  On the other hand, I find that the case
-     where we compute all of the sums is faster (at least with the
-     precomputed expa2n2 table) until about x=10.  Furthermore, if we
-     try to compute all of the sums for x > 20, I find that we
-     sometimes run into numerical problems because underflow/overflow
-     problems start to appear in the various coefficients of the sums,
-     below.  Therefore, we use x < 10 here. */
-  else if (x < 10) {
-
-    double prod2ax = 1, prodm2ax = 1;
-    double expx2;
-
-    if (isnan(y)) {
-#ifdef CERF_INTROSPECT
-      cerf_algorithm = 299;
-#endif
-      return C(y, y);
+        if (y < 0) {
+            /*
+              use w(z) = 2.0*exp(-z*z) - w(-z),
+              but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
+            */
+	    SET_ALGO(cerf_algorithm + 1);
+            return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
+        } else
+            return ret;
     }
 
-    if (x < 5e-4) { // compute sum4 and sum5 together as sum5-sum4
-                    // This special case is needed for accuracy.
-#ifdef CERF_INTROSPECT
-      cerf_algorithm = 201;
-#endif
-      const double x2 = x * x;
-      expx2 = 1 - x2 * (1 - 0.5 * x2); // exp(-x*x) via Taylor
-      // compute exp(2*a*x) and exp(-2*a*x) via Taylor, to double precision
-      const double ax2 = 1.036642960860171859744 * x; // 2*a*x
-      const double exp2ax =
-          1 + ax2 * (1 + ax2 * (0.5 + 0.166666666666666666667 * ax2));
-      const double expm2ax =
-          1 - ax2 * (1 - ax2 * (0.5 - 0.166666666666666666667 * ax2));
-      for (int n = 1;; ++n) {
-        const double coef = expa2n2[n - 1] * expx2 / (a2 * (n * n) + y * y);
-        prod2ax *= exp2ax;
-        prodm2ax *= expm2ax;
-        sum1 += coef;
-        sum2 += coef * prodm2ax;
-        sum3 += coef * prod2ax;
+    const double relerr = DBL_EPSILON;
+    const double a = 0.518321480430085929872;  // pi / sqrt(-log(eps*0.5))
+    const double c = 0.329973702884629072537;  // (2/pi) * a;
+    const double a2 = 0.268657157075235951582; // a^2
 
-        // really = sum5 - sum4
-        sum5 += coef * (2 * a) * n * sinh_taylor((2 * a) * n * x);
+    double sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0;
 
-        // test convergence via sum3
-        if (coef * prod2ax < relerr * sum3) {
-#ifdef CERF_INTROSPECT
-          cerf_nofterms = n;
-#endif
-          break;
+// ------------------------------------------------------------------------------
+// Intermediate case: continued fraction expansion
+// ------------------------------------------------------------------------------
+
+    if (ya > 7 || (xa > 6 && (ya > 0.1 || (xa > 8 && ya > 1e-10) || xa > 28))) {
+        /*
+          Continued-fraction expansion,
+          similar to those described by Gautschi (1970) and Poppe & Wijers (1990).
+
+          Prefered for large z because it is fast.
+
+          However, as pointed out by M. Zaghloul, the continued fraction seems to
+          give a large relative error in Re w(z) for |x| ~ 6 and small |y|.
+          In this region, excluded by the additional conditions in the if clause above,
+          we fall back to ACM algorithm 916 below.
+
+          Poppe & Wijers suggest using a number of terms
+          nu = 3 + 1442 / (26*rho + 77)
+          where rho = sqrt((x/x0)^2 + (y/y0)^2) where x0=6.3, y0=4.4.
+          (They only use this expansion for rho >= 1, but rho a little less
+          than 1 seems okay too.)
+          Instead, I [SGJ] did my own fit to a slightly different function
+          that avoids the hypotenuse calculation, using NLopt to minimize
+          the sum of the squares of the errors in nu with the constraint
+          that the estimated nu be >= minimum nu to attain machine precision.
+          I also separate the regions where nu == 2 and nu == 1.
+        */
+
+        const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
+
+        if (xa + ya > 4000) {                      // nu <= 2
+	    assert(0); // must never be reached, has been replaced by the above
+
+        } else {
+            // compute nu(z) estimate and do general continued fraction
+	    SET_INFO(230, 0);
+            const double c0 = 3.9, c1 = 11.398, c2 = 0.08254, c3 = 0.1421,
+                c4 = 0.2023; // fit
+            double nu = floor(c0 + c1 / (c2*xa + c3*ya + c4));
+            double wr = xs;
+            double wi = ya;
+            for (nu = 0.5 * (nu - 1); nu > 0.4; nu -= 0.5) {
+		SET_NTER(cerf_nofterms + 1);
+                // w <- z - nu/w:
+                double denom = nu / (wr*wr + wi*wi);
+                wr = xs - wr*denom;
+                wi = ya + wi*denom;
+            }
+            // w(z) = i/sqrt(pi) / w:
+            double denom = ispi / (wr*wr + wi*wi);
+            ret = C(denom*wi, denom*wr);
         }
-      }
-    } else { // x > 5e-4, compute sum4 and sum5 separately
-#ifdef CERF_INTROSPECT
-      cerf_algorithm = 202;
-#endif
-      expx2 = exp(-x * x);
-      const double exp2ax = exp((2 * a) * x), expm2ax = 1 / exp2ax;
-      for (int n = 1;; ++n) {
-        const double coef = expa2n2[n - 1] * expx2 / (a2 * (n * n) + y * y);
-        prod2ax *= exp2ax;
-        prodm2ax *= expm2ax;
-        sum1 += coef;
-        sum2 += coef * prodm2ax;
-        sum4 += (coef * prodm2ax) * (a * n);
-        sum3 += coef * prod2ax;
-        sum5 += (coef * prod2ax) * (a * n);
-        // test convergence via sum5, since this sum has the slowest decay
-        if ((coef * prod2ax) * (a * n) < relerr * sum5) {
-#ifdef CERF_INTROSPECT
-          cerf_nofterms = n;
-#endif
-          break;
-        }
-      }
+
+        if (y < 0) {
+            /*
+              use w(z) = 2.0*exp(-z*z) - w(-z),
+              but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
+            */
+	    SET_ALGO(cerf_algorithm + 1);
+            return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
+        } else
+            return ret;
     }
-    const double expx2erfcxy = // avoid spurious overflow for large negative y
-        y > -6 // for y < -6, erfcx(y) = 2*exp(y*y) to double precision
-            ? expx2 * erfcx(y)
-            : 2 * exp(y * y - x * x);
-    if (y > 5) { // imaginary terms cancel
-#ifdef CERF_INTROSPECT
-      cerf_algorithm += 10;
-#endif
-      const double sinxy = sin(x * y);
-      ret = (expx2erfcxy - c * y * sum1) * cos(2 * x * y) +
-            (c * x * expx2) * sinxy * sinc(x * y, sinxy);
+
+// ------------------------------------------------------------------------------
+// Intermediate case: ACM algorithm 916 by Zaghloul & Ali
+// ------------------------------------------------------------------------------
+
+    else if (xa < 10) {
+/*
+  ACM algorithm 916 by Zaghloul & Ali (2011), which is generally competitive
+  at small |z|, and more accurate than the Poppe & Wijers expansion in some
+  regions, e.g. in the vicinity of z=1+i.
+
+  Applicability range: The paper seems to suggest x < sqrt(-log(DBL_MIN)),
+  about 26.6, since otherwise exp(-x^2) underflows to zero and sum1,sum2,sum4
+  are zero.  However, long before this occurs, the sum1,sum2,sum4 contributions
+  are negligible in double precision; I [SGJ] find that this happens for
+  x > about 6, for all y.  On the other hand, I find that the case
+  where we compute all of the sums is faster (at least with the
+  precomputed expa2n2 table) until about x=10.
+*/
+
+        double prod2ax = 1, prodm2ax = 1;
+        double expx2;
+
+        if (isnan(y)) {
+	    SET_INFO(202, 1);
+            return C(y, y);
+        }
+
+        if (xa < 5e-4) {
+            /*
+              compute sum4 and sum5 together as sum5-sum4
+              This special case is needed for accuracy.
+            */
+            const double x2 = xa*xa;
+            expx2 = 1 - x2 * (1 - 0.5*x2); // exp(-x*x) via Taylor
+            // compute exp(2*a*x) and exp(-2*a*x) via Taylor, to double precision
+            const double ax2 = 1.036642960860171859744 * xa; // 2*a*x
+            const double exp2ax =
+                1 + ax2 * (1 + ax2 * (0.5 + 0.166666666666666666667 * ax2));
+            const double expm2ax =
+                1 - ax2 * (1 - ax2 * (0.5 - 0.166666666666666666667 * ax2));
+            for (int n = 1;; ++n) {
+                const double coef = expa2n2[n - 1] * expx2 / (a2 * (n*n) + y*y);
+                prod2ax *= exp2ax;
+                prodm2ax *= expm2ax;
+                sum1 += coef;
+                sum2 += coef * prodm2ax;
+                sum3 += coef * prod2ax;
+
+                // really = sum5 - sum4
+                sum5 += coef * (2*a) * n * sinh_taylor((2*a) * n * xa);
+
+                // test convergence via sum3; for termination rely on coef[n_max] = 0
+                if (coef * prod2ax < relerr * sum3) {
+		    SET_INFO(230, n);
+                    break;
+                }
+            }
+
+        } else {
+            /*
+              x > 5e-4, compute sum4 and sum5 separately
+            */
+
+            expx2 = exp(-xa*xa);
+            const double exp2ax = exp((2*a) * xa), expm2ax = 1 / exp2ax;
+            for (int n = 1;; ++n) {
+                const double coef = expa2n2[n - 1] * expx2 / (a2 * (n*n) + y*y);
+                prod2ax *= exp2ax;
+                prodm2ax *= expm2ax;
+                sum1 += coef;
+                sum2 += coef * prodm2ax;
+                sum3 += coef * prod2ax;
+                sum4 += (coef * prodm2ax) * (a*n);
+                sum5 += (coef * prod2ax) * (a*n);
+                // test convergence via sum5, since this sum has the slowest decay;
+// for termination rely on coef[n_max] = 0
+                if ((coef * prod2ax) * (a*n) < relerr * sum5) {
+		    SET_INFO(232, n);
+                    break;
+                }
+            }
+        }
+        const double expx2erfcxy = y < -6  ? 2*exp(y*y-xa*xa) : expx2*erfcx(y);
+/*
+  The second case has the exact expression.
+  In the first case, to avoid spurious overflow for large negative y,
+  we approximate erfcx(y) by 2*exp(y^2), which is accurate to double precision.
+*/
+// TODO: check exact location of cross-over
+
+        if (y > 5) { // imaginary terms cancel
+	    SET_ALGO(cerf_algorithm + 1);
+            const double sinxy = sin(xa*y);
+            ret = (expx2erfcxy - c*y*sum1) * cos(2*xa*y) +
+                (c*xa*expx2) * sinxy * sinc(xa*y, sinxy);
+        } else {
+            double xs = creal(z);
+            const double sinxy = sin(xs*y);
+            const double sin2xy = sin(2*xs*y), cos2xy = cos(2*xs*y);
+            const double coef1 = expx2erfcxy - c*y*sum1;
+            const double coef2 = c*xs*expx2;
+            ret = C(coef1*cos2xy + coef2*sinxy*sinc(xs*y, sinxy),
+                    coef2*sinc(2*xs*y, sin2xy) - coef1*sin2xy);
+        }
+
     } else {
-#ifdef CERF_INTROSPECT
-      cerf_algorithm += 20;
-#endif
-      double xs = creal(z);
-      const double sinxy = sin(xs * y);
-      const double sin2xy = sin(2 * xs * y), cos2xy = cos(2 * xs * y);
-      const double coef1 = expx2erfcxy - c * y * sum1;
-      const double coef2 = c * xs * expx2;
-      ret = C(coef1 * cos2xy + coef2 * sinxy * sinc(xs * y, sinxy),
-              coef2 * sinc(2 * xs * y, sin2xy) - coef1 * sin2xy);
-    }
-  } else { // x large: only sum3 & sum5 contribute (see above note)
+/*
+  Currently, this case cannot be reached.
 
-#ifdef CERF_INTROSPECT
-    cerf_algorithm = 300;
-#endif
+  Still ACM algorithm 916 by Zaghloul & Ali (2011), modified for large x.
 
-    if (isnan(x))
-      return C(x, x);
-    if (isnan(y))
-      return C(y, y);
+  In the original algorithm, if we try to compute all of the sums for x > 20,
+  I [SGJ] find that we sometimes run into numerical problems because
+  underflow/overflow problems start to appear in the coefficients of some sums.
 
-    ret = exp(-x * x); // |y| < 1e-10, so we only need exp(-x*x) term
-    // (round instead of ceil as in original paper; note that x/a > 1 here)
-    double n0 = floor(x / a + 0.5); // sum in both directions, starting at n0
-    double dx = a * n0 - x;
-    sum3 = exp(-dx * dx) / (a2 * (n0 * n0) + y * y);
-    sum5 = a * n0 * sum3;
-    double exp1 = exp(4 * a * dx), exp1dn = 1;
-    int dn;
-    for (dn = 1; n0 - dn > 0; ++dn) { // loop over n0-dn and n0+dn terms
-      double np = n0 + dn, nm = n0 - dn;
-      double tp = exp(-sqr(a * dn + dx));
-      double tm = tp * (exp1dn *= exp1); // trick to get tm from tp
-      tp /= (a2 * (np * np) + y * y);
-      tm /= (a2 * (nm * nm) + y * y);
-      sum3 += tp + tm;
-      sum5 += a * (np * tp + nm * tm);
-      if (a * (np * tp + nm * tm) < relerr * sum5)
-        goto finish;
+  Here, only sum3 & sum5 contribute.
+*/
+        if (isnan(xa)) {
+	    SET_INFO(205, 1);
+            return C(xa, xa);
+	}
+        if (isnan(y)) {
+	    SET_INFO(206, 1);
+            return C(y, y);
+	}
+
+	SET_INFO(240, 0);
+        ret = exp(-xa*xa); // |y| < 1e-10, so we only need exp(-x*x) term
+        // (round instead of ceil as in original paper; note that x/a > 1 here)
+        const double n0 = floor(xa / a + 0.5); // sum in both directions, starting at n0
+        const double dx = a*n0 - xa;
+        sum3 = exp(-dx*dx) / (a2 * (n0*n0) + y*y);
+        sum5 = a*n0*sum3;
+        const double exp1 = exp(4*a*dx);
+        double exp1dn = 1;
+        int dn;
+        for (dn = 1; n0 - dn > 0; ++dn) { // loop over n0-dn and n0+dn terms
+	    SET_NTER(cerf_nofterms + 1);
+            const double np = n0 + dn, nm = n0 - dn;
+            double tp = exp(-sqr(a*dn + dx));
+            double tm = tp * (exp1dn *= exp1); // trick to get tm from tp
+            tp /= (a2 * (np*np) + y*y);
+            tm /= (a2 * (nm*nm) + y*y);
+            sum3 += tp + tm;
+            sum5 += a * (np*tp + nm*tm);
+            if (a * (np*tp + nm*tm) < relerr * sum5)
+                goto finish;
+        }
+        while (1) { // loop over n0+dn terms only (since n0-dn <= 0)
+	    SET_NTER(cerf_nofterms + 1);
+            const double np = n0 + dn++;
+            const double tp = exp(-sqr(a*dn + dx)) / (a2 * (np*np) + y*y);
+            sum3 += tp;
+            sum5 += a*np*tp;
+            if (a*np*tp < relerr * sum5)
+                goto finish;
+        }
     }
-    while (1) { // loop over n0+dn terms only (since n0-dn <= 0)
-      double np = n0 + dn++;
-      double tp = exp(-sqr(a * dn + dx)) / (a2 * (np * np) + y * y);
-      sum3 += tp;
-      sum5 += a * np * tp;
-      if (a * np * tp < relerr * sum5)
-        goto finish;
-    }
-  }
 finish:
-  return ret + C((0.5 * c) * y * (sum2 + sum3),
-                 (0.5 * c) * copysign(sum5 - sum4, creal(z)));
+    return ret + C((c/2) * y * (sum2 + sum3), (c/2) * copysign(sum5 - sum4, creal(z)));
 } // w_of_z

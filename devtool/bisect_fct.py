@@ -22,6 +22,10 @@ mp.pretty = True
 
 rt.f_ext = rt.external_function1d
 
+rt.print_line = lambda locus, a, n, rr, f, f2: print('%2i %3i %3i  %21.16e %21.16e  %8e %8e' %
+          (locus, a, n, rr, f, (f-f2)/abs(f2), abs((f-f2)/f2)))
+
+
 if __name__ == '__main__':
     if len(sys.argv)<7:
         print(f"Usage: {sys.argv[0]} <fct> <range_mode> <N> <from> <to> <output_mode>")

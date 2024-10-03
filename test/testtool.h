@@ -35,11 +35,23 @@ using std::isfinite;
 #include <float.h>
 #include <stdio.h>
 
+#ifdef CERF_INTROSPECT
+IMPORT extern int cerf_algorithm;
+IMPORT extern int cerf_nofterms;
+#endif
+
 
 typedef struct {
     int failed;
     int total;
 } result_t;
+
+static void print_algo()
+{
+#ifdef CERF_INTROSPECT
+  printf("- used algorithm %i, number of terms %3i\n", cerf_algorithm, cerf_nofterms);
+#endif
+}
 
 // Compute relative error |b-a|/|b+offs|, handling case of NaN and Inf.
 // The tiny offset offs ensures a resonable return value for a=(almost underflowing), b=0.
@@ -63,6 +75,7 @@ void rtest(result_t* result, double limit, double computed, double expected, con
         printf("failure in subtest %i: %s\n", result->total, name);
         printf("- fct value %20.15g\n", computed);
         printf("- expected  %20.15g\n", expected);
+	print_algo();
         printf("=> error %6.2g above limit %6.2g\n", re, limit);
         ++result->failed;
     }
@@ -79,6 +92,7 @@ void ztest(
         printf("failure in subtest %i: %s\n", result->total, name);
         printf("- fct value %20.15g%+20.15g\n", creal(computed), cimag(computed));
         printf("- expected  %20.15g%+20.15g\n", creal(expected), cimag(expected));
+	print_algo();
         printf("=> error %6.2g or %6.2g above limit %6.2g\n", re_r, re_i, limit);
         ++result->failed;
     }

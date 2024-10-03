@@ -54,3 +54,11 @@ def imwx(x, doublecheck=False):
         if abs(result-r2)/result > 1e-17:
             raise Exception(f"mpmath inaccurate")
     return result
+
+def wofz(x, y, doublecheck=False):
+    z = mpc(x,y)
+    j = mpc('0', '1')
+    fz = exp(-z**2)*erfc(-j*z)
+    if doublecheck:
+        raise Exception("Don't know how to implement a generic doublecheck for w(z)")
+    return fz

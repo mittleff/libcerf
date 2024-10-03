@@ -31,3 +31,13 @@
 #ifndef CERF_AS_CPP
 #define alignas _Alignas // C23 will do this for us
 #endif
+
+#ifdef CERF_INTROSPECT
+#define SET_INFO(a,n) cerf_algorithm = a; cerf_nofterms = n
+#define SET_ALGO(a) cerf_algorithm = a
+#define SET_NTER(n) cerf_nofterms = n
+#else
+#define SET_INFO(a,n)
+#define SET_ALGO(a)
+#define SET_NTER(n)
+#endif
