@@ -173,24 +173,38 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         return C(Wreal, Wimag);
     }
 
-    const double xa = fabs(creal(z));
+    const double x = creal(z);
+    const double xa = fabs(x);
     const double y = cimag(z);
     const double ya = fabs(y);
     const double z2 = xa*xa + y*y;
+
+    const double ispi = 0.5641895835477562869; // 1 / sqrt(pi)
 
 // ------------------------------------------------------------------------------
 // Case |y| << |x|
 // ------------------------------------------------------------------------------
 
+//   If |y| << |x|, we get |Re w| << |Im w|, which implies that an algorithm
+//   can be very accurate in terms of the complex norm, with relative error
+//   computed as |w - w_0| / |w_0|, and still Re w can be wrong by orders of
+//   magnitude. Therefore this special case is treated beforehand.
+
+//   We start from the real axis where w(x) = exp(-x^2) + i*im_w_of_x(x).
+//   To compute w(x+iy) we assume that |y| is negligible when added to |x|.
+//   We obtain Re w = exp(-x^2) + 2 y (x Im w(x) - 1 / sqrt(pi)).
+
+    if (ya < 1e-16 * xa) {
+	const double wi = im_w_of_x(x);
+	SET_ALGO(cerf_algorithm + 300);
+	return C(exp(-xa*xa) + 2*y*(x*wi - ispi), wi);
+    }
+
 // ------------------------------------------------------------------------------
-// Case |z| -> 0
+// Case |z| -> 0: Maclaurin series
 // ------------------------------------------------------------------------------
 
     if (z2 < .26) {
-        /*
-          For |z| < 0.51, use Maclaurin expansion,
-          w(z) = (2/sqrt(pi)) * (z - 2/3 z^3  + 4/15 z^5  - 8/105 z^7 ...).
-        */
         if (z2 < .00689) {
             if (z2 < 4e-7) {
 		SET_INFO(210, 5);
@@ -409,7 +423,6 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
           I also separate the regions where nu == 2 and nu == 1.
         */
 
-        const double ispi = 0.56418958354775628694807945156; // 1 / sqrt(pi)
         const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
 
         if (xa + ya > 4000) {                      // nu <= 2
