@@ -160,6 +160,10 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // ------------------------------------------------------------------------------
 // One-dimensional cases (pure imaginary or pure real)
 // ------------------------------------------------------------------------------
+
+// If x=0 or y=0, we can use the real functions erfcx or im_w_of_x that are
+// implemented in separate source files.
+
     if (creal(z) == 0.0) {
         // Purely imaginary input, purely real output.
         // However, use creal(z) to give correct sign of 0 in cimag(w).
