@@ -173,10 +173,10 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         return C(Wreal, Wimag);
     }
 
-    const double x = fabs(creal(z));
+    const double xa = fabs(creal(z));
     const double y = cimag(z);
     const double ya = fabs(y);
-    const double z2 = x*x + y*y;
+    const double z2 = xa*xa + y*y;
 
 // ------------------------------------------------------------------------------
 // Case |y| << |x|
@@ -297,14 +297,14 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                 /*
                   Compute 1/z in differently scaled ways to avoid overflow.
                 */
-                if (x > ya) {
+                if (xa > ya) {
 		    SET_INFO(222, 1);
                     const double yax = ya / xs;
                     const double denom = 0.56418958354775629 / (xs + yax*ya);
                     ret = C(denom*yax, denom);
                 } else if (isinf(ya)) {
 		    SET_INFO(200, 1);
-                    return ((isnan(x) || y < 0) ? C(NaN, NaN) : C(0, 0));
+                    return ((isnan(xa) || y < 0) ? C(NaN, NaN) : C(0, 0));
                 } else {
 		    SET_INFO(224, 1);
                     const double xya = xs / ya;
@@ -385,7 +385,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // Intermediate case: continued fraction expansion
 // ------------------------------------------------------------------------------
 
-    if (ya > 7 || (x > 6 && (ya > 0.1 || (x > 8 && ya > 1e-10) || x > 28))) {
+    if (ya > 7 || (xa > 6 && (ya > 0.1 || (xa > 8 && ya > 1e-10) || xa > 28))) {
         /*
           Continued-fraction expansion,
           similar to those described by Gautschi (1970) and Poppe & Wijers (1990).
@@ -412,7 +412,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         const double ispi = 0.56418958354775628694807945156; // 1 / sqrt(pi)
         const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
 
-        if (x + ya > 4000) {                      // nu <= 2
+        if (xa + ya > 4000) {                      // nu <= 2
 	    assert(0); // must never be reached, has been replaced by the above
 
         } else {
@@ -420,7 +420,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	    SET_INFO(230, 0);
             const double c0 = 3.9, c1 = 11.398, c2 = 0.08254, c3 = 0.1421,
                 c4 = 0.2023; // fit
-            double nu = floor(c0 + c1 / (c2*x + c3*ya + c4));
+            double nu = floor(c0 + c1 / (c2*xa + c3*ya + c4));
             double wr = xs;
             double wi = ya;
             for (nu = 0.5 * (nu - 1); nu > 0.4; nu -= 0.5) {
@@ -450,7 +450,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // Intermediate case: ACM algorithm 916 by Zaghloul & Ali
 // ------------------------------------------------------------------------------
 
-    else if (x < 10) {
+    else if (xa < 10) {
 /*
   ACM algorithm 916 by Zaghloul & Ali (2011), which is generally competitive
   at small |z|, and more accurate than the Poppe & Wijers expansion in some
@@ -473,15 +473,15 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             return C(y, y);
         }
 
-        if (x < 5e-4) {
+        if (xa < 5e-4) {
             /*
               compute sum4 and sum5 together as sum5-sum4
               This special case is needed for accuracy.
             */
-            const double x2 = x*x;
+            const double x2 = xa*xa;
             expx2 = 1 - x2 * (1 - 0.5*x2); // exp(-x*x) via Taylor
             // compute exp(2*a*x) and exp(-2*a*x) via Taylor, to double precision
-            const double ax2 = 1.036642960860171859744 * x; // 2*a*x
+            const double ax2 = 1.036642960860171859744 * xa; // 2*a*x
             const double exp2ax =
                 1 + ax2 * (1 + ax2 * (0.5 + 0.166666666666666666667 * ax2));
             const double expm2ax =
@@ -495,7 +495,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                 sum3 += coef * prod2ax;
 
                 // really = sum5 - sum4
-                sum5 += coef * (2*a) * n * sinh_taylor((2*a) * n * x);
+                sum5 += coef * (2*a) * n * sinh_taylor((2*a) * n * xa);
 
                 // test convergence via sum3; for termination rely on coef[n_max] = 0
                 if (coef * prod2ax < relerr * sum3) {
@@ -509,8 +509,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
               x > 5e-4, compute sum4 and sum5 separately
             */
 
-            expx2 = exp(-x*x);
-            const double exp2ax = exp((2*a) * x), expm2ax = 1 / exp2ax;
+            expx2 = exp(-xa*xa);
+            const double exp2ax = exp((2*a) * xa), expm2ax = 1 / exp2ax;
             for (int n = 1;; ++n) {
                 const double coef = expa2n2[n - 1] * expx2 / (a2 * (n*n) + y*y);
                 prod2ax *= exp2ax;
@@ -528,7 +528,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                 }
             }
         }
-        const double expx2erfcxy = y < -6  ? 2*exp(y*y-x*x) : expx2*erfcx(y);
+        const double expx2erfcxy = y < -6  ? 2*exp(y*y-xa*xa) : expx2*erfcx(y);
 /*
   The second case has the exact expression.
   In the first case, to avoid spurious overflow for large negative y,
@@ -538,9 +538,9 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
         if (y > 5) { // imaginary terms cancel
 	    SET_ALGO(cerf_algorithm + 1);
-            const double sinxy = sin(x*y);
-            ret = (expx2erfcxy - c*y*sum1) * cos(2*x*y) +
-                (c*x*expx2) * sinxy * sinc(x*y, sinxy);
+            const double sinxy = sin(xa*y);
+            ret = (expx2erfcxy - c*y*sum1) * cos(2*xa*y) +
+                (c*xa*expx2) * sinxy * sinc(xa*y, sinxy);
         } else {
             double xs = creal(z);
             const double sinxy = sin(xs*y);
@@ -563,9 +563,9 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
   Here, only sum3 & sum5 contribute.
 */
-        if (isnan(x)) {
+        if (isnan(xa)) {
 	    SET_INFO(205, 1);
-            return C(x, x);
+            return C(xa, xa);
 	}
         if (isnan(y)) {
 	    SET_INFO(206, 1);
@@ -573,10 +573,10 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	}
 
 	SET_INFO(240, 0);
-        ret = exp(-x*x); // |y| < 1e-10, so we only need exp(-x*x) term
+        ret = exp(-xa*xa); // |y| < 1e-10, so we only need exp(-x*x) term
         // (round instead of ceil as in original paper; note that x/a > 1 here)
-        const double n0 = floor(x / a + 0.5); // sum in both directions, starting at n0
-        const double dx = a*n0 - x;
+        const double n0 = floor(xa / a + 0.5); // sum in both directions, starting at n0
+        const double dx = a*n0 - xa;
         sum3 = exp(-dx*dx) / (a2 * (n0*n0) + y*y);
         sum5 = a*n0*sum3;
         const double exp1 = exp(4*a*dx);
