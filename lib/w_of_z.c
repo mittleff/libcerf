@@ -65,6 +65,7 @@
 #include "defs.h" // defines _cerf_cmplx, NaN, C, cexp, ...
 #include <float.h>
 #include <math.h>
+#include <assert.h>
 
 #ifdef CERF_INTROSPECT
 EXPORT int cerf_algorithm;
@@ -154,26 +155,17 @@ static const double expa2n2[] = {
 /******************************************************************************/
 
 _cerf_cmplx w_of_z(_cerf_cmplx z) {
-#ifdef CERF_INTROSPECT
-    cerf_algorithm = -1;
-    cerf_nofterms = 0;
-#endif
+    SET_INFO(-1, -1);
 
 // ------------------------------------------------------------------------------
 // One-dimensional cases (pure imaginary or pure real)
 // ------------------------------------------------------------------------------
     if (creal(z) == 0.0) {
-#ifdef CERF_INTROSPECT
-        cerf_algorithm = 400;
-#endif
         // Purely imaginary input, purely real output.
         // However, use creal(z) to give correct sign of 0 in cimag(w).
         return C(erfcx(cimag(z)), creal(z));
     }
     if (cimag(z) == 0) {
-#ifdef CERF_INTROSPECT
-        cerf_algorithm = 500;
-#endif
         // Purely real input, complex output.
         // Avoid floating underflow for real term of large z.
         const double Wreal = fabs(creal(z)) > 27. ? 0. : exp(-sqr(creal(z)));
@@ -199,14 +191,9 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
           For |z| < 0.51, use Maclaurin expansion,
           w(z) = (2/sqrt(pi)) * (z - 2/3 z^3  + 4/15 z^5  - 8/105 z^7 ...).
         */
-#ifdef CERF_INTROSPECT
-        cerf_algorithm = 550;
-#endif
         if (z2 < .00689) {
             if (z2 < 4e-7) {
-#ifdef CERF_INTROSPECT
-                cerf_nofterms = 4;
-#endif
+		SET_INFO(210, 5);
                 return ((((
                               + C(+5.0000000000000000e-01, 0) ) * z // z^4
                           + C(0, -7.5225277806367508e-01) ) * z // z^3
@@ -214,9 +201,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                         + C(0, +1.1283791670955126e+00) ) * z // z^1
                     + 1;
             }
-#ifdef CERF_INTROSPECT
-            cerf_nofterms = 13;
-#endif
+
+	    SET_INFO(210, 14);
             return (((((((((((((
                                    + C(0, +5.3440090793734269e-04) ) * z // z^13
                                + C(+1.3888888888888889e-03, 0) ) * z // z^12
@@ -233,10 +219,9 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                     + C(0, +1.1283791670955126e+00) ) * z // z^1
                 + 1;
         }
+
         if (z2 < .074) {
-#ifdef CERF_INTROSPECT
-            cerf_nofterms = 19;
-#endif
+	    SET_INFO(210, 20);
             return (((((((((((((((((((
                                          + C(0, -8.8239572002038009e-07) ) * z // z^19
                                      + C(-2.7557319223985893e-06, 0) ) * z // z^18
@@ -259,9 +244,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                     + C(0, +1.1283791670955126e+00) ) * z // z^1
                 + 1;
         }
-#ifdef CERF_INTROSPECT
-        cerf_nofterms = 25;
-#endif
+
+	SET_INFO(210, 26);
         return (((((((((((((((((((((((((
                                            + C(0, +5.8461000084165970e-10) ) * z // z^25
                                        + C(+2.0876756987868100e-09, 0) ) * z // z^24
@@ -305,45 +289,31 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
           and more accurate.
         */
 
-#ifdef CERF_INTROSPECT
-        cerf_algorithm = 700;
-#endif
 	const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
         const _cerf_cmplx r = C(xs/z2, -ya/z2); // 1/z. Using z2, which we already have.
 
         if (z2 > 22500) {
             if (z2 > 4.8e15) {
-#ifdef CERF_INTROSPECT
-                cerf_nofterms = 1;
-#endif
                 /*
                   Compute 1/z in differently scaled ways to avoid overflow.
                 */
                 if (x > ya) {
-#ifdef CERF_INTROSPECT
-                    cerf_algorithm = 101;
-#endif
+		    SET_INFO(222, 1);
                     const double yax = ya / xs;
                     const double denom = 0.56418958354775629 / (xs + yax*ya);
                     ret = C(denom*yax, denom);
                 } else if (isinf(ya)) {
-#ifdef CERF_INTROSPECT
-                    cerf_algorithm = 102;
-#endif
+		    SET_INFO(200, 1);
                     return ((isnan(x) || y < 0) ? C(NaN, NaN) : C(0, 0));
                 } else {
-#ifdef CERF_INTROSPECT
-                    cerf_algorithm = 103;
-#endif
+		    SET_INFO(224, 1);
                     const double xya = xs / ya;
                     const double denom = 0.56418958354775629 / (xya*xs + ya);
                     ret = C(denom, denom*xya);
                 }
 
             } else {
-#ifdef CERF_INTROSPECT
-                cerf_nofterms = 4;
-#endif
+		SET_INFO(220, 4);
                 ret = ((((
                              + C(0, 1.0578554691520430e+00) ) * (r*r) // n=3
                          + C(0, 4.2314218766081724e-01) ) * (r*r) // n=2
@@ -353,9 +323,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
         } else {
             if (z2 > 540) {
-#ifdef CERF_INTROSPECT
-                cerf_nofterms = 11;
-#endif
+		SET_INFO(220, 12);
                 ret = ((((((((((((
                                      + C(0, 3.7877040075087948e+06) ) * (r*r) // n=11
                                  + C(0, 3.6073371500083758e+05) ) * (r*r) // n=10
@@ -371,9 +339,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                        + C(0, 5.6418958354775628e-01) ) * r; // n=0
 
             } else {
-#ifdef CERF_INTROSPECT
-                cerf_nofterms = 19;
-#endif
+		SET_INFO(220, 20);
                 ret = ((((((((((((((((((((
                                              + C(0, 8.8249260943025370e+15) ) * (r*r) // n=19
                                          + C(0, 4.7702303212446150e+14) ) * (r*r) // n=18
@@ -402,9 +368,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
               use w(z) = 2.0*exp(-z*z) - w(-z),
               but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
             */
-#ifdef CERF_INTROSPECT
-            cerf_algorithm += 10;
-#endif
+	    SET_ALGO(cerf_algorithm + 1);
             return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
         } else
             return ret;
@@ -449,49 +413,18 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
 
         if (x + ya > 4000) {                      // nu <= 2
-            if (x + ya > 1e7) {                     // nu == 1, w(z) = i/sqrt(pi) / z
-                // scale to avoid overflow
-                if (x > ya) {
-#ifdef CERF_INTROSPECT
-                    cerf_algorithm = 101;
-#endif
-                    const double yax = ya / xs;
-                    const double denom = ispi / (xs + yax*ya);
-                    ret = C(denom*yax, denom);
-                } else if (isinf(ya)) {
-#ifdef CERF_INTROSPECT
-                    cerf_algorithm = 102;
-#endif
-                    return ((isnan(x) || y < 0) ? C(NaN, NaN) : C(0, 0));
-                } else {
-#ifdef CERF_INTROSPECT
-                    cerf_algorithm = 103;
-#endif
-                    const double xya = xs / ya;
-                    const double denom = ispi / (xya*xs + ya);
-                    ret = C(denom, denom*xya);
-                }
-
-            } else { // nu == 2, w(z) = i/sqrt(pi)*z / (z*z - 0.5)
-#ifdef CERF_INTROSPECT
-                cerf_algorithm = 104;
-#endif
-                const double dr = xs*xs - ya*ya - 0.5, di = 2*xs*ya;
-                const double denom = ispi / (dr*dr + di*di);
-                ret = C(denom * (xs*di - ya*dr), denom * (xs*dr + ya*di));
-            }
+	    assert(0); // must never be reached, has been replaced by the above
 
         } else {
             // compute nu(z) estimate and do general continued fraction
-#ifdef CERF_INTROSPECT
-            cerf_algorithm = 105;
-#endif
+	    SET_INFO(230, 0);
             const double c0 = 3.9, c1 = 11.398, c2 = 0.08254, c3 = 0.1421,
                 c4 = 0.2023; // fit
             double nu = floor(c0 + c1 / (c2*x + c3*ya + c4));
             double wr = xs;
             double wi = ya;
             for (nu = 0.5 * (nu - 1); nu > 0.4; nu -= 0.5) {
+		SET_NTER(cerf_nofterms + 1);
                 // w <- z - nu/w:
                 double denom = nu / (wr*wr + wi*wi);
                 wr = xs - wr*denom;
@@ -507,9 +440,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
               use w(z) = 2.0*exp(-z*z) - w(-z),
               but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
             */
-#ifdef CERF_INTROSPECT
-            cerf_algorithm += 10;
-#endif
+	    SET_ALGO(cerf_algorithm + 1);
             return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
         } else
             return ret;
@@ -538,9 +469,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         double expx2;
 
         if (isnan(y)) {
-#ifdef CERF_INTROSPECT
-            cerf_algorithm = 299;
-#endif
+	    SET_INFO(202, 1);
             return C(y, y);
         }
 
@@ -549,9 +478,6 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
               compute sum4 and sum5 together as sum5-sum4
               This special case is needed for accuracy.
             */
-#ifdef CERF_INTROSPECT
-            cerf_algorithm = 201;
-#endif
             const double x2 = x*x;
             expx2 = 1 - x2 * (1 - 0.5*x2); // exp(-x*x) via Taylor
             // compute exp(2*a*x) and exp(-2*a*x) via Taylor, to double precision
@@ -573,9 +499,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
                 // test convergence via sum3; for termination rely on coef[n_max] = 0
                 if (coef * prod2ax < relerr * sum3) {
-#ifdef CERF_INTROSPECT
-                    cerf_nofterms = n;
-#endif
+		    SET_INFO(230, n);
                     break;
                 }
             }
@@ -585,9 +509,6 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
               x > 5e-4, compute sum4 and sum5 separately
             */
 
-#ifdef CERF_INTROSPECT
-            cerf_algorithm = 202;
-#endif
             expx2 = exp(-x*x);
             const double exp2ax = exp((2*a) * x), expm2ax = 1 / exp2ax;
             for (int n = 1;; ++n) {
@@ -602,9 +523,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                 // test convergence via sum5, since this sum has the slowest decay;
 // for termination rely on coef[n_max] = 0
                 if ((coef * prod2ax) * (a*n) < relerr * sum5) {
-#ifdef CERF_INTROSPECT
-                    cerf_nofterms = n;
-#endif
+		    SET_INFO(232, n);
                     break;
                 }
             }
@@ -618,16 +537,11 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // TODO: check exact location of cross-over
 
         if (y > 5) { // imaginary terms cancel
-#ifdef CERF_INTROSPECT
-            cerf_algorithm += 10;
-#endif
+	    SET_ALGO(cerf_algorithm + 1);
             const double sinxy = sin(x*y);
             ret = (expx2erfcxy - c*y*sum1) * cos(2*x*y) +
                 (c*x*expx2) * sinxy * sinc(x*y, sinxy);
         } else {
-#ifdef CERF_INTROSPECT
-            cerf_algorithm += 20;
-#endif
             double xs = creal(z);
             const double sinxy = sin(xs*y);
             const double sin2xy = sin(2*xs*y), cos2xy = cos(2*xs*y);
@@ -649,15 +563,16 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
   Here, only sum3 & sum5 contribute.
 */
-#ifdef CERF_INTROSPECT
-        cerf_algorithm = 300;
-#endif
-
-        if (isnan(x))
+        if (isnan(x)) {
+	    SET_INFO(205, 1);
             return C(x, x);
-        if (isnan(y))
+	}
+        if (isnan(y)) {
+	    SET_INFO(206, 1);
             return C(y, y);
+	}
 
+	SET_INFO(240, 0);
         ret = exp(-x*x); // |y| < 1e-10, so we only need exp(-x*x) term
         // (round instead of ceil as in original paper; note that x/a > 1 here)
         const double n0 = floor(x / a + 0.5); // sum in both directions, starting at n0
@@ -668,6 +583,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         double exp1dn = 1;
         int dn;
         for (dn = 1; n0 - dn > 0; ++dn) { // loop over n0-dn and n0+dn terms
+	    SET_NTER(cerf_nofterms + 1);
             const double np = n0 + dn, nm = n0 - dn;
             double tp = exp(-sqr(a*dn + dx));
             double tm = tp * (exp1dn *= exp1); // trick to get tm from tp
@@ -679,6 +595,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                 goto finish;
         }
         while (1) { // loop over n0+dn terms only (since n0-dn <= 0)
+	    SET_NTER(cerf_nofterms + 1);
             const double np = n0 + dn++;
             const double tp = exp(-sqr(a*dn + dx)) / (a2 * (np*np) + y*y);
             sum3 += tp;
