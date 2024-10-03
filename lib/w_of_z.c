@@ -36,7 +36,7 @@
  *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * Authors:
- *   Steven G. Johnson, Massachusetts Institute of Technology, 2012, core author
+ *   Steven G. Johnson, Massachusetts Institute of Technology, 2012
  *   Joachim Wuttke, Forschungszentrum Jülich, 2013, 2024
  *
  * Website:
@@ -159,6 +159,9 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     cerf_nofterms = 0;
 #endif
 
+// ------------------------------------------------------------------------------
+// One-dimensional cases (pure imaginary or pure real)
+// ------------------------------------------------------------------------------
     if (creal(z) == 0.0) {
 #ifdef CERF_INTROSPECT
         cerf_algorithm = 400;
@@ -178,18 +181,18 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         return C(Wreal, Wimag);
     }
 
-    const double relerr = DBL_EPSILON;
-    const double a = 0.518321480430085929872;  // pi / sqrt(-log(eps*0.5))
-    const double c = 0.329973702884629072537;  // (2/pi) * a;
-    const double a2 = 0.268657157075235951582; // a^2
-
     const double x = fabs(creal(z));
     const double y = cimag(z);
     const double ya = fabs(y);
     const double z2 = x*x + y*y;
 
-    _cerf_cmplx ret = 0.; // return value
+// ------------------------------------------------------------------------------
+// Case |y| << |x|
+// ------------------------------------------------------------------------------
 
+// ------------------------------------------------------------------------------
+// Case |z| -> 0
+// ------------------------------------------------------------------------------
 
     if (z2 < .26) {
         /*
@@ -288,6 +291,11 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             + 1;
     }
 
+    _cerf_cmplx ret = 0.; // return value
+
+// ------------------------------------------------------------------------------
+// Case |z| -> infty
+// ------------------------------------------------------------------------------
 
     if (z2 > 49) {
         /*
@@ -402,7 +410,16 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             return ret;
     }
 
+    const double relerr = DBL_EPSILON;
+    const double a = 0.518321480430085929872;  // pi / sqrt(-log(eps*0.5))
+    const double c = 0.329973702884629072537;  // (2/pi) * a;
+    const double a2 = 0.268657157075235951582; // a^2
+
     double sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0;
+
+// ------------------------------------------------------------------------------
+// Intermediate case: continued fraction expansion
+// ------------------------------------------------------------------------------
 
     if (ya > 7 || (x > 6 && (ya > 0.1 || (x > 8 && ya > 1e-10) || x > 28))) {
         /*
@@ -497,6 +514,10 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         } else
             return ret;
     }
+
+// ------------------------------------------------------------------------------
+// Intermediate case: ACM algorithm 916 by Zaghloul & Ali
+// ------------------------------------------------------------------------------
 
     else if (x < 10) {
 /*
