@@ -157,19 +157,6 @@ static const double expa2n2[] = {
 _cerf_cmplx w_of_z(_cerf_cmplx z) {
     SET_INFO(-1, -1);
 
-// ------------------------------------------------------------------------------
-// One-dimensional cases (pure imaginary or pure real)
-// ------------------------------------------------------------------------------
-
-// If x=0 or y=0, we can use the real functions erfcx or im_w_of_x that are
-// implemented in separate source files.
-
-    if (creal(z) == 0.0) {
-        // Purely imaginary input, purely real output.
-        // However, use creal(z) to give correct sign of 0 in cimag(w).
-        return C(erfcx(cimag(z)), creal(z));
-    }
-
     const double x = creal(z);
     const double xa = fabs(x);
     const double y = cimag(z);
@@ -195,7 +182,30 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	const double wi = im_w_of_x(x);
 	SET_ALGO(cerf_algorithm + 300);
         const double e2 = xa > 27. ? 0. : exp(-xa*xa); // prevent underflow
-	return C(e2 + 2*y*(x*wi - ispi), wi);
+	if (ya == 0)
+	    return C(e2, wi); // also works for x=+-inf
+	return C(e2 + y*(2*(x*wi - ispi)), wi);
+    }
+
+// ------------------------------------------------------------------------------
+// Case |x| << |y|
+// ------------------------------------------------------------------------------
+
+//   If |x| << |y|, we get |Im w| << |Re w|, which implies that an algorithm
+//   can be very accurate in terms of the complex norm, with relative error
+//   computed as |w - w_0| / |w_0|, and still Im w can be wrong by orders of
+//   magnitude. Therefore this special case is treated beforehand.
+
+//   We start from the imaginary axis where w(iy) = erfcx(y).
+//   To compute w(iy+x) we assume that |x| is negligible when added to |y|.
+//   We obtain Im w = 2 x (1 / sqrt(pi) - y erfcx(y)).
+
+    if (xa < 1e-16 * ya) {
+	const double wr = erfcx(y);
+	SET_ALGO(cerf_algorithm + 400);
+	if (xa == 0)
+	    return C(wr, 0); // also works for y=+inf
+	return C(wr, x*(2*(ispi - y*wr)));
     }
 
 // ------------------------------------------------------------------------------
