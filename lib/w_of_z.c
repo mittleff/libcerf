@@ -445,10 +445,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         }
 
         if (y < 0) {
-            /*
-              use w(z) = 2.0*exp(-z*z) - w(-z),
-              but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
-            */
+            // Use w(z) = 2.0*exp(-z*z) - w(-z),
+            // but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
 	    SET_ALGO(cerf_algorithm + 1);
             return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
         } else
@@ -481,10 +479,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         }
 
         if (xa < 5e-4) {
-            /*
-              compute sum4 and sum5 together as sum5-sum4
-              This special case is needed for accuracy.
-            */
+            // Compute sum4 and sum5 together as sum5-sum4
+            // This special case is needed for accuracy.
             const double x2 = xa*xa;
             expx2 = 1 - x2 * (1 - 0.5*x2); // exp(-x*x) via Taylor
             // compute exp(2*a*x) and exp(-2*a*x) via Taylor, to double precision
@@ -512,10 +508,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             }
 
         } else {
-            /*
-              x > 5e-4, compute sum4 and sum5 separately
-            */
-
+            // x > 5e-4, compute sum4 and sum5 separately
             expx2 = exp(-xa*xa);
             const double exp2ax = exp((2*a) * xa), expm2ax = 1 / exp2ax;
             for (int n = 1;; ++n) {
@@ -528,7 +521,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                 sum4 += (coef * prodm2ax) * (a*n);
                 sum5 += (coef * prod2ax) * (a*n);
                 // test convergence via sum5, since this sum has the slowest decay;
-// for termination rely on coef[n_max] = 0
+                // for termination rely on coef[n_max] = 0
                 if ((coef * prod2ax) * (a*n) < relerr * sum5) {
 		    SET_INFO(232, n);
                     break;
@@ -536,11 +529,11 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             }
         }
         const double expx2erfcxy = y < -6  ? 2*exp(y*y-xa*xa) : expx2*erfcx(y);
-/*
-  The second case has the exact expression.
-  In the first case, to avoid spurious overflow for large negative y,
-  we approximate erfcx(y) by 2*exp(y^2), which is accurate to double precision.
-*/
+
+// The second case has the exact expression.
+// In the first case, to avoid spurious overflow for large negative y,
+// we approximate erfcx(y) by 2*exp(y^2), which is accurate to double precision.
+//
 // TODO: check exact location of cross-over
 
         if (y > 5) { // imaginary terms cancel
