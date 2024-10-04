@@ -555,8 +555,6 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // Still ACM algorithm 916
 // ------------------------------------------------------------------------------
 
-//  Currently, this case cannot be reached.
-//
 //  Still ACM algorithm 916 by Zaghloul & Ali (2011), modified for large x.
 //
 //  In the original algorithm, if we try to compute all of the sums for x > 20,
