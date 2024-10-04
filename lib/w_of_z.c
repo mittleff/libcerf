@@ -169,13 +169,6 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         // However, use creal(z) to give correct sign of 0 in cimag(w).
         return C(erfcx(cimag(z)), creal(z));
     }
-    if (cimag(z) == 0) {
-        // Purely real input, complex output.
-        // Avoid floating underflow for real term of large z.
-        const double Wreal = fabs(creal(z)) > 27. ? 0. : exp(-sqr(creal(z)));
-        const double Wimag = im_w_of_x(creal(z));
-        return C(Wreal, Wimag);
-    }
 
     const double x = creal(z);
     const double xa = fabs(x);
@@ -201,7 +194,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     if (ya < 1e-16 * xa) {
 	const double wi = im_w_of_x(x);
 	SET_ALGO(cerf_algorithm + 300);
-	return C(exp(-xa*xa) + 2*y*(x*wi - ispi), wi);
+        const double e2 = xa > 27. ? 0. : exp(-xa*xa); // prevent underflow
+	return C(e2 + 2*y*(x*wi - ispi), wi);
     }
 
 // ------------------------------------------------------------------------------

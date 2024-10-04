@@ -23,23 +23,16 @@
  *   ../CHANGELOG
  */
 
-#ifdef __cplusplus
-#include <cassert>
-#include <cmath>
-using std::isfinite;
-#else
 #include <assert.h>
-#include <math.h>
-#endif
-#include "defs.h" // defines _cerf_cmplx, CMPLX, NaN, Inf
 #include <float.h>
+#include <math.h>
 #include <stdio.h>
+#include "defs.h"
 
 #ifdef CERF_INTROSPECT
 IMPORT extern int cerf_algorithm;
 IMPORT extern int cerf_nofterms;
 #endif
-
 
 typedef struct {
     int failed;
