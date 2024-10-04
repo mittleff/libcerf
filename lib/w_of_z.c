@@ -157,26 +157,6 @@ static const double expa2n2[] = {
 _cerf_cmplx w_of_z(_cerf_cmplx z) {
     SET_INFO(-1, -1);
 
-// ------------------------------------------------------------------------------
-// One-dimensional cases (pure imaginary or pure real)
-// ------------------------------------------------------------------------------
-
-// If x=0 or y=0, we can use the real functions erfcx or im_w_of_x that are
-// implemented in separate source files.
-
-    if (creal(z) == 0.0) {
-        // Purely imaginary input, purely real output.
-        // However, use creal(z) to give correct sign of 0 in cimag(w).
-        return C(erfcx(cimag(z)), creal(z));
-    }
-    if (cimag(z) == 0) {
-        // Purely real input, complex output.
-        // Avoid floating underflow for real term of large z.
-        const double Wreal = fabs(creal(z)) > 27. ? 0. : exp(-sqr(creal(z)));
-        const double Wimag = im_w_of_x(creal(z));
-        return C(Wreal, Wimag);
-    }
-
     const double x = creal(z);
     const double xa = fabs(x);
     const double y = cimag(z);
@@ -201,7 +181,31 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     if (ya < 1e-16 * xa) {
 	const double wi = im_w_of_x(x);
 	SET_ALGO(cerf_algorithm + 300);
-	return C(exp(-xa*xa) + 2*y*(x*wi - ispi), wi);
+        const double e2 = xa > 27. ? 0. : exp(-xa*xa); // prevent underflow
+	if (ya == 0)
+	    return C(e2, wi); // also works for x=+-inf
+	return C(e2 + y*(2*(x*wi - ispi)), wi);
+    }
+
+// ------------------------------------------------------------------------------
+// Case |x| << |y|
+// ------------------------------------------------------------------------------
+
+//   If |x| << |y|, we get |Im w| << |Re w|, which implies that an algorithm
+//   can be very accurate in terms of the complex norm, with relative error
+//   computed as |w - w_0| / |w_0|, and still Im w can be wrong by orders of
+//   magnitude. Therefore this special case is treated beforehand.
+
+//   We start from the imaginary axis where w(iy) = erfcx(y).
+//   To compute w(iy+x) we assume that |x| is negligible when added to |y|.
+//   We obtain Im w = 2 x (1 / sqrt(pi) - y erfcx(y)).
+
+    if (xa < 1e-16 * ya) {
+	const double wr = erfcx(y);
+	SET_ALGO(cerf_algorithm + 400);
+	if (xa == 0)
+	    return C(wr, 0); // also works for y=+inf
+	return C(wr, x*(2*(ispi - y*wr)));
     }
 
 // ------------------------------------------------------------------------------
@@ -296,25 +300,16 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     _cerf_cmplx ret = 0.; // return value
 
 // ------------------------------------------------------------------------------
-// Case |z| -> infty
+// Case |z| -> infty: Asymptotic expansion
 // ------------------------------------------------------------------------------
 
     if (z2 > 49) {
-        /*
-          For |z| > 7, use the asymptotic expansion.
-
-          Much simpler than the previously used continued fractions,
-          and more accurate.
-        */
-
 	const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
         const _cerf_cmplx r = C(xs/z2, -ya/z2); // 1/z. Using z2, which we already have.
 
         if (z2 > 22500) {
             if (z2 > 4.8e15) {
-                /*
-                  Compute 1/z in differently scaled ways to avoid overflow.
-                */
+                // Scale to prevent overflow.
                 if (xa > ya) {
 		    SET_INFO(222, 1);
                     const double yax = ya / xs;
@@ -382,10 +377,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             }
         }
         if (y < 0) {
-            /*
-              use w(z) = 2.0*exp(-z*z) - w(-z),
-              but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
-            */
+            // Use w(z) = 2.0*exp(-z*z) - w(-z),
+            // but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
 	    SET_ALGO(cerf_algorithm + 1);
             return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
         } else
@@ -403,29 +396,28 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // Intermediate case: continued fraction expansion
 // ------------------------------------------------------------------------------
 
+// Continued-fraction expansion,
+// similar to those described by Gautschi (1970) and Poppe & Wijers (1990).
+//
+// Prefered for large z because it is fast.
+//
+// However, as pointed out by M. Zaghloul, the continued fraction seems to
+// give a large relative error in Re w(z) for |x| ~ 6 and small |y|.
+// In this region, excluded by the additional conditions in the if clause above,
+// we fall back to ACM algorithm 916 below.
+//
+// Poppe & Wijers suggest using a number of terms
+// nu = 3 + 1442 / (26*rho + 77)
+// where rho = sqrt((x/x0)^2 + (y/y0)^2) where x0=6.3, y0=4.4.
+// (They only use this expansion for rho >= 1, but rho a little less
+// than 1 seems okay too.)
+// Instead, I [SGJ] did my own fit to a slightly different function
+// that avoids the hypotenuse calculation, using NLopt to minimize
+// the sum of the squares of the errors in nu with the constraint
+// that the estimated nu be >= minimum nu to attain machine precision.
+// I also separate the regions where nu == 2 and nu == 1.
+
     if (ya > 7 || (xa > 6 && (ya > 0.1 || (xa > 8 && ya > 1e-10) || xa > 28))) {
-        /*
-          Continued-fraction expansion,
-          similar to those described by Gautschi (1970) and Poppe & Wijers (1990).
-
-          Prefered for large z because it is fast.
-
-          However, as pointed out by M. Zaghloul, the continued fraction seems to
-          give a large relative error in Re w(z) for |x| ~ 6 and small |y|.
-          In this region, excluded by the additional conditions in the if clause above,
-          we fall back to ACM algorithm 916 below.
-
-          Poppe & Wijers suggest using a number of terms
-          nu = 3 + 1442 / (26*rho + 77)
-          where rho = sqrt((x/x0)^2 + (y/y0)^2) where x0=6.3, y0=4.4.
-          (They only use this expansion for rho >= 1, but rho a little less
-          than 1 seems okay too.)
-          Instead, I [SGJ] did my own fit to a slightly different function
-          that avoids the hypotenuse calculation, using NLopt to minimize
-          the sum of the squares of the errors in nu with the constraint
-          that the estimated nu be >= minimum nu to attain machine precision.
-          I also separate the regions where nu == 2 and nu == 1.
-        */
 
         const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
 
@@ -467,21 +459,19 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // Intermediate case: ACM algorithm 916 by Zaghloul & Ali
 // ------------------------------------------------------------------------------
 
+//  ACM algorithm 916 by Zaghloul & Ali (2011), which is generally competitive
+//  at small |z|, and more accurate than the Poppe & Wijers expansion in some
+//  regions, e.g. in the vicinity of z=1+i.
+//
+//  Applicability range: The paper seems to suggest x < sqrt(-log(DBL_MIN)),
+//  about 26.6, since otherwise exp(-x^2) underflows to zero and sum1,sum2,sum4
+//  are zero.  However, long before this occurs, the sum1,sum2,sum4 contributions
+//  are negligible in double precision; I [SGJ] find that this happens for
+//  x > about 6, for all y.  On the other hand, I find that the case
+//  where we compute all of the sums is faster (at least with the
+//  precomputed expa2n2 table) until about x=10.
+
     else if (xa < 10) {
-/*
-  ACM algorithm 916 by Zaghloul & Ali (2011), which is generally competitive
-  at small |z|, and more accurate than the Poppe & Wijers expansion in some
-  regions, e.g. in the vicinity of z=1+i.
-
-  Applicability range: The paper seems to suggest x < sqrt(-log(DBL_MIN)),
-  about 26.6, since otherwise exp(-x^2) underflows to zero and sum1,sum2,sum4
-  are zero.  However, long before this occurs, the sum1,sum2,sum4 contributions
-  are negligible in double precision; I [SGJ] find that this happens for
-  x > about 6, for all y.  On the other hand, I find that the case
-  where we compute all of the sums is faster (at least with the
-  precomputed expa2n2 table) until about x=10.
-*/
-
         double prod2ax = 1, prodm2ax = 1;
         double expx2;
 
@@ -568,18 +558,21 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                     coef2*sinc(2*xs*y, sin2xy) - coef1*sin2xy);
         }
 
+// ------------------------------------------------------------------------------
+// Still ACM algorithm 916
+// ------------------------------------------------------------------------------
+
+//  Currently, this case cannot be reached.
+//
+//  Still ACM algorithm 916 by Zaghloul & Ali (2011), modified for large x.
+//
+//  In the original algorithm, if we try to compute all of the sums for x > 20,
+//  I [SGJ] find that we sometimes run into numerical problems because
+//  underflow/overflow problems start to appear in the coefficients of some sums.
+//
+//  Here, only sum3 & sum5 contribute.
+
     } else {
-/*
-  Currently, this case cannot be reached.
-
-  Still ACM algorithm 916 by Zaghloul & Ali (2011), modified for large x.
-
-  In the original algorithm, if we try to compute all of the sums for x > 20,
-  I [SGJ] find that we sometimes run into numerical problems because
-  underflow/overflow problems start to appear in the coefficients of some sums.
-
-  Here, only sum3 & sum5 contribute.
-*/
         if (isnan(xa)) {
 	    SET_INFO(205, 1);
             return C(xa, xa);

@@ -20,27 +20,14 @@ if(NOT DEFINED CERF_CPP)
 endif()
 
 if(CERF_CPP)
-    project(cerfcpp CXX)
     message("Build C++ library libcerfcpp")
-    # add_compile_definitions(CERF_AS_CPP) # requires CMake 3.13, therefore more explicitly:
-    if(MSVC)
-        add_compile_options(/DCERF_AS_CPP)
-    else()
-        add_compile_options(-DCERF_AS_CPP)
-    endif()
+    project(cerfcpp CXX)
     set(CMAKE_CXX_STANDARD 11)
+    add_compile_definitions(CERF_AS_CPP)
 else()
     message("Build C library libcerf")
     project(cerf C)
     set(CMAKE_C_STANDARD 11)
-endif()
-
-if (CERF_INTROSPECT)
-    if(MSVC)
-        add_compile_options(/DCERF_INTROSPECT)
-    else()
-        add_compile_options(-DCERF_INTROSPECT)
-    endif()
 endif()
 
 set(CERF_SOVERSION                 2) # API version
@@ -50,6 +37,10 @@ include(GNUInstallDirs)
 
 SET(CERF_COMPILE_OPTIONS "" CACHE
     STRING "User-supplied compiler options, will be appended to hard-coded ones. Not for Windows.")
+
+if (CERF_INTROSPECT)
+    add_compile_definitions(CERF_INTROSPECT)
+endif()
 
 if(MSVC)
     if (NOT CERF_CPP)

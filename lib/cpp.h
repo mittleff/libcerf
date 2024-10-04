@@ -40,10 +40,6 @@
 #define FADDEEVA(name) Faddeeva::name
 #define FADDEEVA_RE(name) Faddeeva::name
 
-// g++ gets confused between the C and C++ isnan/isinf functions
-#define isnan std::isnan
-#define isinf std::isinf
-
 // If we are using the gnulib <cmath> (e.g. in the GNU Octave sources),
 // gnulib generates a link warning if we use ::floor instead of gnulib::floor.
 // This warning is completely innocuous because the only difference between
