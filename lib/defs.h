@@ -45,17 +45,16 @@
 #ifdef CERF_NO_IEEE754
 #define frexp2 frexp
 #else
-//! Simpler replacement for frexp from math.h, assuming that value!=0.
+//! Simpler replacement for frexp from math.h, assuming that 0 < value < inf.
 //! Adapted from https://github.com/dioptre/newos/blob/master/lib/libm/arch/sh4/frexp.c.
 inline double frexp2(double value, int* eptr)
 {
     union {
 	double v;
 	struct {
-            unsigned u_mant2 : 32;
-            unsigned u_mant1 : 20;
-            unsigned   u_exp : 11;
-	    unsigned  u_sign :  1;
+            unsigned long long u_mant : 52;
+            unsigned  u_exp : 11;
+	    unsigned u_sign :  1;
 	} s;
     } u;
 
