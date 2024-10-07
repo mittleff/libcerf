@@ -18,6 +18,11 @@ endif()
 if(NOT DEFINED CERF_CPP)
     option(CERF_CPP "Build libcerf as native C++" OFF)
 endif()
+if(NOT DEFINED CERF_IEEE754)
+    option(CERF_IEEE754 "Assume IEEE754 floating-point layout" ON)
+    # This switch allows us to fall back to frexp from libc instead of using our own frexp2.
+    # It is unclear though whether the remainder of the code will work on non-IEEE754 machines.
+endif()
 
 if(CERF_CPP)
     message("Build C++ library libcerfcpp")
@@ -40,6 +45,10 @@ SET(CERF_COMPILE_OPTIONS "" CACHE
 
 if (CERF_INTROSPECT)
     add_compile_definitions(CERF_INTROSPECT)
+endif()
+
+if (NOT CERF_IEEE754)
+    add_compile_definitions(CERF_NO_IEEE754)
 endif()
 
 if(MSVC)
