@@ -991,9 +991,9 @@ static double chebInterpolant(double x) {
     const double xm = frexp(x, &je); // from math.h; sets xm and je
 
     // Integer arithmetics to obtain reduced coordinate t:
-    const int ip = (int)ldexp(xm, M + 1);      // index in octave + 2^M
+    const int ip = (int)((1 << (M+1)) * xm);   // index in octave + 2^M
     const int lij = je * (1 << M) + ip - loff; // index in lookup table
-    const double t = ldexp(xm, M + 2) - 1 - 2 * ip;
+    const double t = (1 << (M+2)) * xm - (1 + 2 * ip);
 
     SET_NTER(lij);
 
