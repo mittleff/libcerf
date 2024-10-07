@@ -42,26 +42,37 @@
 #define SET_NTER(n)
 #endif
 
-#ifdef CERF_NO_IEEE754
+#ifdef CERF_NO_IEEE754 // This flag can be set via CMake option -DCERF_IEEE754=OFF
+// Fall back to frexp from math.h. To be used for non-standard processor architectures
+// for which our accelerated function frexp2 does not work.
 #define frexp2 frexp
+
 #else
-//! Simpler replacement for frexp from math.h, assuming that value!=0.
+//! Simpler replacement for frexp from math.h, assuming that 0 < value < inf.
+//!
 //! Adapted from https://github.com/dioptre/newos/blob/master/lib/libm/arch/sh4/frexp.c.
+//!
+//! This function assumes that integer and floating-point numbers have the same endianness.
+//! This seems to be case "on modern standard computers" that implement IEEE 754 [1].
+//! Otherwise set flag CERF_NO_IEEE754 to fall back to frexp.
+//!
+//! [1] https://en.wikipedia.org/wiki/Endianness#Floating_point of 07oct24
 inline double frexp2(double value, int* eptr)
 {
     union {
 	double v;
 	struct {
-            unsigned u_mant2 : 32;
-            unsigned u_mant1 : 20;
-            unsigned   u_exp : 11;
-	    unsigned  u_sign :  1;
+	    // mantissa split in two parts lest we get segfault under MSVC
+            unsigned mantissa2 : 32;
+            unsigned mantissa1 : 20;
+            unsigned exponent : 11;
+	    unsigned sign :  1;
 	} s;
     } u;
 
     u.v = value;
-    *eptr = u.s.u_exp - 1022;
-    u.s.u_exp = 1022;
+    *eptr = u.s.exponent - 1022;
+    u.s.exponent = 1022;
     return u.v ;
 }
 #endif
