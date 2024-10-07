@@ -62,7 +62,9 @@ inline double frexp2(double value, int* eptr)
     union {
 	double v;
 	struct {
-            unsigned long long mantissa : 52;
+	    // mantissa split in two parts lest we get segfault under MSVC
+            unsigned mantissa2 : 32;
+            unsigned mantissa1 : 20;
             unsigned exponent : 11;
 	    unsigned sign :  1;
 	} s;
