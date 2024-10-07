@@ -61,6 +61,7 @@
 #include <math.h>
 #include <stdalign.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef CERF_INTROSPECT
 IMPORT extern int cerf_algorithm;
@@ -988,7 +989,7 @@ static double chebInterpolant(double x) {
 
     // For given x, obtain mantissa xm and exponent je:
     int je;                          // will be set in next line
-    const double xm = frexp(x, &je); // from math.h; sets xm and je
+    const double xm = frexp2(x, &je); // sets xm and je
 
     // Integer arithmetics to obtain reduced coordinate t:
     const int ip = (int)((1 << (M+1)) * xm);   // index in octave + 2^M

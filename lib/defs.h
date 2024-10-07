@@ -41,3 +41,27 @@
 #define SET_ALGO(a)
 #define SET_NTER(n)
 #endif
+
+#ifdef CERF_NO_IEEE754
+#define frexp2 frexp
+#else
+//! Simpler replacement for frexp from math.h, assuming that value!=0.
+//! Adapted from https://github.com/dioptre/newos/blob/master/lib/libm/arch/sh4/frexp.c.
+inline double frexp2(double value, int* eptr)
+{
+    union {
+	double v;
+	struct {
+            unsigned u_mant2 : 32;
+            unsigned u_mant1 : 20;
+            unsigned   u_exp : 11;
+	    unsigned  u_sign :  1;
+	} s;
+    } u;
+
+    u.v = value;
+    *eptr = u.s.u_exp - 1022;
+    u.s.u_exp = 1022;
+    return u.v ;
+}
+#endif
