@@ -53,7 +53,7 @@
 //!
 //! Adapted from https://github.com/dioptre/newos/blob/master/lib/libm/arch/sh4/frexp.c.
 //! However, the mantissa must _not_ be broken into two variables to prevent errors
-//! on architectures like MISP that do not revert the byte order of simple types.
+//! on architectures like MIPS that do not revert the byte order of simple types.
 inline double frexp2(double value, int* eptr)
 {
     union {
