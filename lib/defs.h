@@ -51,22 +51,16 @@
 //! Simpler replacement for frexp from math.h, assuming that 0 < value < inf.
 //!
 //! Adapted from https://github.com/dioptre/newos/blob/master/lib/libm/arch/sh4/frexp.c.
-//!
-//! This function assumes that integer and floating-point numbers have the same endianness.
-//! This seems to be case "on modern standard computers" that implement IEEE 754 [1].
-//! Otherwise set flag CERF_NO_IEEE754 to fall back to frexp.
-//!
-//! [1] https://en.wikipedia.org/wiki/Endianness#Floating_point of 07oct24
+//! However, the mantissa must _not_ be broken into two variables to prevent errors
+//! on architectures like MISP that do not revert the byte order of simple types.
 inline double frexp2(double value, int* eptr)
 {
     union {
 	double v;
 	struct {
-	    // mantissa split in two parts lest we get segfault under MSVC
-            unsigned mantissa2 : 32;
-            unsigned mantissa1 : 20;
-            unsigned exponent : 11;
-	    unsigned sign :  1;
+            unsigned long long mantissa : 52;
+            unsigned long long exponent : 11;
+	    unsigned long long sign :  1;
 	} s;
     } u;
 
