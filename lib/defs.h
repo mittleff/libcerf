@@ -14,8 +14,9 @@
  *   See ../COPYING
  *
  * Authors:
- *   Steven G. Johnson, Massachusetts Institute of Technology, 2012, core author
- *   Joachim Wuttke, Forschungszentrum Jülich, 2013, package maintainer
+ *   Steven G. Johnson, Massachusetts Institute of Technology, 2012
+ *   Joachim Wuttke, Forschungszentrum Jülich, 2013-2024
+ *   Alexander Kleinsorge, TH Wildau, 2024
  *
  * Website:
  *   http://apps.jcns.fz-juelich.de/libcerf
