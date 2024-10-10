@@ -514,7 +514,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             // x > 5e-4, compute sum4 and sum5 separately
             expx2 = exp(-xa*xa);
 	    e2y = y < -6  ? 2*exp(y*y-xa*xa) : expx2*erfcx(y); // may SET_ALGO
-            const double exp2ax = exp((2*a) * xa), expm2ax = 1 / exp2ax;
+            const double exp2ax = exp((2*a) * xa);
+	    const double expm2ax = 1 / exp2ax;
             for (int n = 1;; ++n) {
                 const double coef = expa2n2[n - 1] * expx2 / (a2 * (n*n) + y*y);
                 prod2ax *= exp2ax;
@@ -546,7 +547,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         } else {
             double xs = creal(z);
             const double sinxy = sin(xs*y);
-            const double sin2xy = sin(2*xs*y), cos2xy = cos(2*xs*y);
+            const double sin2xy = sin(2*xs*y);
+	    const double cos2xy = cos(2*xs*y);
             const double coef1 = e2y - c*y*sum1;
             const double coef2 = c*xs*expx2;
             ret = C(coef1*cos2xy + coef2*sinxy*sinc(xs*y, sinxy),
