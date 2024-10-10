@@ -166,7 +166,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     const double ispi = 0.5641895835477562869; // 1 / sqrt(pi)
 
 // ------------------------------------------------------------------------------
-// Case |y| << |x|
+// Case |y| << |x|                                                     [ALGO 3??]
 // ------------------------------------------------------------------------------
 
 //   If |y| << |x|, we get |Re w| << |Im w|, which implies that an algorithm
@@ -188,7 +188,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     }
 
 // ------------------------------------------------------------------------------
-// Case |x| << |y|
+// Case |x| << |y|                                                     [ALGO 4??]
 // ------------------------------------------------------------------------------
 
 //   If |x| << |y|, we get |Im w| << |Re w|, which implies that an algorithm
@@ -209,7 +209,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     }
 
 // ------------------------------------------------------------------------------
-// Case |z| -> 0: Maclaurin series
+// Case |z| -> 0: Maclaurin series                                     [ALGO 210]
 // ------------------------------------------------------------------------------
 
     if (z2 < .26) {
@@ -300,7 +300,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     _cerf_cmplx ret = 0.; // return value
 
 // ------------------------------------------------------------------------------
-// Case |z| -> infty: Asymptotic expansion
+// Case |z| -> infty: Asymptotic expansion                        [ALGO 100, 22?]
 // ------------------------------------------------------------------------------
 
     if (z2 > 49) {
@@ -316,7 +316,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                     const double denom = 0.56418958354775629 / (xs + yax*ya);
                     ret = C(denom*yax, denom);
                 } else if (isinf(ya)) {
-		    SET_INFO(200, 1);
+		    SET_INFO(100, 1);
                     return ((isnan(xa) || y < 0) ? C(NaN, NaN) : C(0, 0));
                 } else {
 		    SET_INFO(224, 1);
@@ -393,7 +393,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     double sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0;
 
 // ------------------------------------------------------------------------------
-// Intermediate case: continued fraction expansion
+// Intermediate case: continued fraction expansion                     [ALGO 230]
 // ------------------------------------------------------------------------------
 
 // Continued-fraction expansion,
@@ -445,10 +445,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         }
 
         if (y < 0) {
-            /*
-              use w(z) = 2.0*exp(-z*z) - w(-z),
-              but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
-            */
+            // Use w(z) = 2.0*exp(-z*z) - w(-z),
+            // but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
 	    SET_ALGO(cerf_algorithm + 1);
             return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
         } else
@@ -456,7 +454,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     }
 
 // ------------------------------------------------------------------------------
-// Intermediate case: ACM algorithm 916 by Zaghloul & Ali
+// Intermediate case: ACM algorithm 916 by Zaghloul & Ali          [ALGO 5?? 6??]
 // ------------------------------------------------------------------------------
 
 //  ACM algorithm 916 by Zaghloul & Ali (2011), which is generally competitive
@@ -480,13 +478,14 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             return C(y, y);
         }
 
+	SET_ALGO(0);
+        double e2y;
         if (xa < 5e-4) {
-            /*
-              compute sum4 and sum5 together as sum5-sum4
-              This special case is needed for accuracy.
-            */
+            // Compute sum4 and sum5 together as sum5-sum4
+            // This special case is needed for accuracy.
             const double x2 = xa*xa;
             expx2 = 1 - x2 * (1 - 0.5*x2); // exp(-x*x) via Taylor
+	    e2y = y < -6  ? 2*exp(y*y-xa*xa) : expx2*erfcx(y); // may SET_ALGO
             // compute exp(2*a*x) and exp(-2*a*x) via Taylor, to double precision
             const double ax2 = 1.036642960860171859744 * xa; // 2*a*x
             const double exp2ax =
@@ -506,17 +505,15 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
                 // test convergence via sum3; for termination rely on coef[n_max] = 0
                 if (coef * prod2ax < relerr * sum3) {
-		    SET_INFO(230, n);
+		    SET_INFO(600+cerf_algorithm, n);
                     break;
                 }
             }
 
         } else {
-            /*
-              x > 5e-4, compute sum4 and sum5 separately
-            */
-
+            // x > 5e-4, compute sum4 and sum5 separately
             expx2 = exp(-xa*xa);
+	    e2y = y < -6  ? 2*exp(y*y-xa*xa) : expx2*erfcx(y); // may SET_ALGO
             const double exp2ax = exp((2*a) * xa), expm2ax = 1 / exp2ax;
             for (int n = 1;; ++n) {
                 const double coef = expa2n2[n - 1] * expx2 / (a2 * (n*n) + y*y);
@@ -528,42 +525,38 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
                 sum4 += (coef * prodm2ax) * (a*n);
                 sum5 += (coef * prod2ax) * (a*n);
                 // test convergence via sum5, since this sum has the slowest decay;
-// for termination rely on coef[n_max] = 0
+                // for termination rely on coef[n_max] = 0
                 if ((coef * prod2ax) * (a*n) < relerr * sum5) {
-		    SET_INFO(232, n);
+		    SET_INFO(500+cerf_algorithm, n);
                     break;
                 }
             }
         }
-        const double expx2erfcxy = y < -6  ? 2*exp(y*y-xa*xa) : expx2*erfcx(y);
-/*
-  The second case has the exact expression.
-  In the first case, to avoid spurious overflow for large negative y,
-  we approximate erfcx(y) by 2*exp(y^2), which is accurate to double precision.
-*/
+
+// The second case has the exact expression.
+// In the first case, to avoid spurious overflow for large negative y,
+// we approximate erfcx(y) by 2*exp(y^2), which is accurate to double precision.
+//
 // TODO: check exact location of cross-over
 
         if (y > 5) { // imaginary terms cancel
 	    SET_ALGO(cerf_algorithm + 1);
             const double sinxy = sin(xa*y);
-            ret = (expx2erfcxy - c*y*sum1) * cos(2*xa*y) +
-                (c*xa*expx2) * sinxy * sinc(xa*y, sinxy);
+            ret = (e2y - c*y*sum1) * cos(2*xa*y) + (c*xa*expx2) * sinxy * sinc(xa*y, sinxy);
         } else {
             double xs = creal(z);
             const double sinxy = sin(xs*y);
             const double sin2xy = sin(2*xs*y), cos2xy = cos(2*xs*y);
-            const double coef1 = expx2erfcxy - c*y*sum1;
+            const double coef1 = e2y - c*y*sum1;
             const double coef2 = c*xs*expx2;
             ret = C(coef1*cos2xy + coef2*sinxy*sinc(xs*y, sinxy),
                     coef2*sinc(2*xs*y, sin2xy) - coef1*sin2xy);
         }
 
 // ------------------------------------------------------------------------------
-// Still ACM algorithm 916
+// Still ACM algorithm 916                                     [ALGO 105 106 24?]
 // ------------------------------------------------------------------------------
 
-//  Currently, this case cannot be reached.
-//
 //  Still ACM algorithm 916 by Zaghloul & Ali (2011), modified for large x.
 //
 //  In the original algorithm, if we try to compute all of the sums for x > 20,
@@ -574,11 +567,11 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
     } else {
         if (isnan(xa)) {
-	    SET_INFO(205, 1);
+	    SET_INFO(105, 1);
             return C(xa, xa);
 	}
         if (isnan(y)) {
-	    SET_INFO(206, 1);
+	    SET_INFO(106, 1);
             return C(y, y);
 	}
 
