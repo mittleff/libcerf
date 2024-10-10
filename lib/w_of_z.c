@@ -66,6 +66,7 @@
 #include <float.h>
 #include <math.h>
 #include <assert.h>
+#include <stdio.h>
 
 #ifdef CERF_INTROSPECT
 EXPORT int cerf_algorithm;
