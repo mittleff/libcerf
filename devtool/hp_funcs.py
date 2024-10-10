@@ -58,7 +58,10 @@ def imwx(x, doublecheck=False):
 def wofz(x, y, doublecheck=False):
     z = mpc(x,y)
     j = mpc('0', '1')
-    fz = exp(-z**2)*erfc(-j*z)
+    result = exp(-z**2)*erfc(-j*z)
     if doublecheck:
-        raise Exception("Don't know how to implement a generic doublecheck for w(z)")
-    return fz
+        # Check mpmath-computed reference value against mpmath-based brute-force integration
+        r2 = mpc(0,1)/pi*quad(lambda t: exp(-t**2)/(z-t), [-inf, +inf])
+        if abs((result-r2)/result) > 1e-17:
+            raise Exception(f"mpmath inaccurate")
+    return result
