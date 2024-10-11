@@ -50,12 +50,17 @@ def external_function1d(x):
     xs = "%22.16e" % xhp
     a1 = subprocess.run([external_program, xs], stdout=subprocess.PIPE)
     try:
-        a2 = a1.stdout.decode('utf-8').split()
+        out_text = a1.stdout.decode('utf-8').rstrip(' \n\t')
+        last_out_line = out_text.split('\n')[-1]
+        a2 = last_out_line.split()
         a3 = [mpf(a2[0]), mpf(a2[1]), int(a2[2]), int(a2[3])]
     except:
+        print("Could not read back from C call")
         print("x:", x)
         print("a:", a1)
-        print("Could not read back from C call")
+        print("t:", out_text)
+        print("l:", last_out_line)
+        print("2:", a2)
         sys.exit(1)
     if a3[0] != mpf(xs):
         raise Exception(f"failed double-string cycle {x} -> {xhp} -> {xs} -> {a3[0]} ({(x-a3[0])/x})")
@@ -73,13 +78,18 @@ def external_function2d(x, y):
     xs, ys = "%22.16e" % xhp, "%22.16e" % yhp
     a1 = subprocess.run([external_program, xs, ys], stdout=subprocess.PIPE)
     try:
-        a2 = a1.stdout.decode('utf-8').split()
+        out_text = a1.stdout.decode('utf-8').rstrip(' \n\t')
+        last_out_line = out_text.split('\n')[-1]
+        a2 = last_out_line.split()
         a3 = [mpc(a2[0], a2[1]), mpc(a2[2], a2[3]), int(a2[4]), int(a2[5])]
     except:
+        print("Could not read back from C call")
         print("x:", x)
         print("y:", y)
         print("a:", a1)
-        print("Could not read back from C call")
+        print("t:", out_text)
+        print("l:", last_out_line)
+        print("2:", a2)
         sys.exit(1)
     if re(a3[0]) != mpf(xs):
         raise Exception(f"failed double-string cycle x: {x} -> {xhp} -> {xs} -> {re(a3[0])} ({(x-re(a3[0]))/x})")
