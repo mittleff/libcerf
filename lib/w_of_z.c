@@ -92,8 +92,7 @@ static inline double sinh_taylor(double x) {
 static inline double sqr(double x) { return x * x; }
 
 /******************************************************************************/
-/* precomputed table of expa2n2[n-1] = exp(-a2*n*n)                           */
-/* for double-precision a2 = 0.26865... in w_of_z, below.                     */
+/* precomputed table of expa2n2[n-1] = exp(-a^2 * n^2)                        */
 /******************************************************************************/
 
 static const double expa2n2[] = {
@@ -389,7 +388,6 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     const double relerr = DBL_EPSILON;
     const double a = 0.518321480430085929872;  // pi / sqrt(-log(eps*0.5))
     const double a2_pi = 0.329973702884629072537;  // (2/pi) * a;
-    const double a2 = 0.268657157075235951582; // a^2
 
     double sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0;
 
@@ -494,7 +492,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             const double expm2ax =
                 1 - ax2 * (1 - ax2 * (0.5 - 0.166666666666666666667 * ax2));
             for (int n = 1;; ++n) {
-                const double coef = expa2n2[n - 1] * expx2 / (a2 * (n*n) + y*y);
+                const double coef = expa2n2[n - 1] * expx2 / ((a*a) * (n*n) + y*y);
                 prod2ax *= exp2ax;
                 prodm2ax *= expm2ax;
                 sum1 += coef;
@@ -518,7 +516,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             const double exp2ax = exp((2*a) * xa);
 	    const double expm2ax = 1 / exp2ax;
             for (int n = 1;; ++n) {
-                const double coef = expa2n2[n - 1] * expx2 / (a2 * (n*n) + y*y);
+                const double coef = expa2n2[n - 1] * expx2 / ((a*a) * (n*n) + y*y);
                 prod2ax *= exp2ax;
                 prodm2ax *= expm2ax;
                 sum1 += coef;
@@ -583,7 +581,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         // (round instead of ceil as in original paper; note that x/a > 1 here)
         const double n0 = floor(xa / a + 0.5); // sum in both directions, starting at n0
         const double dx = a*n0 - xa;
-        sum3 = exp(-dx*dx) / (a2 * (n0*n0) + y*y);
+        sum3 = exp(-dx*dx) / ((a*a) * (n0*n0) + y*y);
         sum5 = a*n0*sum3;
         const double exp1 = exp(4*a*dx);
         double exp1dn = 1;
@@ -593,8 +591,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             const double np = n0 + dn, nm = n0 - dn;
             double tp = exp(-sqr(a*dn + dx));
             double tm = tp * (exp1dn *= exp1); // trick to get tm from tp
-            tp /= (a2 * (np*np) + y*y);
-            tm /= (a2 * (nm*nm) + y*y);
+            tp /= ((a*a) * (np*np) + y*y);
+            tm /= ((a*a) * (nm*nm) + y*y);
             sum3 += tp + tm;
             sum5 += a * (np*tp + nm*tm);
             if (a * (np*tp + nm*tm) < relerr * sum5)
@@ -603,7 +601,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         while (1) { // loop over n0+dn terms only (since n0-dn <= 0)
 	    SET_NTER(cerf_nofterms + 1);
             const double np = n0 + dn++;
-            const double tp = exp(-sqr(a*dn + dx)) / (a2 * (np*np) + y*y);
+            const double tp = exp(-sqr(a*dn + dx)) / ((a*a) * (np*np) + y*y);
             sum3 += tp;
             sum5 += a*np*tp;
             if (a*np*tp < relerr * sum5)
