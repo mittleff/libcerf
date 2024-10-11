@@ -92,62 +92,63 @@ static inline double sinh_taylor(double x) {
 static inline double sqr(double x) { return x * x; }
 
 /******************************************************************************/
-/* precomputed table of expa2n2[n-1] = exp(-a2*n*n)                           */
-/* for double-precision a2 = 0.26865... in w_of_z, below.                     */
+/* precomputed table of expa2n2[n-1] = exp(-a^2 * n^2)                        */
 /******************************************************************************/
 
 static const double expa2n2[] = {
-    7.6440528167122157e-1,
-    3.41424527166548419e-1,
-    8.91072646929412376e-2,
-    1.35887299055460053e-2,
-    1.21085455253437473e-3,
-    6.30452613933448798e-5,
-    1.91805156577114627e-6,
-    3.40969447714832129e-8,
-    3.54175089099468534e-10,
-    2.14965079583260701e-12,
-    7.62368911833724214e-15,
-    1.57982797110680523e-17,
-    1.91294189103582847e-20,
-    1.35344656764205201e-23,
-    5.59535712428587329e-27,
-    1.35164257972401336e-30,
-    1.90784582843499203e-34,
-    1.573519202914414e-38,
-    7.58312432328031747e-43,
-    2.13536275438697177e-47,
-    3.51352063787194301e-52,
-    3.37800830266396575e-57,
-    1.89769439468300171e-62,
-    6.22929926072660027e-68,
-    1.19481172006938479e-73,
-    1.33908181133006436e-79,
-    8.76924303483226468e-86,
-    3.35555576166253504e-92,
-    7.5026411068815959e-99,
-    9.80192200745400666e-106,
-    7.48265412822263025e-113,
-    3.33770122566805208e-120,
-    8.69934598159840512e-128,
-    1.3248695148408338e-135,
-    1.17898144201314251e-143,
-    6.13039120236156112e-152,
-    1.86258785950818541e-160,
-    3.30668408201430881e-169,
-    3.43017280887946632e-178,
-    2.07915397775808552e-187,
-    7.36384545323981754e-197,
-    1.52394760394083166e-206,
-    1.84281935046525516e-216,
-    1.30209553802992364e-226,
-    5.37588903521091667e-237,
-    1.29689584599760859e-247,
-    1.82813078022865549e-258,
-    1.50576355348675694e-269,
-    7.24692320799252486e-281,
-    2.03797051314725175e-292,
-    3.34880215927866455e-304,
+    7.78800783071404878e-1,
+    3.67879441171442334e-1,
+    1.05399224561864333e-1,
+    1.83156388887341787e-2,
+    1.9304541362277093e-3,
+    1.23409804086679561e-4,
+    4.78511739212900875e-6,
+    1.12535174719259116e-7,
+    1.60522805518561165e-9,
+    1.38879438649640209e-11,
+    7.28772409581969219e-14,
+    2.31952283024356963e-16,
+    4.4777324417183015e-19,
+    5.2428856633634639e-22,
+    3.72336312175051061e-25,
+    1.60381089054863793e-28,
+    4.19009319449439736e-32,
+    6.63967719958073481e-36,
+    6.38150344806079078e-40,
+    3.72007597602083612e-44,
+    1.31532589485746445e-48,
+    2.8207700884601352e-53,
+    3.66905961542916342e-58,
+    2.89464031164830029e-63,
+    1.38511936992260166e-68,
+    4.02006021574335523e-74,
+    7.07669817542954913e-80,
+    7.55581901971196089e-86,
+    4.8931122620973616e-92,
+    1.92194772782384913e-98,
+    4.57878996929157753e-105,
+    6.61626105670948528e-112,
+    5.79865541856403774e-119,
+    3.08244069694909812e-126,
+    9.93836441348368381e-134,
+    1.9435148500492928e-141,
+    2.30522631523556484e-149,
+    1.65841047768114525e-157,
+    7.23641151924800958e-166,
+    1.91516959671400568e-174,
+    3.07428396708383541e-183,
+    2.99318445226019286e-192,
+    1.76756641155092425e-201,
+    6.33097733621059151e-211,
+    1.37536679932640647e-220,
+    1.81225402579399229e-230,
+    1.44834614899898877e-240,
+    7.02066779850473475e-251,
+    2.06413091092950948e-261,
+    3.68085585480180036e-272,
+    3.9811921806329143e-283,
+    2.61174176128405546e-294,
+    1.03920226214308252e-305,
     0.0 // underflow (will force termination of loops, and thereby prevent reading past array end)
 }; // expa2n2
 
@@ -387,9 +388,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     }
 
     const double relerr = DBL_EPSILON;
-    const double a = 0.518321480430085929872;  // pi / sqrt(-log(eps*0.5))
-    const double c = 0.329973702884629072537;  // (2/pi) * a;
-    const double a2 = 0.268657157075235951582; // a^2
+    const double a = 0.5;  // smaller than pi / sqrt(-log(eps*0.5))
+    const double a2_pi = 0.31830988618379067;  // (2/pi) * a;
 
     double sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0;
 
@@ -494,7 +494,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             const double expm2ax =
                 1 - ax2 * (1 - ax2 * (0.5 - 0.166666666666666666667 * ax2));
             for (int n = 1;; ++n) {
-                const double coef = expa2n2[n - 1] * expx2 / (a2 * (n*n) + y*y);
+                const double coef = expa2n2[n - 1] * expx2 / ((a*a) * (n*n) + y*y);
                 prod2ax *= exp2ax;
                 prodm2ax *= expm2ax;
                 sum1 += coef;
@@ -518,7 +518,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             const double exp2ax = exp((2*a) * xa);
 	    const double expm2ax = 1 / exp2ax;
             for (int n = 1;; ++n) {
-                const double coef = expa2n2[n - 1] * expx2 / (a2 * (n*n) + y*y);
+                const double coef = expa2n2[n - 1] * expx2 / ((a*a) * (n*n) + y*y);
                 prod2ax *= exp2ax;
                 prodm2ax *= expm2ax;
                 sum1 += coef;
@@ -544,14 +544,14 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         if (y > 5) { // imaginary terms cancel
 	    SET_ALGO(cerf_algorithm + 1);
             const double sinxy = sin(xa*y);
-            ret = (e2y - c*y*sum1) * cos(2*xa*y) + (c*xa*expx2) * sinxy * sinc(xa*y, sinxy);
+            ret = (e2y - a2_pi*y*sum1) * cos(2*xa*y) + (a2_pi*xa*expx2) * sinxy * sinc(xa*y, sinxy);
         } else {
             double xs = creal(z);
             const double sinxy = sin(xs*y);
             const double sin2xy = sin(2*xs*y);
 	    const double cos2xy = cos(2*xs*y);
-            const double coef1 = e2y - c*y*sum1;
-            const double coef2 = c*xs*expx2;
+            const double coef1 = e2y - a2_pi*y*sum1;
+            const double coef2 = a2_pi*xs*expx2;
             ret = C(coef1*cos2xy + coef2*sinxy*sinc(xs*y, sinxy),
                     coef2*sinc(2*xs*y, sin2xy) - coef1*sin2xy);
         }
@@ -583,7 +583,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         // (round instead of ceil as in original paper; note that x/a > 1 here)
         const double n0 = floor(xa / a + 0.5); // sum in both directions, starting at n0
         const double dx = a*n0 - xa;
-        sum3 = exp(-dx*dx) / (a2 * (n0*n0) + y*y);
+        sum3 = exp(-dx*dx) / ((a*a) * (n0*n0) + y*y);
         sum5 = a*n0*sum3;
         const double exp1 = exp(4*a*dx);
         double exp1dn = 1;
@@ -593,8 +593,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             const double np = n0 + dn, nm = n0 - dn;
             double tp = exp(-sqr(a*dn + dx));
             double tm = tp * (exp1dn *= exp1); // trick to get tm from tp
-            tp /= (a2 * (np*np) + y*y);
-            tm /= (a2 * (nm*nm) + y*y);
+            tp /= ((a*a) * (np*np) + y*y);
+            tm /= ((a*a) * (nm*nm) + y*y);
             sum3 += tp + tm;
             sum5 += a * (np*tp + nm*tm);
             if (a * (np*tp + nm*tm) < relerr * sum5)
@@ -603,7 +603,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         while (1) { // loop over n0+dn terms only (since n0-dn <= 0)
 	    SET_NTER(cerf_nofterms + 1);
             const double np = n0 + dn++;
-            const double tp = exp(-sqr(a*dn + dx)) / (a2 * (np*np) + y*y);
+            const double tp = exp(-sqr(a*dn + dx)) / ((a*a) * (np*np) + y*y);
             sum3 += tp;
             sum5 += a*np*tp;
             if (a*np*tp < relerr * sum5)
@@ -611,5 +611,5 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         }
     }
 finish:
-    return ret + C((c/2) * y * (sum2 + sum3), (c/2) * copysign(sum5 - sum4, creal(z)));
+    return ret + C((a2_pi/2) * y * (sum2 + sum3), (a2_pi/2) * copysign(sum5 - sum4, creal(z)));
 } // w_of_z
