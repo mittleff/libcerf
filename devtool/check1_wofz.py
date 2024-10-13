@@ -27,8 +27,14 @@ if __name__ == '__main__':
     z, wc, a, n = run_cerf(z)
     wr = hp.wofz(z.real, z.imag, True)
 
+    dr = 0
+    if wr.real != 0:
+        dr = abs((wc-wr).real/wr.real)
+    di = 0
+    if wr.imag != 0:
+        di = abs((wc-wr).imag/wr.imag)
+
     print("z:      %22.15e %22.15e" % (z.real, z.imag))
     print("mpmath: %22.15e %22.15e" % (wr.real, wr.imag))
     print("cerf:   %22.15e %22.15e algo %i nterms %i rdiff %7.2e %7.2e %7.2e" %
-          (wc.real, wc.imag, a, n,
-           abs((wc-wr).real/wr.real), abs((wc-wr).imag/wr.imag), abs((wc-wr)/wr)))
+          (wc.real, wc.imag, a, n, dr, di, abs((wc-wr)/wr)))
