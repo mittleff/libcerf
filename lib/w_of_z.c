@@ -398,7 +398,6 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // ------------------------------------------------------------------------------
 
     if (ya < .25 + xa/8) {
-
         const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
 	const double wi = im_w_of_x(xs);
 	SET_INFO(cerf_algorithm + 700, 0);
@@ -406,14 +405,42 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	ret = C(e2 + y*(2*(x*wi - ispi)), wi);
 	static const int NW = 40;
 	_cerf_cmplx W[NW];
-	W[0] = C(e2, wi); // will become w[n-2]
-	W[1] = -2 * xs * W[0] + C(0, 2*ispi); // will become w[n-1]
+	W[0] = C(e2, wi);
+	W[1] = -2 * xs * W[0] + C(0, 2*ispi);
 	for (int n = 2; n < NW; ++n)
 	    W[n] = -2 * (W[n-1]*xs + W[n-2]*(n-1));
 	ret = 0;
 	_cerf_cmplx h = C(0, ya);
 	for (int n = NW - 1; n >= 0; --n)
 	    ret = ret * h / (n+1) + W[n];
+
+        if (y < 0) {
+            // Use w(z) = 2.0*exp(-z*z) - w(-z),
+            // but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
+	    SET_ALGO(cerf_algorithm + 1);
+            return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
+        } else
+            return ret;
+    }
+
+// ------------------------------------------------------------------------------
+// Taylor in x                                                         [ALGO 8??]
+// ------------------------------------------------------------------------------
+
+    if (xa < .25 + ya/8) {
+        const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
+	const double wr = erfcx(ya);
+	SET_INFO(cerf_algorithm + 800, 0);
+	static const int NW = 40;
+	_cerf_cmplx z0 = C(0., ya);
+	_cerf_cmplx W[NW];
+	W[0] = wr;
+	W[1] = -2 * z0 * W[0] + C(0, 2*ispi);
+	for (int n = 2; n < NW; ++n)
+	    W[n] = -2 * (W[n-1]*z0 + W[n-2]*(n-1));
+	ret = 0;
+	for (int n = NW - 1; n >= 0; --n)
+	    ret = ret * xa / (n+1) + W[n];
 
         if (y < 0) {
             // Use w(z) = 2.0*exp(-z*z) - w(-z),
