@@ -536,6 +536,19 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     }
 
 // ------------------------------------------------------------------------------
+// NaN                                                             [ALGO 105 106]
+// ------------------------------------------------------------------------------
+
+    if (isnan(xa)) {
+	SET_INFO(105, 1);
+	return C(xa, xa);
+    }
+    if (isnan(y)) {
+	SET_INFO(106, 1);
+	return C(y, y);
+    }
+
+// ------------------------------------------------------------------------------
 // Intermediate case: ACM algorithm 916 by Zaghloul & Ali          [ALGO 5?? 6??]
 // ------------------------------------------------------------------------------
 
@@ -551,70 +564,33 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 //  where we compute all of the sums is faster (at least with the
 //  precomputed expa2n2 table) until about x=10.
 
-    else if (xa < 10) {
-        double prod2ax = 1, prodm2ax = 1;
-        double expx2;
+    double prod2ax = 1, prodm2ax = 1;
+    double expx2;
 
-        if (isnan(y)) {
-	    SET_INFO(202, 1);
-            return C(y, y);
-        }
+    SET_ALGO(0);
+    double e2y;
 
-	SET_ALGO(0);
-        double e2y;
-        if (xa < 5e-4) {
-            // Compute sum4 and sum5 together as sum5-sum4
-            // This special case is needed for accuracy.
-            const double x2 = xa*xa;
-            expx2 = 1 - x2 * (1 - 0.5*x2); // exp(-x*x) via Taylor
-	    e2y = y < -6  ? 2*exp(y*y-xa*xa) : expx2*erfcx(y); // may SET_ALGO
-            // compute exp(2*a*x) and exp(-2*a*x) via Taylor, to double precision
-            const double ax2 = 1.036642960860171859744 * xa; // 2*a*x
-            const double exp2ax =
-                1 + ax2 * (1 + ax2 * (0.5 + 0.166666666666666666667 * ax2));
-            const double expm2ax =
-                1 - ax2 * (1 - ax2 * (0.5 - 0.166666666666666666667 * ax2));
-            for (int n = 1;; ++n) {
-                const double coef = expa2n2[n - 1] * expx2 / ((a*a) * (n*n) + y*y);
-                prod2ax *= exp2ax;
-                prodm2ax *= expm2ax;
-                sum1 += coef;
-                sum2 += coef * prodm2ax;
-                sum3 += coef * prod2ax;
-
-                // really = sum5 - sum4
-                sum5 += coef * (2*a) * n * sinh_taylor((2*a) * n * xa);
-
-                // test convergence via sum3; for termination rely on coef[n_max] = 0
-                if (coef * prod2ax < relerr * sum3) {
-		    SET_INFO(600+cerf_algorithm, n);
-                    break;
-                }
-            }
-
-        } else {
-            // x > 5e-4, compute sum4 and sum5 separately
-            expx2 = exp(-xa*xa);
-	    e2y = y < -6  ? 2*exp(y*y-xa*xa) : expx2*erfcx(y); // may SET_ALGO
-            const double exp2ax = exp((2*a) * xa);
-	    const double expm2ax = 1 / exp2ax;
-            for (int n = 1;; ++n) {
-                const double coef = expa2n2[n - 1] * expx2 / ((a*a) * (n*n) + y*y);
-                prod2ax *= exp2ax;
-                prodm2ax *= expm2ax;
-                sum1 += coef;
-                sum2 += coef * prodm2ax;
-                sum3 += coef * prod2ax;
-                sum4 += (coef * prodm2ax) * (a*n);
-                sum5 += (coef * prod2ax) * (a*n);
-                // test convergence via sum5, since this sum has the slowest decay;
-                // for termination rely on coef[n_max] = 0
-                if ((coef * prod2ax) * (a*n) < relerr * sum5) {
-		    SET_INFO(500+cerf_algorithm, n);
-                    break;
-                }
-            }
-        }
+    // x > 5e-4, compute sum4 and sum5 separately
+    expx2 = exp(-xa*xa);
+    e2y = y < -6  ? 2*exp(y*y-xa*xa) : expx2*erfcx(y); // may SET_ALGO
+    const double exp2ax = exp((2*a) * xa);
+    const double expm2ax = 1 / exp2ax;
+    for (int n = 1;; ++n) {
+	const double coef = expa2n2[n - 1] * expx2 / ((a*a) * (n*n) + y*y);
+	prod2ax *= exp2ax;
+	prodm2ax *= expm2ax;
+	sum1 += coef;
+	sum2 += coef * prodm2ax;
+	sum3 += coef * prod2ax;
+	sum4 += (coef * prodm2ax) * (a*n);
+	sum5 += (coef * prod2ax) * (a*n);
+	// test convergence via sum5, since this sum has the slowest decay;
+	// for termination rely on coef[n_max] = 0
+	if ((coef * prod2ax) * (a*n) < relerr * sum5) {
+	    SET_INFO(500+cerf_algorithm, n);
+	    break;
+	}
+    }
 
 // The second case has the exact expression.
 // In the first case, to avoid spurious overflow for large negative y,
@@ -622,75 +598,20 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 //
 // TODO: check exact location of cross-over
 
-        if (y > 5) { // imaginary terms cancel
-	    SET_ALGO(cerf_algorithm + 1);
-            const double sinxy = sin(xa*y);
-            ret = (e2y - a2_pi*y*sum1) * cos(2*xa*y) + (a2_pi*xa*expx2) * sinxy * sinc(xa*y, sinxy);
-        } else {
-            double xs = creal(z);
-            const double sinxy = sin(xs*y);
-            const double sin2xy = sin(2*xs*y);
-	    const double cos2xy = cos(2*xs*y);
-            const double coef1 = e2y - a2_pi*y*sum1;
-            const double coef2 = a2_pi*xs*expx2;
-            ret = C(coef1*cos2xy + coef2*sinxy*sinc(xs*y, sinxy),
-                    coef2*sinc(2*xs*y, sin2xy) - coef1*sin2xy);
-        }
-
-// ------------------------------------------------------------------------------
-// Still ACM algorithm 916                                     [ALGO 105 106 24?]
-// ------------------------------------------------------------------------------
-
-//  Still ACM algorithm 916 by Zaghloul & Ali (2011), modified for large x.
-//
-//  In the original algorithm, if we try to compute all of the sums for x > 20,
-//  I [SGJ] find that we sometimes run into numerical problems because
-//  underflow/overflow problems start to appear in the coefficients of some sums.
-//
-//  Here, only sum3 & sum5 contribute.
-
+    if (y > 5) { // imaginary terms cancel
+	SET_ALGO(cerf_algorithm + 1);
+	const double sinxy = sin(xa*y);
+	ret = (e2y - a2_pi*y*sum1) * cos(2*xa*y) + (a2_pi*xa*expx2) * sinxy * sinc(xa*y, sinxy);
     } else {
-        if (isnan(xa)) {
-	    SET_INFO(105, 1);
-            return C(xa, xa);
-	}
-        if (isnan(y)) {
-	    SET_INFO(106, 1);
-            return C(y, y);
-	}
-
-	SET_INFO(240, 0);
-        ret = exp(-xa*xa); // |y| < 1e-10, so we only need exp(-x*x) term
-        // (round instead of ceil as in original paper; note that x/a > 1 here)
-        const double n0 = floor(xa / a + 0.5); // sum in both directions, starting at n0
-        const double dx = a*n0 - xa;
-        sum3 = exp(-dx*dx) / ((a*a) * (n0*n0) + y*y);
-        sum5 = a*n0*sum3;
-        const double exp1 = exp(4*a*dx);
-        double exp1dn = 1;
-        int dn;
-        for (dn = 1; n0 - dn > 0; ++dn) { // loop over n0-dn and n0+dn terms
-	    SET_NTER(cerf_nofterms + 1);
-            const double np = n0 + dn, nm = n0 - dn;
-            double tp = exp(-sqr(a*dn + dx));
-            double tm = tp * (exp1dn *= exp1); // trick to get tm from tp
-            tp /= ((a*a) * (np*np) + y*y);
-            tm /= ((a*a) * (nm*nm) + y*y);
-            sum3 += tp + tm;
-            sum5 += a * (np*tp + nm*tm);
-            if (a * (np*tp + nm*tm) < relerr * sum5)
-                goto finish;
-        }
-        while (1) { // loop over n0+dn terms only (since n0-dn <= 0)
-	    SET_NTER(cerf_nofterms + 1);
-            const double np = n0 + dn++;
-            const double tp = exp(-sqr(a*dn + dx)) / ((a*a) * (np*np) + y*y);
-            sum3 += tp;
-            sum5 += a*np*tp;
-            if (a*np*tp < relerr * sum5)
-                goto finish;
-        }
+	double xs = creal(z);
+	const double sinxy = sin(xs*y);
+	const double sin2xy = sin(2*xs*y);
+	const double cos2xy = cos(2*xs*y);
+	const double coef1 = e2y - a2_pi*y*sum1;
+	const double coef2 = a2_pi*xs*expx2;
+	ret = C(coef1*cos2xy + coef2*sinxy*sinc(xs*y, sinxy),
+		coef2*sinc(2*xs*y, sin2xy) - coef1*sin2xy);
     }
-finish:
     return ret + C((a2_pi/2) * y * (sum2 + sum3), (a2_pi/2) * copysign(sum5 - sum4, creal(z)));
+
 } // w_of_z
