@@ -154,6 +154,16 @@ def scan_and_bisect(X):
         a0 = a2
         n0 = n2
 
+def scan_wo_bisect(X):
+    """
+    Scan without bisection.
+    """
+    this.worst_relerr = 0
+    this.worst_x = 0
+
+    for x in X:
+        check_at(0, x)
+
 # Reporting.
 
 def print_conclusion():

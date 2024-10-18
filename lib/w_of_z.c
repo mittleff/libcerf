@@ -426,23 +426,46 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	    assert(0); // must never be reached, has been replaced by the above
 
         } else {
-            // compute nu(z) estimate and do general continued fraction
+//	    // Forward recursion for numerator and denominator (GiST07 ch 6.2)
+//	    SET_INFO(230, 0);
+//	    _cerf_cmplx A2 = C(0., 0.);
+//	    _cerf_cmplx B2 = C(1., 0.);
+//	    _cerf_cmplx A1 = C(-.5, 0.);
+//	    _cerf_cmplx B1 = z;
+//	    _cerf_cmplx s = 1/z/2;
+//	    for (int n = 2; n < 130; ++n) {
+//		_cerf_cmplx A = A1 - A2*n*s;
+//		_cerf_cmplx B = B1 - B2*n*s;
+//		A2 = A1;
+//		B2 = B1;
+//		A1 = A;
+//		B1 = B;
+//		printf("%2i %22.15e %22.15e %22.15e %22.15e %22.15e %22.15e\n",
+//		       n, creal(A1), cimag(A1), creal(B1), cimag(B1), creal(A1/B1), cimag(A1/B1));
+//	    }
+//	    ret = C(0, ispi) / (z + A1/B1);
+
+	    // Modified Lentz algorithm according to Gil Segura Temma 2007, Algorithm 6.2
 	    SET_INFO(230, 0);
-            const double c0 = 3.9, c1 = 11.398, c2 = 0.08254, c3 = 0.1421,
-                c4 = 0.2023; // fit
-            double nu = 40; // floor(c0 + c1 / (c2*xa + c3*ya + c4));
-            double wr = xs;
-            double wi = ya;
-            for (nu = 0.5 * (nu - 1); nu > 0.4; nu -= 0.5) {
-		SET_NTER(cerf_nofterms + 1);
-                // w <- z - nu/w:
-                double denom = nu / (wr*wr + wi*wi);
-                wr = xs - wr*denom;
-                wi = ya + wi*denom;
-            }
-            // w(z) = i/sqrt(pi) / w:
-            double denom = ispi / (wr*wr + wi*wi);
-            ret = C(denom*wi, denom*wr);
+	    _cerf_cmplx Cn = C(1e-30, 0);
+	    _cerf_cmplx Dn = C(0, 0);
+	    _cerf_cmplx En = Cn;
+	    for (int n = 1; n < 100; ++n) {
+		Dn = z - n * Dn / 2;
+		if (cabs(Dn) < 1e-30)
+		    Dn = C(0, 0);
+		En = z - n / En / 2;
+		if (cabs(En) < 1e-30)
+		    En = C(0, 0);
+		Dn = 1 / Dn;
+		_cerf_cmplx Hn = En * Dn;
+		Cn *= Hn;
+		if (cabs(Hn-1) < 1e-16) {
+		    SET_NTER(n);
+		    break;
+		}
+	    }
+	    ret = C(0, ispi) / (z + Cn);
         }
 
         if (y < 0) {

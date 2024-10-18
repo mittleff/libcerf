@@ -27,6 +27,16 @@ rt.print_line = lambda locus, a, n, rr, f, f2: print('%2i %3i %3i  %21.16e  %21.
 
 
 if __name__ == '__main__':
+    if len(sys.argv)<2:
+        print(f"Usage: {sys.argv[0]} <scan_mode>")
+        print(f"   where <scan_mode>   is any of b (bisect) s (scan)")
+        sys.exit(-1)
+    if sys.argv[1] == 'b':
+        do_scan = rt.scan_and_bisect
+    elif sys.argv[1] == 's':
+        do_scan = rt.scan_wo_bisect
+    else:
+        raise Exception("Invalid arg1, expected b|s")
 
     rt.external_program = "run/run_wofz"
     rt.range_mode = 'p'
@@ -47,5 +57,5 @@ if __name__ == '__main__':
             return (a[0].imag, a[1], a[2], a[3])
         rt.f_ext = ext
         rt.f_hp = lambda r : hp.wofz(s, r)
-        rt.scan_and_bisect(R)
+        do_scan(R)
         print()

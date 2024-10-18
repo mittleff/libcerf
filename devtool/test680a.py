@@ -11,10 +11,6 @@ import runtool as rt
 
 mp.dps = 48
 mp.pretty = True
-rt.external_program = "run/run_wofz"
-
-def run_cerf(z0):
-    return rt.external_function2d(z0.real, z0.imag)
 
 def print_deviation(txt, wc, wr):
     print("%s: im %8g re %8g abs %8g" %
