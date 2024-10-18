@@ -449,7 +449,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // that the estimated nu be >= minimum nu to attain machine precision.
 // I also separate the regions where nu == 2 and nu == 1.
 
-    if (ya > 7 || (xa > 6 && (ya > 0.1 || (xa > 8 && ya > 1e-10) || xa > 28))) {
+    if (xa > 6 && ya > 0.1) {
 
         const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
 
