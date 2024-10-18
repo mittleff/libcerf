@@ -394,6 +394,37 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
     double sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, sum5 = 0;
 
 // ------------------------------------------------------------------------------
+// Taylor in y                                                         [ALGO 7??]
+// ------------------------------------------------------------------------------
+
+    if (ya < .25 + xa/8) {
+
+        const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
+	const double wi = im_w_of_x(xs);
+	SET_INFO(cerf_algorithm + 700, 0);
+        const double e2 = xa > 27. ? 0. : exp(-xa*xa); // prevent underflow
+	ret = C(e2 + y*(2*(x*wi - ispi)), wi);
+	static const int NW = 40;
+	_cerf_cmplx W[NW];
+	W[0] = C(e2, wi); // will become w[n-2]
+	W[1] = -2 * xs * W[0] + C(0, 2*ispi); // will become w[n-1]
+	for (int n = 2; n < NW; ++n)
+	    W[n] = -2 * (W[n-1]*xs + W[n-2]*(n-1));
+	ret = 0;
+	_cerf_cmplx h = C(0, ya);
+	for (int n = NW - 1; n >= 0; --n)
+	    ret = ret * h / (n+1) + W[n];
+
+        if (y < 0) {
+            // Use w(z) = 2.0*exp(-z*z) - w(-z),
+            // but be careful of overflow in exp(-z*z) = exp(-(xs*xs-ya*ya) -2*i*xs*ya)
+	    SET_ALGO(cerf_algorithm + 1);
+            return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
+        } else
+            return ret;
+    }
+
+// ------------------------------------------------------------------------------
 // Intermediate case: continued fraction expansion                     [ALGO 230]
 // ------------------------------------------------------------------------------
 
@@ -418,7 +449,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // that the estimated nu be >= minimum nu to attain machine precision.
 // I also separate the regions where nu == 2 and nu == 1.
 
-    if (1) { // ya > 7 || (xa > 6 && (ya > 0.1 || (xa > 8 && ya > 1e-10) || xa > 28))) {
+    if (ya > 7 || (xa > 6 && (ya > 0.1 || (xa > 8 && ya > 1e-10) || xa > 28))) {
 
         const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
 
@@ -447,7 +478,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 
 	    // Modified Lentz algorithm according to Gil Segura Temma 2007, Algorithm 6.2
 	    SET_INFO(230, 0);
-	    _cerf_cmplx Cn = C(1e-30, 0);
+	    _cerf_cmplx Cn = C(0, 1e-30);
 	    _cerf_cmplx Dn = C(0, 0);
 	    _cerf_cmplx En = Cn;
 	    for (int n = 1; n < 100; ++n) {

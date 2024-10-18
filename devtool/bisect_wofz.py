@@ -42,11 +42,11 @@ if __name__ == '__main__':
     rt.range_mode = 'p'
     rt.output_mode = 't'
 
-    N, fr, to = 151, .2, 9
+    N, fr, to = 121, .05, 9
     step = log10(to/fr)/(N-1)
     S = [fr * 10**(i*step) for i in range(N)]
 
-    N, fr, to = 151, .2, 9
+    N, fr, to = 121, .05, 9
     step = log10(to/fr)/(N-1)
     R = [fr * 10**(i*step) for i in range(N)]
 
