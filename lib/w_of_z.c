@@ -418,7 +418,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // that the estimated nu be >= minimum nu to attain machine precision.
 // I also separate the regions where nu == 2 and nu == 1.
 
-    if (ya > 7 || (xa > 6 && (ya > 0.1 || (xa > 8 && ya > 1e-10) || xa > 28))) {
+    if (1) { // ya > 7 || (xa > 6 && (ya > 0.1 || (xa > 8 && ya > 1e-10) || xa > 28))) {
 
         const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
 
@@ -430,7 +430,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	    SET_INFO(230, 0);
             const double c0 = 3.9, c1 = 11.398, c2 = 0.08254, c3 = 0.1421,
                 c4 = 0.2023; // fit
-            double nu = floor(c0 + c1 / (c2*xa + c3*ya + c4));
+            double nu = 40; // floor(c0 + c1 / (c2*xa + c3*ya + c4));
             double wr = xs;
             double wi = ya;
             for (nu = 0.5 * (nu - 1); nu > 0.4; nu -= 0.5) {
