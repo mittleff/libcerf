@@ -440,7 +440,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	    W[n] = -2 * (W[n-1]*z0 + W[n-2]*(n-1));
 	ret = 0;
 	for (int n = NW - 1; n >= 0; --n)
-	    ret = ret * xa / (n+1) + W[n];
+	    ret = ret * xs / (n+1) + W[n];
 
         if (y < 0) {
             // Use w(z) = 2.0*exp(-z*z) - w(-z),
