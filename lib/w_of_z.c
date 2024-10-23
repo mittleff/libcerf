@@ -83,14 +83,6 @@ static inline double sinc(double x, double sinx) {
     return fabs(x) < 1e-4 ? 1 - (0.1666666666666666666667) * x * x : sinx / x;
 }
 
-static inline double sinh_taylor(double x) {
-    // sinh(x) via Taylor series, accurate to machine precision for |x| < 1e-2
-    return x * (1 + (x * x) * (0.1666666666666666666667 +
-                               0.00833333333333333333333 * (x * x)));
-}
-
-static inline double sqr(double x) { return x * x; }
-
 /******************************************************************************/
 /* precomputed table of expa2n2[n-1] = exp(-a^2 * n^2)                        */
 /******************************************************************************/
