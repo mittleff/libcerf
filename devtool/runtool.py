@@ -37,6 +37,14 @@ import subprocess, sys
 
 this = sys.modules[__name__]
 
+### Grids.
+
+def lingrid(N, fr, to):
+    return [(fr * (N-1-n) + to * n) / (N-1) for n in range(N)]
+
+def loggrid(N, fr, to):
+    return [fr**((N-1-n)/(N-1)) * to**(n/(N-1)) for n in range(N)]
+
 ### Run C function to be tested.
 
 def external_function1d(x):
