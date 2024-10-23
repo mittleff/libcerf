@@ -25,7 +25,7 @@ if __name__ == '__main__':
         print(f"Usage: {sys.argv[0]} <x> <y>")
     z = mpc(sys.argv[1], sys.argv[2])
     z, wc, a, n = run_cerf(z)
-    wr = hp.wofz(z.real, z.imag, False) # TODO True)
+    wr = hp.wofz(z.real, z.imag, True)
 
     dr = 0
     if wr.real != 0:

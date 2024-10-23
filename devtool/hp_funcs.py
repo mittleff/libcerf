@@ -33,6 +33,15 @@
 
 from mpmath import *
 
+def cagree(u, v):
+    """
+    Returns true if complex numbers agree with each other within epsilon.
+    """
+    m = (u+v)/2
+    d = u-v
+    t = 1e-17
+    return abs(d.real) < t * (abs(m.real) + t*abs(m)) and abs(d.imag) < t * (abs(m.imag) + t*abs(m))
+
 def erfcx(x, doublecheck=False):
     result = exp(x**2)*erfc(x)
     if doublecheck:
@@ -58,10 +67,20 @@ def imwx(x, doublecheck=False):
 def wofz(x, y, doublecheck=False):
     z = mpc(x,y)
     j = mpc('0', '1')
-    result = exp(-z**2)*erfc(-j*z)
-    if doublecheck:
-        # Check mpmath-computed reference value against mpmath-based brute-force integration
-        r2 = mpc(0,1)/pi*quad(lambda t: exp(-t**2)/(z-t), [-inf, +inf])
-        if abs((result-r2)/result) > 1e-17:
-            raise Exception(f"mpmath inaccurate")
-    return result
+    r1 = exp(-z**2)*erfc(-j*z)
+    if not doublecheck:
+        return r1
+    # Check mpmath-computed reference value against mpmath-based brute-force integration
+    r2 = mpc(0,1)/pi*quad(lambda t: exp(-t**2)/(z-t), [-inf, +inf])
+    if cagree(r1, r2):
+        return r1
+    r3 = mpc(0,1)/pi*(quad(lambda t: exp(-t**2)/(z-t), [-inf, x])
+                      + quad(lambda t: exp(-t**2)/(z-t), [x, +inf]))
+    if cagree(r1, r3):
+        return r1
+#            w = z
+#            for k in reversed(range(2000)):
+#                w = z - k/2/w
+#            r4 = mpc(0,1)/sqrt(pi)/w
+    raise Exception(f"mpmath inaccurate: r1=%8g+i%8g, d2=%8g+i%8g, d3=%8g+i%8g" %
+                    (r1.real, r1.imag, (r2-r1).real, (r2-r1).imag, (r3-r1).real, (r3-r1).imag))
