@@ -400,11 +400,11 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	W[0] = C(e2, wi);
 	W[1] = -2 * xs * W[0] + C(0, 2*ispi);
 	for (int n = 2; n < NW; ++n)
-	    W[n] = -2 * (W[n-1]*xs + W[n-2]*(n-1));
+	    W[n] = -2. * (W[n-1]*xs + W[n-2]*(n-1));
 	ret = 0;
 	_cerf_cmplx h = C(0, ya);
 	for (int n = NW - 1; n >= 0; --n)
-	    ret = ret * h / (n+1) + W[n];
+	    ret = ret * h / (n+1.) + W[n];
 
         if (y < 0) {
             // Use w(z) = 2.0*exp(-z*z) - w(-z),
@@ -427,12 +427,12 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	_cerf_cmplx z0 = C(0., ya);
 	_cerf_cmplx W[NW];
 	W[0] = wr;
-	W[1] = -2 * z0 * W[0] + C(0, 2*ispi);
+	W[1] = -2. * z0 * W[0] + C(0, 2*ispi);
 	for (int n = 2; n < NW; ++n)
-	    W[n] = -2 * (W[n-1]*z0 + W[n-2]*(n-1));
+	    W[n] = -2. * (W[n-1]*z0 + W[n-2]*(n-1));
 	ret = 0;
 	for (int n = NW - 1; n >= 0; --n)
-	    ret = ret * xs / (n+1) + W[n];
+	    ret = ret * xs / (n+1.) + W[n];
 
         if (y < 0) {
             // Use w(z) = 2.0*exp(-z*z) - w(-z),
@@ -501,10 +501,10 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	    _cerf_cmplx Dn = C(0, 0);
 	    _cerf_cmplx En = Cn;
 	    for (int n = 1; n < 100; ++n) {
-		Dn = z - n * Dn / 2;
+		Dn = z - n / 2. * Dn;
 		if (cabs(Dn) < 1e-30)
 		    Dn = C(0, 0);
-		En = z - n / En / 2;
+		En = z - n / 2. * En;
 		if (cabs(En) < 1e-30)
 		    En = C(0, 0);
 		Dn = 1 / Dn;
