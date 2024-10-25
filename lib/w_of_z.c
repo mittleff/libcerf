@@ -110,14 +110,11 @@ _cerf_cmplx taylor(double xa, double ya, int jblock)
 	exit(-1);
     }
     */
-    _cerf_cmplx ret = C(T[0], T[1]);
+    _cerf_cmplx ret = C(T[2*N], T[2*N+1]);
     //_cerf_cmplx dz = C(xa, ya) - C(T[nT-6], T[nT-5]);
     _cerf_cmplx dz = C(xa, ya) - C(4., 4.);
-    _cerf_cmplx pz = C(1., 0.);
-    for (int k = 1; k <= N; ++k) {
-	pz *= dz;
-	ret += C(T[2*k], T[2*k+1]) * pz;
-    }
+    for (int k = N-1; k >= 0; --k)
+	ret = ret * dz + C(T[2*k], T[2*k+1]);
     SET_INFO(900, kblock);
     return ret;
 }
