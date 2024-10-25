@@ -1626,30 +1626,90 @@ BoxBackground
 0 wx 0 wy np 7 wx 0 wx sub 0 90 arc 0 wx 0 wy li cp fill
 
 /cQ 0 def
-/Q { % cx cy r
-   /rQ x wx 0 wx sub def
-   wy /yQ x def
-   wx /xQ x def
-   xQ rQ sub xQ rQ add  yQ rQ sub yQ rQ add  rect
+/Q { % ix iy e
+   /eQ x .125 mul wx 0 wx sub def
+   /yQ x .125 mul wy def
+   /xQ x .125 mul wx def
+   xQ eQ sub xQ eQ add  yQ eQ sub yQ eQ add  rect
    cQ ipCol
    fill
    /cQ cQ 8 ge { 0 } { cQ 1 add } ifelse def
 } def
 
-6.35 0 .65 Q
-5.20 0 .50 Q
-4.28 0 .42 Q
-3.49 0 .37 Q
-2.78 0 .34 Q
-2.14 0 .30 Q
-1.60 0 .24 Q
-1.16 0 .21 Q
-0.76 0 .19 Q
-0.39 0 .18 Q
+ 0  0  1 Q
 
-0 0.39 .18 Q
+ 0  2  1 Q
+ 0  4  1 Q
+ 0  7  2 Q
+ 0 11  2 Q
+ 0 16  3 Q
+ 0 22  3 Q
+ 0 30  5 Q
+ 0 41  6 Q
+ 0 53  6 Q
 
-6.26 1.24 .77 Q
+ 2  0  1 Q
+ 4  0  1 Q
+ 6  0  1 Q
+ 8  0  1 Q
+10  0  1 Q
+12  0  1 Q
+14  0  1 Q
+17  0  2 Q
+21  0  2 Q
+25  0  2 Q
+30  0  3 Q
+36  0  3 Q
+43  0  4 Q
+52  0  5 Q
+
+52 10  5 Q
+43  8  4 Q
+36  6  3 Q
+30  6  3 Q
+25  4  2 Q
+21  4  2 Q
+17  4  2 Q
+13  3  2 Q
+
+13 50  7 Q
+11 37  6 Q
+ 7 27  4 Q
+ 6 20  3 Q
+ 4 15  2 Q
+ 4 11  2 Q
+ 4  7  2 Q
+
+ 2  2  1 Q
+ 4  2  1 Q
+ 6  2  1 Q
+ 8  2  1 Q
+10  2  1 Q
+
+ 2  4  1 Q
+ 4  4  1 Q
+ 6  4  1 Q
+ 8  4  1 Q
+10  4  1 Q
+
+50 17  5 Q
+42 13  4 Q
+35 12  3 Q
+29  9  3 Q
+24  8  2 Q
+20  8  2 Q
+16  7  2 Q
+12  6  2 Q
+
+24 46  7 Q
+
+ 8 15  2 Q
+ 8 11  2 Q
+ 8  7  2 Q
+
+%6 27  7 Q
+
+%9  5  2 Q
 
 % x axis:
 [
