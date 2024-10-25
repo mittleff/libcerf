@@ -44,18 +44,18 @@ def err23(T, R):
 
 def redetermine_R(T, R):
     """
-    Called if Nmax > 23. Recomputes R such that Nmax = 23.
+    Called if Nmax > 22. Recomputes R such that Nmax = 22.
     """
     f = lambda r: err23(T, r) - 2**-54
     # print(f"1.0: {R} -> {f(R)}")
     # print(f"0.8: {0.8*R} -> {f(0.8*R)}")
     r = mp.findroot(f, [R], solver='newton', verbose=False)
-    return r, 23
+    return r, 22
 
 def z2radius(z):
     """
-    For a Taylor expansion around z, determine radius R such that T[k]*R/T[k-1] < 1/4,
-    thereby ensuring that sum T[k] >= 2/3 T[0]
+    For a Taylor expansion around z, determine radius R such that T[k]*R/T[k-1] < q,
+    thereby ensuring that sum T[k] >= (1-2q)/(1-q) T[0]
     """
     N = 32
     T = forward(z, N)
@@ -67,7 +67,7 @@ def z2radius(z):
         if ratio > worst_ratio:
             worst_ratio = ratio
             k_worst = k
-    R = 1 / ( 4 * worst_ratio )
+    R = 1 / ( 10/3 * worst_ratio )
 
     sum = abs(T[0])
     Nmax = 99
@@ -78,8 +78,8 @@ def z2radius(z):
             break
         sum -= term
 
-    if Nmax > 23:
-        print("original:", R, Nmax)
+    if Nmax > 22:
+        # print("original:", R, Nmax)
         R, Nmax = redetermine_R(T, R)
     return R, Nmax
 
@@ -90,7 +90,9 @@ if __name__ == '__main__':
     if len(sys.argv)==3:
         z = mpc(sys.argv[1], sys.argv[2])
         R, Nmax = z2radius(z)
-        print(R, Nmax)
+        e = int(100*R/sqrt(2))/100
+        print("%2i edge %5.2f x range %5.2f %5.2f y range %5.2f %5.2f" %
+              (Nmax, e, z.real-e, z.real+e, z.imag-e, z.imag+e))
         sys.exit(0)
 
     for y in rt.lingrid(81, 0, 8):

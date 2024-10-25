@@ -42,8 +42,10 @@ if __name__ == '__main__':
     rt.range_mode = 'p'
     rt.output_mode = 't'
 
-    S = rt.loggrid(111, .2, 8)
-    R = rt.loggrid(111, .2, 8)
+#    S = rt.loggrid(111, .2, 8)
+#    R = rt.loggrid(111, .2, 8)
+    R = rt.lingrid(111, 0, 7.75)
+    S = rt.lingrid(111, 0, 7.75)
 
     for s in S:
         print(s)
