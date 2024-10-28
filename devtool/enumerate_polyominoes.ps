@@ -1596,7 +1596,6 @@ WuGdict18a begin
 10 -15 setnewpage newpage
 
 2 4 27 -27 setpagegrid
-2 8 24 abcset % usage: {(text)} abc
 /EndFrame { nextFrame end } def
 
 1 1 language
@@ -1642,11 +1641,16 @@ BoxBackground
          i ij Q
       } for
    } for
+   /str 7 string def
+   21 setown
+   -8.5 -10 { (n = )showif nP str cvs} textCT
+   +8.5 -10 { {(D)(2)sp( = )} exec showif D2 str cvs } textCT
+   /nP nP 1 add def
+   nextFrame
 } def
 
-
+/nP 1 def
 2 [1] P
-nextFrame
 34 [3 5 5 5 3] P
 
 EndFrame
