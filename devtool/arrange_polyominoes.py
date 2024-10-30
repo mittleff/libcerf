@@ -16411,16 +16411,16 @@ def neighbors(j, i, RadialIndex, Rows):
     j0 = j//2
     for jj in range(nj):
         jcorner = j0 + jj - nj//2
-        if jcorner<=0 or jcorner>=Nax:
-            break
+        if jcorner<0 or jcorner>=Nax:
+            continue
         ni = rows[jj]
         i0 = i//2
         for ii in range(ni):
             icorner = i0 + ii - ni//2
-            if icorner<=0 or icorner>=Nax:
-                break
+            if icorner<0 or icorner>=Nax:
+                continue
             result.append((jcorner, icorner))
-    print("%3i %3i kP=%3i nj=%3i %s -> %s" % (j, i, kP, nj, str(rows), str(result)))
+    # print("neighbors(%3i %3i) kP=%3i nj=%3i %s -> %s (size %i)" % (j, i, kP, nj, str(rows), str(result), len(result)))
     return result
 
 def unclaimed(F):
@@ -16434,10 +16434,12 @@ def unclaimed(F):
 def arrange_polyominoes():
     # set up field of base squares
     F = [[-2 for i in range(Nax)] for j in range(Nax)]
+    count = 0
     for j in range(Nax):
         for i in range(Nax):
             if j**2+i**2 > (Rtot*Ndiv)**2:
                 F[j][i] = -1
+                count += 1
 
     # load convergence radius indices
     RadialIndex = []
@@ -16451,20 +16453,19 @@ def arrange_polyominoes():
         RadialIndex.append(row)
 
     # make lists of squared diameters and row patterns
-    P = ep.sorted_polyominoes(100)
+    P = ep.sorted_polyominoes(40)
     Rows = []
     for n, i, j, d2, area, rows in P:
         Rows.append(rows)
+    # print("# Number of available polyominoes: %3i" % len(Rows))
 
     nout = 0
-    while unclaimed(F)>0:
+    while nout < 2: #unclaimed(F)>0:
         max_improve = 0
         i_max, j_max = -1, -1
-        for j in range(Nax):
-            for i in range(Nax):
-                if F[j][i] != -2:
-                    continue
-                print("Call neighbors %3i %3i" % (j, i))
+        for j in range(2*Nax):
+            for i in range(2*Nax):
+                # print("Call neighbors %3i %3i" % (j, i))
                 Neighbors = neighbors(j, i, RadialIndex, Rows)
                 count_improve = 0
                 for jj, ii in Neighbors:
@@ -16475,12 +16476,12 @@ def arrange_polyominoes():
                     j_max = jj
                     i_max = ii
 
-        print("Found optimum %3i %3i" % (j_max, i_max))
         Neighbors = neighbors(j_max, i_max, RadialIndex, Rows)
         for jj, ii in Neighbors:
             if F[jj][ii] == -2:
                 F[jj][ii] = nout
-        print("Place %3i at %3i %3i, # %3i" % (nout, j_max, i_max, len(Neighbors)))
+        print("Improve by %3i Place %3i at %3i %3i, kP=%3i neighbors #=%3i %s" %
+              (count_improve, nout, j_max, i_max, RadialIndex[j][i], len(Neighbors), Neighbors))
         nout += 1
     fut.print_provenience()
 
