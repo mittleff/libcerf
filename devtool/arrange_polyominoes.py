@@ -16481,6 +16481,8 @@ def arrange_polyominoes():
         for jj, ii in Neighbors:
             if F[jj][ii] == -2:
                 F[jj][ii] = nout
+            else:
+                F[jj][ii] = -3
         print("# Improve by %3i Place %3i at %3i %3i, kP=%3i neighbors #=%3i" %
               (max_improve, nout, j_max, i_max, RadialIndex[j][i], len(Neighbors)))
         nout += 1
