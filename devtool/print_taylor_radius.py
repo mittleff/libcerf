@@ -9,9 +9,11 @@ import sys
 import hp_funcs as hp
 import runtool as rt
 import functool as fut
+import enumerate_polyominoes as ep
 
 mp.dps = 48
 mp.pretty = True
+
 
 def forward(z, N):
     """
@@ -67,7 +69,7 @@ def z2radius(z):
         if ratio > worst_ratio:
             worst_ratio = ratio
             k_worst = k
-    R = 1 / ( 10/3 * worst_ratio )
+    R = 1 / ( 11/3 * worst_ratio )
 
     sum = abs(T[0])
     Nmax = 99
@@ -83,9 +85,6 @@ def z2radius(z):
         R, Nmax = redetermine_R(T, R)
     return R, Nmax
 
-def zr2nmax(z, R):
-    return 99
-
 if __name__ == '__main__':
     if len(sys.argv)==3:
         z = mpc(sys.argv[1], sys.argv[2])
@@ -95,10 +94,28 @@ if __name__ == '__main__':
               (Nmax, e, z.real-e, z.real+e, z.imag-e, z.imag+e))
         sys.exit(0)
 
-    for y in rt.lingrid(81, 0, 8):
-        print(y)
-        for x in rt.lingrid(81, 0, 8):
+    P = ep.sorted_polyominoes(100)
+    Diams2 = []
+    Rows = []
+    for n, i, j, d2, area, rows in P:
+        Diams2.append(d2)
+        Rows.append(rows)
+
+    fut.print_provenience()
+    for iy in range(128):
+        y = iy/16
+        # print(iy)
+        for ix in range(128):
+            x = ix/16
             z = mpc(x, y)
             R, Nmax = z2radius(z)
-            print(x, R, Nmax)
-        print()
+            ir = 997
+            for ii in range(len(Diams2)):
+                if (2*8*R)**2 < Diams2[ii]:
+                    ir = ii - 1
+                    break
+            assert(ir < 997)
+            while (iy%2 != len(Rows[ir])%2 or ix%2 != Rows[ir][0]%2) and ir >= 0:
+                ir -= 1
+            print("(%3i, %3i, %3i, %3i, %8.4f), # %s" % (iy, ix, Nmax, ir, R, str(Rows[ir])))
+        # print()
