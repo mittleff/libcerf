@@ -73,14 +73,9 @@ EXPORT int cerf_algorithm;
 EXPORT int cerf_nofterms;
 #endif
 
-static const int Cover[4096] = {
-#include "w_taylor_cover.c"
-};
-static const int Centers[88] = {
-#include "w_taylor_centers.c"
-};
-// Define static const double TaylorCoeffs[]
-#include "w_taylor_coeffs.c"
+#include "w_taylor_cover.c" // -> static const int Cover[]
+#include "w_taylor_centers.c" // -> static const int Centers[]
+#include "w_taylor_coeffs.c"  // -> static const double TaylorCoeffs[]
 
 /******************************************************************************/
 /*  w_of_z, Faddeeva's scaled complex error function                          */
