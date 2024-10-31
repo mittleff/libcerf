@@ -27,52 +27,25 @@ rt.print_line = lambda locus, a, n, rr, f, f2: print('%2i %3i %3i  %21.16e  %21.
 
 
 if __name__ == '__main__':
-#     if len(sys.argv)<7:
-#         print(f"Usage: {sys.argv[0]} <fct> <range_mode> <N> <from> <to> <output_mode>")
-#         print(f"   where <fct>         is any of i (im_wofx) x (erfcx) xm(erfcx(-x))")
-#         print(f"   where <range_mode>  is any of l (lin) p(pos log) n(neg log)")
-#         print(f"   where <output_mode> is any of t (tabulate) w(print_worst)")
-#         sys.exit(-1)
-#     if sys.argv[1] == 'i':
-#         rt.external_program = "run/run_imwx"
-#         rt.f_hp = hp.imwx
-#     elif sys.argv[1] == 'x':
-#         rt.external_program = "run/run_erfcx"
-#         rt.f_hp = hp.erfcx
-#     else:
-#         raise Exception("Invalid fct")
-#     rt.range_mode = sys.argv[2]
-#     Ni = int(sys.argv[3])
-#     x_fr = float(sys.argv[4])
-#     x_to = float(sys.argv[5])
-#     rt.output_mode = sys.argv[6]
-#
-#     assert(x_fr < x_to)
-#
-#     if rt.range_mode == 'l':
-#         x_range = x_to-x_fr
-#         step = x_range/(Ni-1)
-#         X = [x_fr + i*step for i in range(Ni)]
-#     elif rt.range_mode == 'p':
-#         assert(0 < x_fr)
-#         step = log10(x_to/x_fr)/(Ni-1)
-#         X = [x_fr * 10**(i*step) for i in range(Ni)]
-#     elif rt.range_mode == 'n':
-#         assert(x_to < 0)
-#         step = log10(x_to/x_fr)/(Ni-1)
-#         X = [x_fr * 10**(i*step) for i in range(Ni)]
+    if len(sys.argv)<2:
+        print(f"Usage: {sys.argv[0]} <scan_mode>")
+        print(f"   where <scan_mode>   is any of b (bisect) s (scan)")
+        sys.exit(-1)
+    if sys.argv[1] == 'b':
+        do_scan = rt.scan_and_bisect
+    elif sys.argv[1] == 's':
+        do_scan = rt.scan_wo_bisect
+    else:
+        raise Exception("Invalid arg1, expected b|s")
 
     rt.external_program = "run/run_wofz"
     rt.range_mode = 'p'
     rt.output_mode = 't'
 
-    N, fr, to = 500, 1e-3, 1e2
-    step = log10(to/fr)/(N-1)
-    S = [fr * 10**(i*step) for i in range(N)]
-
-    N, fr, to = 501, 1e-3, 1e2
-    step = log10(to/fr)/(N-1)
-    R = [fr * 10**(i*step) for i in range(N)]
+#    S = rt.loggrid(111, .2, 8)
+#    R = rt.loggrid(111, .2, 8)
+    R = rt.lingrid(111, 0, 7.75)
+    S = rt.lingrid(111, 0, 7.75)
 
     for s in S:
         print(s)
@@ -81,6 +54,5 @@ if __name__ == '__main__':
             return (a[0].imag, a[1], a[2], a[3])
         rt.f_ext = ext
         rt.f_hp = lambda r : hp.wofz(s, r)
-        rt.scan_and_bisect(R)
+        do_scan(R)
         print()
-    #rt.print_conclusion()

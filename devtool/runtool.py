@@ -37,6 +37,14 @@ import subprocess, sys
 
 this = sys.modules[__name__]
 
+### Grids.
+
+def lingrid(N, fr, to):
+    return [(fr * (N-1-n) + to * n) / (N-1) for n in range(N)]
+
+def loggrid(N, fr, to):
+    return [fr**((N-1-n)/(N-1)) * to**(n/(N-1)) for n in range(N)]
+
 ### Run C function to be tested.
 
 def external_function1d(x):
@@ -153,6 +161,16 @@ def scan_and_bisect(X):
         r0 = r2
         a0 = a2
         n0 = n2
+
+def scan_wo_bisect(X):
+    """
+    Scan without bisection.
+    """
+    this.worst_relerr = 0
+    this.worst_x = 0
+
+    for x in X:
+        check_at(0, x)
 
 # Reporting.
 
