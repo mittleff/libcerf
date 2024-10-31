@@ -68,7 +68,7 @@ def wofz(x, y, doublecheck=False):
     z = mpc(x,y)
     j = mpc('0', '1')
     r1 = exp(-z**2)*erfc(-j*z)
-    if not doublecheck:
+    if (not doublecheck) or y==0:
         return r1
     # Check mpmath-computed reference value against mpmath-based brute-force integration
     r2 = mpc(0,1)/pi*quad(lambda t: exp(-t**2)/(z-t), [-inf, +inf])
@@ -82,5 +82,22 @@ def wofz(x, y, doublecheck=False):
 #            for k in reversed(range(2000)):
 #                w = z - k/2/w
 #            r4 = mpc(0,1)/sqrt(pi)/w
-    raise Exception(f"mpmath inaccurate: r1=%8g+i%8g, d2=%8g+i%8g, d3=%8g+i%8g" %
-                    (r1.real, r1.imag, (r2-r1).real, (r2-r1).imag, (r3-r1).real, (r3-r1).imag))
+    raise Exception(f"mpmath inaccurate for z=%8g+i%8g: r1=%8g+i%8g, d2=%8g+i%8g, d3=%8g+i%8g" %
+                    (z.real, z.imag, r1.real, r1.imag,
+                     (r2-r1).real, (r2-r1).imag, (r3-r1).real, (r3-r1).imag))
+
+def wofz_taylor(z, N):
+    """
+    Taylor coefficients of w(z), forward computed.
+    """
+    W = []
+    W.append(wofz(z.real, z.imag, True))
+    W.append(-2*z*W[0] + mpc(0,2)/sqrt(pi))
+    for k in range(2,N):
+        W.append(-2*(z*W[k-1]+(k-1)*W[k-2]))
+    R = []
+    fac = 1
+    for k in range(N):
+        R.append(W[k] * fac)
+        fac /= (k+1)
+    return R
