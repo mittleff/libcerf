@@ -315,10 +315,18 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
             return ret;
     }
 
-
 // ------------------------------------------------------------------------------
 // Taylor around some z                                                [ALGO 9??]
 // ------------------------------------------------------------------------------
+
+    if (isnan(xa)) {
+	SET_INFO(105, 1);
+	return C(xa, xa);
+    }
+    if (isnan(y)) {
+	SET_INFO(106, 1);
+	return C(y, y);
+    }
 
     const int kP = Cover[((int)(8*ya)*64)+((int)(8*xa))];
     assert(kP >= 0);
@@ -330,11 +338,15 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	ret = ret * dz + C(T[2*k], T[2*k+1]);
     SET_INFO(900, kP);
 
+
     if (y < 0) {
 	SET_ALGO(cerf_algorithm + 1);
-	const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
-	return 2.0 * cexp(C((ya - xs) * (xs + ya), 2*xs*y)) - ret;
-    } else
-	return ret;
+	if (x < 0)
+	    return 2.0 * cexp(C((y - x) * (x + y), -2*x*y)) - ret;
+	return 2.0 * cexp(C((y - x) * (x + y), -2*x*y)) - C(creal(ret), -cimag(ret));
+    }
+    if (x < 0)
+	ret = C(creal(ret), -cimag(ret));
+    return ret;
 
 } // w_of_z
