@@ -91,6 +91,25 @@ void ztest(
     }
 }
 
+// Test whether complex numbers 'computed' and 'expected' agree.
+// Allow for relaxed 'limit2' for either the real or the imaginary part.
+void ztest2(
+    result_t* result, double limit, double limit2,
+    _cerf_cmplx computed, _cerf_cmplx expected, const char* name)
+{
+    ++result->total;
+    const double re_r = relerr(creal(computed), creal(expected));
+    const double re_i = relerr(cimag(computed), cimag(expected));
+    if ((re_r > limit && re_i > limit2) || (re_r > limit2 && re_i > limit)) {
+        printf("failure in subtest %i: %s\n", result->total, name);
+        printf("- fct value %20.15g%+20.15g\n", creal(computed), cimag(computed));
+        printf("- expected  %20.15g%+20.15g\n", creal(expected), cimag(expected));
+	print_algo();
+        printf("=> error %6.2g or %6.2g above limits %6.2g or %6.2g\n", re_r, re_i, limit, limit2);
+        ++result->failed;
+    }
+}
+
 // Wrap rtest; use preprocessor stringification to print the calling 'function_val' verbatim
 #define RTEST(result, limit, function_val, expected_val)                                           \
     rtest(&result, limit, function_val, expected_val, #function_val);
@@ -98,3 +117,7 @@ void ztest(
 // Wrap ztest; use preprocessor stringification to print the calling 'function_val' verbatim
 #define ZTEST(result, limit, function_val, expected_val)                                           \
     ztest(&result, limit, function_val, expected_val, #function_val);
+
+// Wrap ztest; use preprocessor stringification to print the calling 'function_val' verbatim
+#define ZTEST2(result, limit, limit2, function_val, expected_val)	                           \
+    ztest2(&result, limit, limit2, function_val, expected_val, #function_val);
