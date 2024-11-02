@@ -97,7 +97,7 @@ if __name__ == '__main__':
     P = ep.sorted_polyominoes(100)
     Diams2 = []
     Rows = []
-    for n, i, j, d2, area, rows in P:
+    for i, j, d2, area, rows in P:
         Diams2.append(d2)
         Rows.append(rows)
 
