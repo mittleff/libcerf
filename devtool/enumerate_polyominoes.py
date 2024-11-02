@@ -17,10 +17,7 @@ def sorted_polyominoes(N):
                 continue
 
             rows = []
-            if j%2 == 0:
-                nj2 = 2*int(sqrt(d2)/2+1)
-            else:
-                nj2 = int(sqrt(d2))+1
+            nj2 = int(sqrt(d2)) + 1
             for jj2 in range(2-j%2, nj2, 2):
                 dx = sqrt(d2 - jj2**2)/2 - (i%2)/2
                 row = 2 * int(dx) + (i%2)
