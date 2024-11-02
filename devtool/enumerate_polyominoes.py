@@ -23,20 +23,16 @@ def sorted_polyominoes(N):
         i,j,d2 = Tup[n]
         rows = []
         if j%2 == 0:
-            for jj in range(1, int(sqrt(d2)/2+1)):
-                dx = sqrt(d2/4 - jj**2) - (i%2)/2
-                row = 2 * int(dx) + (i%2)
-                if row > 0:
-                    rows.insert(0, row)
-                    rows.append(row)
+            nj2 = 2*int(sqrt(d2)/2+1)
         else:
-            for jj2 in range(1, int(sqrt(d2))+1, 2):
-                dx = sqrt(d2 - jj2**2)/2 - (i%2)/2
-                row = 2 * int(dx) + (i%2)
-                if row > 0:
-                    if jj2 > 1:
-                        rows.insert(0, row)
-                    rows.append(row)
+            nj2 = int(sqrt(d2))+1
+        for jj2 in range(2-j%2, nj2, 2):
+            dx = sqrt(d2 - jj2**2)/2 - (i%2)/2
+            row = 2 * int(dx) + (i%2)
+            if row > 0:
+                if jj2 > j%2:
+                    rows.insert(0, row)
+                rows.append(row)
         area = 0
         for r in rows:
             area += r
