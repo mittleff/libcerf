@@ -18,11 +18,11 @@ def sorted_polyominoes(N):
 
             rows = []
             nj2 = int(sqrt(d2)) + 1
-            for jj2 in range(2-s%2, nj2, 2):
-                dx = sqrt(d2 - jj2**2)/2 - (t%2)/2
+            for k in range(2-s%2, nj2, 2):
+                dx = sqrt(d2 - k**2)/2 - (t%2)/2
                 row = 2 * int(dx) + (t%2)
                 if row > 0:
-                    if jj2 > s%2:
+                    if k > s%2:
                         rows.insert(0, row)
                     rows.append(row)
             area = 0
