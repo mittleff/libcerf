@@ -16460,7 +16460,7 @@ def arrange_polyominoes():
     # make lists of squared diameters and row patterns
     P = ep.sorted_polyominoes(40)
     Rows = []
-    for n, i, j, d2, area, rows in P:
+    for i, j, d2, area, rows in P:
         Rows.append(rows)
     # print("# Number of available polyominoes: %3i" % len(Rows))
 
