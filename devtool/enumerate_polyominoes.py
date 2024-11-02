@@ -29,7 +29,7 @@ def sorted_polyominoes(N):
             for n in rows:
                 area += n
 
-            Out.append((t, s, d2, area, rows))
+            Out.append((s, t, d2, area, rows))
 
     return sorted(Out, key=lambda e: e[2])
 
