@@ -15,7 +15,7 @@ def per_d2(d2):
 
     q = lambda z: (2*prt.z2radius(z)[0])**2
     f = lambda a: mpc(0,a)
-    y = findroot(lambda y: q(f(y)) - d2, [.01, 2*d2], solver='bisect')
+    y = findroot(lambda y: q(f(y)) - d2, [.01, 4*d2], solver='bisect')
     z = f(y)
     print("%8g %8g" %(z.real, z.imag))
 
