@@ -14,6 +14,9 @@ import enumerate_polyominoes as ep
 mp.dps = 48
 mp.pretty = True
 
+Nmax = 24
+f = lambda r: 2**-53*(1-2*r) - r**Nmax
+rho = findroot(f, [.01, .49], solver='bisect')
 
 def forward(z, N):
     """
@@ -32,66 +35,63 @@ def forward(z, N):
         fac /= (k+1)
     return T
 
-def err23(T, R):
+def errN(T, R):
     """
-    Return maximum relative error of T[23] term in Taylor sum.
+    Return maximum relative error of T[N-1] term in Taylor sum.
     """
     sum = abs(T[0])
-    for k in range(1,22):
+    for k in range(1,Nmax):
         term = abs(T[k]) * R**k
         sum -= term
-    t23 = abs(T[23]) * R**23
-    # print(f"R {R} t {t23} s {sum} a {t23/sum - 2**-54}")
-    return t23/sum
+    tN = abs(T[Nmax]) * R**Nmax
+    return tN/sum
 
 def redetermine_R(T, R):
     """
-    Called if Nmax > 22. Recomputes R such that Nmax = 22.
+    Called if Nused > N. Recomputes R such that Nused = N.
     """
-    f = lambda r: err23(T, r) - 2**-54
-    # print(f"1.0: {R} -> {f(R)}")
-    # print(f"0.8: {0.8*R} -> {f(0.8*R)}")
+    f = lambda r: errN(T, r) - 2**-53
     r = mp.findroot(f, [R], solver='newton', verbose=False)
-    return r, 22
+    return r, Nmax
 
 def z2radius(z):
     """
     For a Taylor expansion around z, determine radius R such that T[k]*R/T[k-1] < q,
     thereby ensuring that sum T[k] >= (1-2q)/(1-q) T[0]
     """
-    N = 32
-    T = forward(z, N)
+    Ntest = Nmax+2
+    T = forward(z, Ntest)
     fac = 1
     worst_ratio = 0
     k_worst = 0
-    for k in range(1,N):
+    for k in range(1,Ntest):
         ratio = abs(T[k]/T[k-1])
         if ratio > worst_ratio:
             worst_ratio = ratio
             k_worst = k
-    R = 1 / ( 11/3 * worst_ratio )
+    R = rho / worst_ratio
 
     sum = abs(T[0])
-    Nmax = 99
+    Nused = Ntest
     for k in range(1,len(T)):
         term = abs(T[k]) * R**k
-        if term < 2**-54 * sum:
-            Nmax = k-1
+        if term < 2**-53 * sum:
+            Nused = k-1
             break
         sum -= term
 
-    if Nmax > 22:
+    if Nused > Nmax:
         # print("original:", R, Nmax)
-        R, Nmax = redetermine_R(T, R)
-    return R, Nmax
+        R, Nused = redetermine_R(T, R)
+    return R, Nused
 
 if __name__ == '__main__':
     if len(sys.argv)==3:
         z = mpc(sys.argv[1], sys.argv[2])
         R, Nmax = z2radius(z)
         e = int(100*R/sqrt(2))/100
-        print("%2i edge %5.2f x range %5.2f %5.2f y range %5.2f %5.2f" %
-              (Nmax, e, z.real-e, z.real+e, z.imag-e, z.imag+e))
+        print("N %2i R %8g d^2 %8g edge %5.2f x range %5.2f %5.2f y range %5.2f %5.2f" %
+              (Nmax, R, 4*R**2, e, z.real-e, z.real+e, z.imag-e, z.imag+e))
         sys.exit(0)
 
     P = ep.sorted_polyominoes(100)
