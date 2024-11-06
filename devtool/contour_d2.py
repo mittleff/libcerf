@@ -10,10 +10,10 @@ import print_taylor_radius as prt
 mp.dps = 48
 mp.pretty = True
 
-def per_d2(d2):
+def per_d2(d2, N, rho):
     print(d2)
 
-    q = lambda z: (2*prt.z2radius(z)[0])**2
+    q = lambda z: 4 * prt.z2radius(z, N, rho)**2
     f = lambda a: mpc(0,a)
     y = findroot(lambda y: q(f(y)) - d2, [.01, 4*d2], solver='bisect')
     z = f(y)
@@ -47,5 +47,7 @@ def per_d2(d2):
     print()
 
 if __name__ == '__main__':
+    N = 24
+    rho = prt.N2rho(N)
     for d2 in [.3,.5,.8,1.4,2,2.7,3.6,4.6,5.8,7.2]:
-        per_d2(d2)
+        per_d2(d2, N, rho)
