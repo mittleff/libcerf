@@ -7,6 +7,7 @@ Compute Taylor coefficients of w(z).
 from mpmath import *
 import sys
 import hp_funcs as hp
+import runtool as rt
 
 mp.dps = 48
 mp.pretty = True
@@ -56,6 +57,9 @@ def backward(z, N, dN):
 
     return R, B
 
+def dw_integral(z, n):
+    return 2/sqrt(pi) * 2**n/gamma(n+1) * quad(lambda u: u**n * exp(-u**2-mpc(0,2)*u*z), [0, +inf])
+
 if __name__ == '__main__':
     if len(sys.argv)==3:
         z = mpc(sys.argv[1], sys.argv[2])
@@ -72,3 +76,16 @@ if __name__ == '__main__':
             print("%11.3e %11.3e %11.3e %8f  %11.3e %11.3e %11.3e %8f  %11.3e %11.3e" %
                   (t.real, t.imag, abs(t), p, r.real, r.imag, abs(r), q, B[n].real, B[n].imag), )
         sys.exit(0)
+
+    for x in [0] + rt.loggrid(30, 1e-18, .08) + rt.loggrid(50, .1, 7.):
+        print(x)
+        for y in [0] + rt.loggrid(30, 1e-18, .08) + rt.loggrid(50, .1, 7.):
+            z = mpc(x, y)
+            if z==0:
+                continue
+            T = forward(z, 25)
+            t=T[24]
+            r = dw_integral(z, 24)
+            print("%13.5e %11.3e %11.3e %11.3e %11.3e %8g" %
+                  (y, t.real, t.imag, r.real, r.imag, abs(t-r)/abs(t)))
+        print()
