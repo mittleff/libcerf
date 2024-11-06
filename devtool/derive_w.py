@@ -33,25 +33,34 @@ def backward(z, N, dN):
     Return Taylor coefficients T[k]=w^(k)/k!,
     computed through backward recursion.
     """
-    w2, w1 = 1/gamma(N+dN)**.67, 0
-    recurse = lambda n, w1, w2: (-z*w1 - n*w2/2, w1)
+    recurse = lambda n, w1, w2: (-z*w1 - (n+2)*w2/2, w1)
+    w2, w1 = mpc(2,1)/gamma(N+dN)**.67, 0
     for n in reversed(range(N, N+dN)):
         w1, w2 = recurse(n, w1, w2)
+
+    # check accuracy
+    v2, v1 = mpc(-1,-2)/gamma(N+dN+7)**.67, 0
+    for n in reversed(range(N, N+dN+7)):
+        v1, v2 = recurse(n, v1, v2)
+    if abs(w1/w2 - v1/v2) > 1e-16 * (abs(w1/w2) + abs(v1/v2)):
+        pass #raise Exception("dN too small?")
+
     B = []
     for n in reversed(range(N)):
         w1, w2 = recurse(n, w1, w2)
-        B.append(w1)
-    fac = hp.wofz(z.real, z.imag, True) / B[-1]
-    R = []
-    for b in reversed(B):
-        R.append(fac * b)
-    return R
+        B.insert(0, w1)
+    w1, w2 = recurse(-1, w1, w2)
+    fac = mpc(0, -1/sqrt(pi)) / w1
+
+    R = [fac * b for b in B]
+
+    return R, B
 
 if __name__ == '__main__':
     if len(sys.argv)==3:
         z = mpc(sys.argv[1], sys.argv[2])
         T = forward(z, 60)
-        R = backward(z, 60, 60)
+        R, B = backward(z, 60, 40)
         for n in range(len(T)):
             t = T[n]
             r = R[n]
@@ -60,6 +69,6 @@ if __name__ == '__main__':
             if n>0:
                 p = abs(T[n])/abs(T[n-1])
                 q = abs(R[n])/abs(R[n-1])
-            print("%11.3e %11.3e %11.3e %8f  %11.3e %11.3e %11.3e %8f" %
-                  (t.real, t.imag, abs(t), p, r.real, r.imag, abs(r), q))
+            print("%11.3e %11.3e %11.3e %8f  %11.3e %11.3e %11.3e %8f  %11.3e %11.3e" %
+                  (t.real, t.imag, abs(t), p, r.real, r.imag, abs(r), q, B[n].real, B[n].imag), )
         sys.exit(0)

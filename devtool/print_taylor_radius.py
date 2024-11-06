@@ -23,7 +23,14 @@ def z2radius(z, N, rho):
     For a Taylor expansion around z, determine radius R such that T[k]*R/T[k-1] < rho.
     """
 
-    T = dw.forward(z, 3*N//2)
+    F = dw.forward(z, 2*N)
+    T = dw.backward(z, 2*N, 110)
+    T2 = dw.backward(z, 2*N, 120)
+    if abs(T[3] - T2[3]) > 1e-16 * abs(T[3]):
+        print(F[3])
+        print(T[3])
+        print(T2[3])
+        raise Exception("backward iteration did not converge")
     fac = 1
     phi = 0
     k_worst = 0
