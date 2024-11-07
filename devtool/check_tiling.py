@@ -18,7 +18,7 @@ def forward(z, N):
     Return Taylor coefficients T[k]=w^(k)/k!.
     """
     W = []
-    W.append(hp.wofz(z.real, z.imag, False))
+    W.append(hp.wofz(z, False))
     W.append(-2*z*W[0] + mpc(0,2)/sqrt(pi))
     for k in range(2,N):
         W.append(-2*(z*W[k-1]+(k-1)*W[k-2]))

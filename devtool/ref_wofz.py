@@ -15,5 +15,5 @@ if __name__ == '__main__':
     if len(sys.argv)<3:
         print(f"Usage: {sys.argv[0]} <x> <y>")
     z = mpc(sys.argv[1], sys.argv[2])
-    w = hp.wofz(z.real, z.imag)
+    w = hp.wofz(z)
     print("%22.15e %22.15e" % (w.real, w.imag))

@@ -64,8 +64,7 @@ def imwx(x, doublecheck=False):
             raise Exception(f"mpmath inaccurate")
     return result
 
-def wofz(x, y, doublecheck=False):
-    z = mpc(x,y)
+def wofz(z, doublecheck=False):
     j = mpc('0', '1')
     r1 = exp(-z**2)*erfc(-j*z)
     if (not doublecheck) or y==0:
@@ -91,7 +90,7 @@ def wofz_taylor(z, N):
     Taylor coefficients of w(z), forward computed.
     """
     W = []
-    W.append(wofz(z.real, z.imag, True))
+    W.append(wofz(z, True))
     W.append(-2*z*W[0] + mpc(0,2)/sqrt(pi))
     for k in range(2,N):
         W.append(-2*(z*W[k-1]+(k-1)*W[k-2]))

@@ -53,6 +53,6 @@ if __name__ == '__main__':
             a = rt.external_function2d(s, r)
             return (a[0].imag, a[1], a[2], a[3])
         rt.f_ext = ext
-        rt.f_hp = lambda r : hp.wofz(s, r)
+        rt.f_hp = lambda r : hp.wofz(mpc(s, r))
         do_scan(R)
         print()

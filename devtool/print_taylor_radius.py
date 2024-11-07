@@ -22,7 +22,6 @@ def z2radius(z, N, rho):
     """
     For a Taylor expansion around z, determine radius R such that T[k]*R/T[k-1] < rho.
     """
-
     F = dw.forward(z, 2*N)
     T = dw.backward(z, 2*N, 110)
     T2 = dw.backward(z, 2*N, 120)
