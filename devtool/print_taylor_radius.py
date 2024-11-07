@@ -7,91 +7,68 @@ Compute Taylor coefficients of w(z).
 from mpmath import *
 import sys
 import hp_funcs as hp
-import runtool as rt
 import functool as fut
-import enumerate_polyominoes as ep
+import derive_w as dw
 
 mp.dps = 48
 mp.pretty = True
 
-Nmax = 24
-f = lambda r: 2**-53*(1-2*r) - r**Nmax
-rho = findroot(f, [.01, .49], solver='bisect')
+def N2rho(N):
+    f = lambda r: 2**-53*(1-2*r) - r**N
+    rho = findroot(f, [.01, .49], solver='bisect')
+    return rho
 
-def forward(z, N):
+def z2radius(z, N, rho):
     """
-    Return Taylor coefficients T[k]=w^(k)/k!.
+    For a Taylor expansion around z, determine radius R such that T[k]*R/T[k-1] < rho.
     """
-    W = []
-    W.append(hp.wofz(z.real, z.imag, False))
-    W.append(-2*z*W[0] + mpc(0,2)/sqrt(pi))
-    for k in range(2,N):
-        W.append(-2*(z*W[k-1]+(k-1)*W[k-2]))
-        # print("%2i %22.15e" % (k, abs(W[k])))
-    T = []
+    F = dw.forward(z, 2*N)
+    T = dw.backward(z, 2*N, 110)
+    T2 = dw.backward(z, 2*N, 120)
+    if abs(T[3] - T2[3]) > 1e-16 * abs(T[3]):
+        print(F[3])
+        print(T[3])
+        print(T2[3])
+        raise Exception("backward iteration did not converge")
     fac = 1
-    for k in range(N):
-        T.append(W[k] * fac)
-        fac /= (k+1)
-    return T
-
-def errN(T, R):
-    """
-    Return maximum relative error of T[N-1] term in Taylor sum.
-    """
-    sum = abs(T[0])
-    for k in range(1,Nmax):
-        term = abs(T[k]) * R**k
-        sum -= term
-    tN = abs(T[Nmax]) * R**Nmax
-    return tN/sum
-
-def redetermine_R(T, R):
-    """
-    Called if Nused > N. Recomputes R such that Nused = N.
-    """
-    f = lambda r: errN(T, r) - 2**-53
-    r = mp.findroot(f, [R], solver='newton', verbose=False)
-    return r, Nmax
-
-def z2radius(z):
-    """
-    For a Taylor expansion around z, determine radius R such that T[k]*R/T[k-1] < q,
-    thereby ensuring that sum T[k] >= (1-2q)/(1-q) T[0]
-    """
-    Ntest = Nmax+2
-    T = forward(z, Ntest)
-    fac = 1
-    worst_ratio = 0
+    phi = 0
     k_worst = 0
-    for k in range(1,Ntest):
+    for k in range(1, len(T)):
         ratio = abs(T[k]/T[k-1])
-        if ratio > worst_ratio:
-            worst_ratio = ratio
+        if ratio > phi:
+            phi = ratio
             k_worst = k
-    R = rho / worst_ratio
+    if k_worst >= N:
+        for k in range(len(T)):
+            t = T[k]
+            q = 0
+            if k>0:
+                q = abs(t)/abs(T[k-1])
+            print("#>> %3i %10e %10e %8f" % (k, t.real, t.imag, q))
+        raise Exception("bound phi_N is insufficient; f^(n) don't decay fast enough")
+    R = rho / phi
 
     sum = abs(T[0])
-    Nused = Ntest
+    Nused = len(T)
     for k in range(1,len(T)):
         term = abs(T[k]) * R**k
         if term < 2**-53 * sum:
             Nused = k-1
             break
         sum -= term
+    if Nused > N:
+        raise Exception("determination of R failed")
 
-    if Nused > Nmax:
-        # print("original:", R, Nmax)
-        R, Nused = redetermine_R(T, R)
-    return R, Nused
+    return R
 
 if __name__ == '__main__':
+    N = 24
     if len(sys.argv)==3:
         z = mpc(sys.argv[1], sys.argv[2])
-        R, Nmax = z2radius(z)
+        R = z2radius(z, N)
         e = int(100*R/sqrt(2))/100
-        print("N %2i R %8g d^2 %8g edge %5.2f x range %5.2f %5.2f y range %5.2f %5.2f" %
-              (Nmax, R, 4*R**2, e, z.real-e, z.real+e, z.imag-e, z.imag+e))
+        print("N R %8g d^2 %8g edge %5.2f x range %5.2f %5.2f y range %5.2f %5.2f" %
+              (R, 4*R**2, e, z.real-e, z.real+e, z.imag-e, z.imag+e))
         sys.exit(0)
 
     P = ep.sorted_polyominoes(100)
@@ -108,7 +85,7 @@ if __name__ == '__main__':
         for ix in range(128):
             x = ix/16
             z = mpc(x, y)
-            R, Nmax = z2radius(z)
+            R = z2radius(z, N)
             ir = 997
             for ii in range(len(Diams2)):
                 if (2*8*R)**2 < Diams2[ii]:

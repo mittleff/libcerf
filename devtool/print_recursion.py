@@ -24,6 +24,6 @@ if __name__ == '__main__':
         print("%2i %22.15e %22.15e" % (k, rho.real, rho.imag))
 
     w = mpc(0,1)/sqrt(pi)/rho
-    wref = hp.wofz(z.real, z.imag, True)
+    wref = hp.wofz(z, True)
     if not hp.cagree(w, wref):
         raise Exception(f"inaccurate")

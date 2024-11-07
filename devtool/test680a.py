@@ -26,7 +26,7 @@ def rho0(M, z):
 
 z = mpc(3,3)
 h = mpc(0,0)
-wr = hp.wofz(z.real, z.imag)
+wr = hp.wofz(z)
 print(wr)
 M = 20
 
