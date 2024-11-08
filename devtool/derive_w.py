@@ -17,7 +17,7 @@ def forward(z, N):
     Return Taylor coefficients T[k]=w^(k)/k!.
     """
     W = []
-    W.append(hp.wofz(z.real, z.imag, False))
+    W.append(hp.wofz(z, False))
     W.append(-2*z*W[0] + mpc(0,2)/sqrt(pi))
     for k in range(2,N):
         W.append(-2*(z*W[k-1]+(k-1)*W[k-2]))
@@ -58,7 +58,7 @@ def backward(z, N, dN):
     return R, B
 
 def dw_integral(z, n):
-    return 2/sqrt(pi) * 2**n/gamma(n+1) * quad(lambda u: u**n * exp(-u**2-mpc(0,2)*u*z), [0, +inf])
+    return mpc(0,1)**n/sqrt(pi)*hyperu((n+1)/2,1/2,-z**2)
 
 if __name__ == '__main__':
     if len(sys.argv)==3:
