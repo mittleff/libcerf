@@ -1,7 +1,7 @@
 #!/bin/env python
 
 """
-Contour of |w(z)|=const.
+Contour of |w(z)|=const in 1st quadrant.
 """
 
 from mpmath import *
@@ -16,24 +16,20 @@ def per_v(v):
     ret = []
 
     f = lambda z: abs(hp.wofz(z))
-    ymin = -5
-    x = findroot(lambda x: f(mpc(x,ymin))-v, [-20, -.01], solver='bisect')
-    z = mpc(x, ymin)
+    y = findroot(lambda y: f(mpc(0,y))-v, [0, 7], solver='bisect')
+    z = mpc(0, y)
 
     ret.append((z.real, z.imag))
 
-    z0, phi0 = z, None
+    z0, phi0 = z, 0
     step = .02
-    while z.imag>=ymin:
+    while z.imag>=0:
         a = lambda phi: z0 + step*exp(mpc(0,phi))
-        if phi0:
-            phi = findroot(lambda phi: f(a(phi)) - v, phi0, solver='newton')
-        else:
-            phi = findroot(lambda phi: f(a(phi)) - v, [0, pi], solver='bisect')
+        phi = findroot(lambda phi: f(a(phi)) - v, phi0, solver='newton')
         z = a(phi)
-        if z.imag<ymin:
-            x = findroot(lambda x: f(mpc(x,ymin)) - v, [0, 2*z.real], solver='bisect')
-            z = mpc(x,ymin)
+        if z.imag<0:
+            x = findroot(lambda x: f(mpc(x,0)) - v, [0, 2*z.real], solver='bisect')
+            z = mpc(x,0)
             ret.append((z.real, z.imag))
             break
         ret.append((z.real, z.imag))
@@ -42,9 +38,10 @@ def per_v(v):
     return ret
 
 if __name__ == '__main__':
-    for v in [.14,.165,.2,.25,.32,.4,.55,.75,1.,1.4,2.,3.,6.,15.,40.,100,250]:
+    for v in [.14,.3,.5,.6,.7,.75,.77,.79,.81]:
+        # [.14,.165,.2,.25,.32,.4,.55,.75,1.,1.4,2.,3.,6.,15.,40.,100,250]:
         raw = per_v(v)
-        out = rdp.rdp(raw, .01)
+        out = rdp.rdp(raw, .001)
 
         print(v)
         for o in out:
