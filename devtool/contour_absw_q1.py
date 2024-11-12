@@ -27,9 +27,10 @@ def per_v(v):
         a = lambda phi: z0 + step*exp(mpc(0,phi))
         phi = findroot(lambda phi: f(a(phi)) - v, phi0, solver='newton')
         z = a(phi)
-        if z.imag<0:
-            x = findroot(lambda x: f(mpc(x,0)) - v, [0, 2*z.real], solver='bisect')
-            z = mpc(x,0)
+        ymin = -1
+        if z.imag<ymin:
+            x = findroot(lambda x: f(mpc(x,ymin)) - v, z.real, solver='newton')
+            z = mpc(x,ymin)
             ret.append((z.real, z.imag))
             break
         ret.append((z.real, z.imag))
