@@ -71,6 +71,7 @@ extern "C" {
 
 // compute w(z) = exp(-z^2) erfc(-iz), Faddeeva's scaled complex error function
 EXPORT _cerf_cmplx w_of_z(_cerf_cmplx z);
+
 EXPORT double im_w_of_x(double x); // special case Im[w(x)] of real x
 EXPORT double re_w_of_z(double x, double y);
 EXPORT double im_w_of_z(double x, double y);
@@ -101,6 +102,12 @@ EXPORT double voigt_hwhm(double sigma, double gamma);
 #ifndef CERF_AS_CPP
 #ifdef __cplusplus
 } // extern "C"
+
+std::complex<double> w_of_z(std::complex<double> z) {
+    _cerf_cmplx ret = w_of_z(*((_cerf_cmplx*)(void*)&z));
+    return *((std::complex<double>*)(void*)&ret);
+}
+
 #endif
 #endif
 
