@@ -60,7 +60,7 @@ Debian_gcc:
     - pwd && ls
     - mkdir build
     - cd build
-    - cmake -GNinja -DWERROR=ON ${COMPILE_OPTIONS} ..
+    - cmake -GNinja -DWERROR=ON $COMPILE_OPTIONS ..
     - cmake --build .
     - ctest -j6 --output-on-failure
 
@@ -78,6 +78,7 @@ Debian_clang:
   - Debian
   before_script:
     - export CC=clang; export CXX=clang++
+    - COMPILE_OPTIONS=""
   stage: build
   script:
   <<: *debian_build
@@ -88,6 +89,7 @@ Debian_clang++:
   - Debian
   before_script:
     - export CC=clang; export CXX=clang++
+    - COMPILE_OPTIONS="-DCERF_AS_CPP=ON"
   stage: build
   script:
     <<: *debian_build
