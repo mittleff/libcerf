@@ -46,31 +46,14 @@ windows:
     - build/*zip
     expire_in: 10 days
 
-Debian_clang:
-  tags:
-  - Debian
-  before_script:
-    - export CC=clang; export CXX=clang++
-    - cmake --version
-    - clang --version
-  stage: build
-  script: &native_scr
-    - pwd && ls
-    - mkdir build
-    - cd build
-    - cmake -DWERROR=ON ..
-    - make -j6
-    - ctest -j6 --output-on-failure
-    - if [ "$CI_COMMIT_REF_NAME" == "main" ]; then make install; fi
-
-Debian_g++:
+Debian_gcc:
   tags:
   - Debian
   before_script:
     - export CC=gcc; export CXX=g++
-    - COMPILE_OPTIONS="-DCERF_AS_CPP -DBUG"
+    - COMPILE_OPTIONS=""
   stage: build
-  script:
+  script: & debian_build
     - uname -a
     - cmake --version
     - clang --version
@@ -80,3 +63,31 @@ Debian_g++:
     - cmake -GNinja -DWERROR=ON ${COMPILE_OPTIONS} ..
     - cmake --build .
     - ctest -j6 --output-on-failure
+
+Debian_g++:
+  tags:
+  - Debian
+  before_script:
+    - export CC=gcc; export CXX=g++
+    - COMPILE_OPTIONS="-DCERF_AS_CPP=ON"
+  stage: build
+  script: *debian_build
+
+Debian_clang:
+  tags:
+  - Debian
+  before_script:
+    - export CC=clang; export CXX=clang++
+  stage: build
+  script:
+    <<: *debian_build
+    - if [ "$CI_COMMIT_REF_NAME" == "main" ]; then cmake --install .; fi
+
+Debian_clang++:
+  tags:
+  - Debian
+  before_script:
+    - export CC=clang; export CXX=clang++
+  stage: build
+  script:
+    <<: *debian_build
