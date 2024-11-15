@@ -55,25 +55,11 @@
      typedef double _Complex _cerf_cmplx;
 #  endif
 
-#  undef __BEGIN_DECLS
-#  undef __END_DECLS
-#  ifdef CERF_AS_CPP
-#    ifndef __cplusplus
-       impossible_case
-#    endif
-#    define __BEGIN_DECLS
-#    define __END_DECLS
-#  else
-#    ifdef __cplusplus // this include file called from C++ while library is compiled as C
-#      define __BEGIN_DECLS extern "C" {
-#      define __END_DECLS }
-#    else
-#      define __BEGIN_DECLS
-#      define __END_DECLS
-#    endif
-#  endif
-
-__BEGIN_DECLS
+#ifndef CERF_AS_CPP
+#ifdef __cplusplus // this include file called from C++ while library is compiled as C
+extern "C" {
+#endif
+#endif
 
 #if _WIN32
 #define EXPORT __declspec(dllexport)
@@ -112,5 +98,10 @@ EXPORT double voigt(double x, double sigma, double gamma);
 // compute the full width at half maximum of the Voigt function
 EXPORT double voigt_hwhm(double sigma, double gamma);
 
-__END_DECLS
+#ifndef CERF_AS_CPP
+#ifdef __cplusplus
+} // extern "C"
+#endif
+#endif
+
 #endif /* __CERF_H__ */
