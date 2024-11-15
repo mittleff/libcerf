@@ -53,7 +53,7 @@ Debian_gcc:
     - export CC=gcc; export CXX=g++
     - COMPILE_OPTIONS=""
   stage: build
-  script: & debian_build
+  script: &debian_build
     - uname -a
     - cmake --version
     - clang --version
