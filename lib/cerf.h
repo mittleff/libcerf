@@ -102,7 +102,7 @@ EXPORT double voigt_hwhm(double sigma, double gamma);
 #ifndef CERF_AS_CPP
 #ifdef __cplusplus
 } // extern "C"
-std::complex<double> w_of_z_cpp(std::complex<double> z) {
+std::complex<double> w_of_z(std::complex<double> z) {
     _cerf_cmplx ret = w_of_z(*((_cerf_cmplx*)(void*)&z));
     return *((std::complex<double>*)(void*)&ret);
 }
