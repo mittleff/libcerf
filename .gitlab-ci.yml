@@ -63,19 +63,20 @@ Debian_clang:
     - ctest -j6 --output-on-failure
     - if [ "$CI_COMMIT_REF_NAME" == "main" ]; then make install; fi
 
-Debian_gcc:
+Debian_g++:
   tags:
   - Debian
-  before_script: &debian_clang
-    - uname -a
+  before_script:
     - export CC=gcc; export CXX=g++
-    - cmake --version
-    - clang --version
+    - COMPILE_OPTIONS="-DCERF_AS_CPP -DBUG"
   stage: build
   script:
+    - uname -a
+    - cmake --version
+    - clang --version
     - pwd && ls
     - mkdir build
     - cd build
-    - cmake -DWERROR=ON ..
-    - make -j6
+    - cmake -GNinja -DWERROR=ON ${COMPILE_OPTIONS} ..
+    - cmake --build .
     - ctest -j6 --output-on-failure
