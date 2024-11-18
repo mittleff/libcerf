@@ -102,10 +102,18 @@ EXPORT double voigt_hwhm(double sigma, double gamma);
 #ifndef CERF_AS_CPP
 #ifdef __cplusplus
 } // extern "C"
-std::complex<double> w_of_z(std::complex<double> z) {
-    _cerf_cmplx ret = w_of_z(*((_cerf_cmplx*)(void*)&z));
-    return *((std::complex<double>*)(void*)&ret);
-}
+
+#define WRAP(f) std::complex<double> f(std::complex<double> z) { \
+    _cerf_cmplx ret = f(*((_cerf_cmplx*)(void*)&z)); \
+    return *((std::complex<double>*)(void*)&ret); }
+
+WRAP(w_of_z)
+WRAP(cerf)
+WRAP(cerfc)
+WRAP(cerfcx)
+WRAP(cerfi)
+WRAP(cdawson)
+
 #endif
 #endif
 
