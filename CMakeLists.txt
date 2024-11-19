@@ -58,8 +58,6 @@ if(MSVC)
     add_compile_options("/MP") # parallel compilation
     add_compile_options("$<$<CONFIG:Debug>:/MTd>") # multithreaded, debug, required for post-build under vcpkg
     add_compile_options("/wd4244")
-    # /wd4018 /wd4068 /wd4101 /wd4244 /wd4267 /wd4305 /wd4715") # warnings off
-    add_compile_options("-D_CRT_SECURE_NO_WARNINGS -D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
     set(CTEST_CONFIGURATION_TYPE "${JOB_BUILD_CONFIGURATION}")
     if(BUILD_SHARED_LIBS)
         set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
