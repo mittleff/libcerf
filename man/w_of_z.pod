@@ -16,6 +16,8 @@ B<#include <cerf.h>>
 
 B<double _Complex w_of_z ( double _Complex z );>
 
+B<#ifdef __cplusplus>E<10> E<8>B<std::complexE<lt>doubleE<gt> w_of_z (std::complexE<lt>doubleE<gt> z );>E<10> E<8>B<#endif>
+
 B<double im_w_of_x ( double x );>
 
 =head1 DESCRIPTION

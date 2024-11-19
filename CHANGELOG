@@ -2,7 +2,8 @@
 
 libcerf-2.5
   - Required C standard now C11 instead of C99
-  - Reworked numerics of erfcx and im_w_of_x to achieve an accuracy of a few epsilon.
+  - When compiled as C but read from C++, then functions of std::complex<double> are added to the API
+  - Reworked numerics of erfcx and im_w_of_x to achieve an accuracy of a few epsilon
   - Minor optimization of width.c (contributed by Alexander Kleinsorge)
   - Prefer look-up tables over long switch statements (advocated by Alexander Kleinsorge)
   - Provide compiler switch CERF_INTROSPECT to activate or suppress introspection

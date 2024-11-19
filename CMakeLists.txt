@@ -55,17 +55,12 @@ if(MSVC)
     if (NOT CERF_CPP)
         message(FATAL_ERROR "Under MSVC, only CERF_CPP=ON is supported")
     endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP") # parallel compilation
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS}")
-    set(MS_NOWARN "/wd4018 /wd4068 /wd4101 /wd4244 /wd4267 /wd4305 /wd4715 /wd4996")
-    set(MS_D "-D_CRT_SECURE_NO_WARNINGS -D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${MS_NOWARN} ${MS_D}")
+    add_compile_options("/MP") # parallel compilation
+    add_compile_options("$<$<CONFIG:Debug>:/MTd>") # multithreaded, debug, required for post-build under vcpkg
+    add_compile_options("/wd4244")
     set(CTEST_CONFIGURATION_TYPE "${JOB_BUILD_CONFIGURATION}")
     if(BUILD_SHARED_LIBS)
         set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-    else()
-        # required for post-build validation under vcpkg:
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd") # multithreaded, debug
     endif()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

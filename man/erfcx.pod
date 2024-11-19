@@ -16,6 +16,8 @@ B<#include <cerf.h>>
 
 B<double _Complex cerfcx ( double _Complex z );>
 
+B<#ifdef __cplusplus>E<10> E<8>B<std::complexE<lt>doubleE<gt> cerfcx (std::complexE<lt>doubleE<gt> z );>E<10> E<8>B<#endif>
+
 B<double          erfcx  ( double x );>
 
 
