@@ -25,7 +25,7 @@ def forward(z, N, doublecheck=True):
     for n in range(1, N):
         w1, w2 = -2*(z*w1 + w2)/n, w1
         T.append(w1)
-    if doublecheck:
+    if N > 0 and doublecheck:
         r = dw_integral(z, N-1)
         if abs(T[-1] - r) > 1e-17*abs(T[-1]):
             print("# %25.16g %25.16g  %25.16g %25.16g  %8g" %
@@ -50,6 +50,9 @@ if __name__ == '__main__':
         sys.exit(0)
 
     N = 24
+    if len(sys.argv)==2:
+        N = int(sys.argv[1])
+
     for x in [0] + rt.loggrid(30, 1e-18, .08) + rt.loggrid(50, .1, 7.):
         print(x)
         for y in [0] + rt.loggrid(30, 1e-18, .08) + rt.loggrid(50, .1, 7.):
@@ -59,6 +62,6 @@ if __name__ == '__main__':
             T = forward(z, N)
             t=T[-1]
             r = dw_integral(z, N-1)
-            print("%13.5e %11.3e %11.3e %11.3e %11.3e %8g" %
-                  (y, t.real, t.imag, r.real, r.imag, abs(t-r)/abs(t)))
+            print("%13.5e %11.3e %11.3e %11.3e %11.3e %11.3e %8g" %
+                  (y, t.real, t.imag, abs(t), r.real, r.imag, abs(t-r)/abs(t)))
         print()

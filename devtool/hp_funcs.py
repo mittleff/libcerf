@@ -67,12 +67,13 @@ def imwx(x, doublecheck=False):
 def wofz(z, doublecheck=False):
     j = mpc('0', '1')
     r1 = exp(-z**2)*erfc(-j*z)
-    if (not doublecheck) or y==0:
+    if (not doublecheck) or z.imag==0:
         return r1
     # Check mpmath-computed reference value against mpmath-based brute-force integration
     r2 = mpc(0,1)/pi*quad(lambda t: exp(-t**2)/(z-t), [-inf, +inf])
     if cagree(r1, r2):
         return r1
+    x = z.real
     r3 = mpc(0,1)/pi*(quad(lambda t: exp(-t**2)/(z-t), [-inf, x])
                       + quad(lambda t: exp(-t**2)/(z-t), [x, +inf]))
     if cagree(r1, r3):
