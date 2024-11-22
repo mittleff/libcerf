@@ -53,12 +53,10 @@ if __name__ == '__main__':
     if len(sys.argv)==2:
         N = int(sys.argv[1])
 
-    for x in [0] + rt.loggrid(30, 1e-18, .08) + rt.loggrid(50, .1, 7.):
+    for x in [0] + rt.loggrid(20, 1e-4, 1.):
         print(x)
-        for y in [0] + rt.loggrid(30, 1e-18, .08) + rt.loggrid(50, .1, 7.):
+        for y in [0] + rt.loggrid(20, 1e-4, 1.):
             z = mpc(x, y)
-            if z==0:
-                continue
             T = forward(z, N)
             t=T[-1]
             r = dw_integral(z, N-1)
