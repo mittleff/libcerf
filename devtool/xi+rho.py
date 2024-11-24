@@ -11,7 +11,7 @@ import functool as fut
 import derive_w as dw
 import runtool as rt
 
-mp.dps = 48
+mp.dps = 80
 mp.pretty = True
 
 def taylor_remainder(z, t, N, M, T):
@@ -41,16 +41,30 @@ if __name__ == '__main__':
 
                 amin = abs(hp.wofz(z+tau/sqrt(2)*mpc(1,1)))
 
-                amax = taylor_remainder(z, tau, N, 50, T)
-                amax2 = taylor_remainder(z, tau, N, 60, T)
-                if abs((amax2-amax)/amax) > 1e-17:
-                    raise Exception("Truncation error in computation of TE of w(z)")
+                amax = taylor_remainder(z, tau, N, 90, T)
+                amax2 = taylor_remainder(z, tau, N, 100, T)
+                if abs((amax2-amax)/amax) > 1e-13:
+                    if amax>1e3 and amax2>1e3:
+                        amax = inf
+                    if amax<1e-2 and amax2<1e-2:
+                        amax = 0
+                    else:
+                        raise Exception("Truncation error in computation of TE of w(z): N=%i tau=%g, amax=%24.16g, amax2=%24.16g" % (N, tau, amax, amax2))
                 xi = amax / amin / eps
 
-                re = 0
+                re = 0   # using actual rounding errors vn
+                rewc = 0 # wc = worst case
                 for n in range(N):
-                    re += abs(T[n]) * tau**n * (n + 1 + n*la)
+                    vn = hypot(float(T[n].real)-T[n].real, float(T[n].imag)-T[n].imag)/abs(T[n])/eps
+                    vnwc = 1
+                    if z==0 and n==0:
+                        vnwc = 0
+                    cn = 2
+                    if n==0 or n==N-1:
+                        cn = 1
+                    re += abs(T[n]) * tau**n * (vn + cn + n*(1+la))
+                    rewc += abs(T[n]) * tau**n * (vnwc + cn + n*(1+la))
                 rho = re/amin
-
-                print("%12.5g %12.5g %12.5g" % (tau, xi, rho))
+                rhowc = rewc/amin
+                print("%12.5g %12.5g %12.5g %12.5g" % (tau, xi, rho, rhowc))
             print()
