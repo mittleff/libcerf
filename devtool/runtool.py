@@ -53,6 +53,7 @@ def external_function1d(x):
     Rounds r to 53 binary digits to avoid loss of precision in external program.
     Returns tuple (x, f(x), algorithm_number, number_of_terms).
     """
+    old_dps = mp.dps
     mp.bps = 53
     xhp = mpf(x)
     xs = "%22.16e" % xhp
@@ -72,7 +73,7 @@ def external_function1d(x):
         sys.exit(1)
     if a3[0] != mpf(xs):
         raise Exception(f"failed double-string cycle {x} -> {xhp} -> {xs} -> {a3[0]} ({(x-a3[0])/x})")
-    mp.dps = 48
+    mp.dps = old_dps
     return a3
 
 def external_function2d(x, y):
