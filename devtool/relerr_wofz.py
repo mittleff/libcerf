@@ -27,8 +27,8 @@ if __name__ == '__main__':
     for ia in range(1, len(A)):
         wc_re = 0
         wc_z = None
-        for az in rt.lingrid(137, A[ia-1], A[ia]):
-            for ph in rt.lingrid(371, 0, pi/2):
+        for az in rt.lingrid(1371, A[ia-1], A[ia]):
+            for ph in rt.lingrid(1373, 0, pi/2):
                 x = az*cos(ph)
                 y = az*sin(ph)
                 z = mpc(x, y)
@@ -39,5 +39,5 @@ if __name__ == '__main__':
                 if relerr > wc_re:
                     wc_re = relerr
                     wc_z = z
-        print("%2i %6g %6g %12g %12g %12g" %
-              (ia, A[ia-1], A[ia], wc_z.real, wc_z.imag, wc_re))
+                    print("%2i %6g %6g %12g %12g %12g" %
+                          (ia, A[ia-1], A[ia], wc_z.real, wc_z.imag, wc_re/2**-53))

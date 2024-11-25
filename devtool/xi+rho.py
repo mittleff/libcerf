@@ -66,5 +66,5 @@ if __name__ == '__main__':
                     rewc += abs(T[n]) * tau**n * (vnwc + cn + n*(1+la))
                 rho = re/amin
                 rhowc = rewc/amin
-                print("%12.5g %12.5g %12.5g %12.5g" % (tau, xi, rho, rhowc))
+                print("%12.5g %12.5g %12.5g %12.5g %12.5g %12.5g" % (tau, xi, rho, rhowc, xi+rho, xi+rhowc))
             print()

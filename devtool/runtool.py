@@ -90,6 +90,8 @@ def external_function2d(x, y):
         out_text = a1.stdout.decode('utf-8').rstrip(' \n\t')
         last_out_line = out_text.split('\n')[-1]
         a2 = last_out_line.split()
+        if len(a2)<6:
+            raise Exception("External function did not return enough words. Build with -DCERF_INTROSPECT=ON.")
         a3 = [mpc(a2[0], a2[1]), mpc(a2[2], a2[3]), int(a2[4]), int(a2[5])]
     except:
         print("Could not read back from C call")
