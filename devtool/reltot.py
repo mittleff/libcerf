@@ -44,6 +44,9 @@ def rho_of_cNt(z, N, tau):
     te = amax / eps
 
     # Rounding error:
+    la = sqrt(5)
+    if z.imag==0 or z.real==0:
+        la = 1
     re = 0
     for n in range(N):
         vn = hypot(float(T[n].real)-T[n].real, float(T[n].imag)-T[n].imag)/abs(T[n])/eps
