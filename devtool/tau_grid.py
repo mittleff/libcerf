@@ -6,11 +6,13 @@ Computes tau for grid points c_ij and given N, delta.
 
 from mpmath import *
 import sys
-import reltot as rt
 import derive_w as dw
 import enumerate_diameters as ed
+import functool as fut
+import reltot as rt
 
 if __name__ == '__main__':
+    fut.print_provenience()
 
     N = 20
     delta = 3
