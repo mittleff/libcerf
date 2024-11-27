@@ -8,22 +8,19 @@ of increasing diameter.
 from math import sqrt
 import functool as fut
 
-def sorted_polyominoes(N):
-    Raw = []
+def sorted_diameters(N):
+    D2 = set()
     for j in range(1,N):
         for i in range(1,N):
             d2 = j**2 + i**2
-            if d2 > N**2:
+            if d2 > N:
                 continue
-            Raw.append((i, j, d2))
-    Tup = sorted(Raw, key=lambda t: t[2])
-    return Tup
+            D2.add(d2)
+    return sorted(D2)
 
 if __name__ == '__main__':
     fut.print_provenience()
-    P = sorted_polyominoes(50)
-    for p in P:
-        i, j, d2 = p
-        # print("%2i %2i %3i" % (i, j, d2))
-        print("%i," % j, end="")
+    D2 = sorted_diameters(1450)
+    for d2 in D2:
+        print("%i," % d2, end="")
     print()

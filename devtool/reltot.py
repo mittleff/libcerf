@@ -12,36 +12,35 @@ import functool as fut
 import derive_w as dw
 import runtool as rt
 
-mp.dps = 80
+mp.dps = 48
 mp.pretty = True
 
-def taylor_remainder(z, t, N, M, T):
+def taylor_remainder(t, N, M, T):
     r = 0
     for n in range(N, M):
         r += abs(T[n]) * t**n
     return r
 
-def rho_of_cNt(z, N, tau):
+def rho_of_cNt(z, N, tau, T):
     """
     Returns total relative error in units of epsilon.
     """
     eps = 2**-53
-    T = dw.forward(z, 120, False)
 
     # Minimum function value (denominator):
     amin = abs(hp.wofz(z+tau/sqrt(2)*mpc(1,1)))
 
     # Truncation error:
-    amax = taylor_remainder(z, tau, N, 90, T)
-    amax2 = taylor_remainder(z, tau, N, 100, T)
-    if abs((amax2-amax)/amax) > 1e-13:
-        if amax>1e3 and amax2>1e3:
-            amax = inf
-        if amax<1e-2 and amax2<1e-2:
-            amax = 0
+    dt = taylor_remainder(tau, N, 50, T)
+    ddt = taylor_remainder(tau, 50, 60, T)
+    if abs(ddt) > 1e-13 * dt:
+        if dt>1e3:
+            dt = inf
+        if dt<1e-2 and ddt<1e-4:
+            dt = 0
         else:
-            raise Exception("Truncation error in computation of TE of w(z): N=%i tau=%g, amax=%24.16g, amax2=%24.16g" % (N, tau, amax, amax2))
-    te = amax / eps
+            raise Exception("Truncation error in computation of TE of w(z): N=%i tau=%g, dt=%24.16g, ddt=%24.16g" % (N, tau, dt, ddt))
+    te = dt / eps
 
     # Rounding error:
     la = sqrt(5)
@@ -66,9 +65,10 @@ if __name__ == '__main__':
             la = 1
         tmax = 3
         Nt = 780
+        T = dw.forward(z, 60, False)
         for N in (16,20,24,28,32):
             print(N)
             for tau in rt.lingrid(Nt, tmax/Nt, tmax):
-                rho = rho_of_cNt(z, N, tau)
+                rho = rho_of_cNt(z, N, tau, T)
                 print("%12.5g %12.5g" % (tau, rho))
             print()
