@@ -245,7 +245,7 @@ if __name__ == '__main__':
         for jy in range(1, Nax):
             if F[jx][jy] == -2:
                 JJ.append((jx, jy))
-    JJ = sorted(JJ, key=lambda jj: hypot(jj[0]+Ndiv, jj[1]))
+    JJ = sorted(JJ, key=lambda jj: hypot(jj[0]+20*Ndiv, jj[1]))
 
     # Create expansion points inside the quadrant.
     while nF>0:
@@ -300,7 +300,7 @@ if __name__ == '__main__':
     print("# coord -> tile")
     for jx in range(Nax):
         for jy in range(Nax):
-            print("%i," % F[jx][jy], end="")
+            print("%2i," % F[jx][jy], end="")
         print()
     print(f"# {len(C)} tiles")
     for c in C:
