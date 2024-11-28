@@ -149,7 +149,7 @@ def add_expansion(F, C, D2, P, ix, iy):
     for jx, jy in qs:
         assert(F[jx][jy] == -2)
         F[jx][jy] = n
-        print(f'cover {jx},{jy} by {n}')
+        # print(f'cover {jx},{jy} by {n}')
 
     return len(qs)
 
@@ -206,7 +206,7 @@ if __name__ == '__main__':
         options = []
         best_n = 0
         iy = None
-        print("DEBUG", 2*jy0+1, 2*Nax, 2*jy0+2*tmax+1)
+        # print("DEBUG", 2*jy0+1, 2*Nax, 2*jy0+2*tmax+1)
         for iy1 in range(2*jy0+1, min(2*Nax, 2*jy0+2*tmax+1)):
             if F[0][iy1//2] == -1 or iy1 >= len(D2[0]):
                 break
@@ -217,6 +217,29 @@ if __name__ == '__main__':
         if iy is None:
             break
         nF -= add_expansion(F, C, D2, P, 0, iy)
+
+    # Expand around points on x axis.
+    while True:
+        # Search first point not yet covered
+        for jx0 in range(1, Nax):
+            if F[jx0][0] < 0:
+                break
+        if F[jx0][0] == -1: # not in domain
+            break # all points inside domain are covered
+        options = []
+        best_n = 0
+        ix = None
+        # print("DEBUG", 2*jx0+1, 2*Nax, 2*jx0+2*tmax+1)
+        for ix1 in range(2*jx0+1, min(2*Nax, 2*jx0+2*tmax+1)):
+            if F[ix1//2][0] == -1 or ix1 >= len(D2):
+                break
+            qs = covered_squares(F, D2, P, ix1, 0)
+            if (jx0, 0) in qs and len(qs) > best_n:
+                best_n = len(qs)
+                ix = ix1
+        if ix is None:
+            break
+        nF -= add_expansion(F, C, D2, P, ix, 0)
 
 #     while unclaimed(F)>0:
 #         max_improve = 0
