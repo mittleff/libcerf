@@ -5,7 +5,6 @@ Contour of |w(z)|=const.
 """
 
 from mpmath import *
-import print_taylor_radius as prt
 import sys
 sys.path.insert(0, '../shared')
 import hp_funcs as hp
