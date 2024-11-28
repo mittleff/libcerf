@@ -1,9 +1,7 @@
 #!/bin/env python
 
 """
-Generate accuracy tests for the Voigt function.
-Reference values are computed by brute-force multi-precision quadrature
-of the convolution integral.
+Print coefficients exp(-a^2*n^2) for algorithm ...
 """
 
 from mpmath import *
