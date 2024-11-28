@@ -6,6 +6,8 @@ Prints a LaTeX table.
 Used to generate the table in the cgt paper.
 """
 
+import sys
+sys.path.insert(0, '../common')
 from math import sqrt
 import functool as fut
 

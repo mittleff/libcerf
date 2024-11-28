@@ -1,7 +1,7 @@
 #!/bin/env python
 
 """
-Print expansion coefficients of w(z) for the non-Chebyshev cases.
+Print expansion coefficients of w(z) for the asymptotic expansion and for the Maclaurin series.
 """
 
 from mpmath import *
@@ -13,12 +13,12 @@ eps = 2**(-53)
 I = mpc(0,1)
 
 if __name__ == '__main__':
-    print("asymptotic expansion")
+    print("# Asymptotic expansion")
     for n in reversed(range(21)):
         c = gamma(mpf(n)+1/2)/pi
         print(" + C(0, %22.16e) ) * (r*r) // n=%i" % (c, n))
 
-    print("Maclaurin series")
+    print("# Maclaurin series")
     for n in reversed(range(1,27)):
         c = 1 / gamma(mpf(n)/2+1)
         if n%4==2 or n%4==3:
