@@ -197,13 +197,12 @@ if __name__ == '__main__':
 
     # Expand around points on y axis.
     while True:
-        # Search first point not yet covered
+        # Search first square not yet covered
         for jy0 in range(1, Nax):
             if F[0][jy0] < 0:
                 break
         if F[0][jy0] == -1: # not in domain
             break # all points inside domain are covered
-        options = []
         best_n = 0
         iy = None
         # print("DEBUG", 2*jy0+1, 2*Nax, 2*jy0+2*tmax+1)
@@ -220,13 +219,12 @@ if __name__ == '__main__':
 
     # Expand around points on x axis.
     while True:
-        # Search first point not yet covered
+        # Search first square not yet covered
         for jx0 in range(1, Nax):
             if F[jx0][0] < 0:
                 break
         if F[jx0][0] == -1: # not in domain
             break # all points inside domain are covered
-        options = []
         best_n = 0
         ix = None
         # print("DEBUG", 2*jx0+1, 2*Nax, 2*jx0+2*tmax+1)
@@ -240,6 +238,39 @@ if __name__ == '__main__':
         if ix is None:
             break
         nF -= add_expansion(F, C, D2, P, ix, 0)
+
+    # Sort remaining squares by distance from (-1,0).
+    JJ = []
+    for jx in range(1, Nax):
+        for jy in range(1, Nax):
+            if F[jx][jy] == -2:
+                JJ.append((jx, jy))
+    JJ = sorted(JJ, key=lambda jj: hypot(jj[0]+Ndiv, jj[1]))
+
+    # Create expansion points inside the quadrant.
+    while nF>0:
+        # Search first square not yet covered
+        for jx0, jy0 in JJ:
+            if F[jx0][jy0] < 0:
+                break
+        best_n = 0
+        ix = None
+        for ix1 in range(1, 2*Nax):
+            if ix1 >= len(D2):
+                break
+            for iy1 in range(1, 2*Nax):
+                if iy1 >= len(D2[ix1]):
+                    break
+                if F[ix1//2][iy1//2] == -1 or D2[ix1][iy1] == 0:
+                    continue
+                qs = covered_squares(F, D2, P, ix1, iy1)
+                if (jx0, jy0) in qs and len(qs) > best_n:
+                    best_n = len(qs)
+                    ix, iy = ix1, iy1
+        if ix is None:
+            break
+        nF -= add_expansion(F, C, D2, P, ix, iy)
+
 
 #     while unclaimed(F)>0:
 #         max_improve = 0
@@ -271,7 +302,7 @@ if __name__ == '__main__':
         for jy in range(Nax):
             print("%i," % F[jx][jy], end="")
         print()
-    print("# tiles")
+    print(f"# {len(C)} tiles")
     for c in C:
         print("%3i, %3i," % c)
 #
