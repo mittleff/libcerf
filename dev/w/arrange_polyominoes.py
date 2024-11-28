@@ -18,11 +18,6 @@ mp.pretty = True
 # Created by devtool/print_taylor_radius.py on 21:01:25.585837
 #(  0,   0,  17,   2,   0.2417), # [2, 2]
 
-Rtot = 7
-Ndiv = 8 # base square has edge 1/Ndiv
-Nrge = 8 # 0 <= x,y < Nrge
-Nax  = Nrge * Ndiv
-
 def neighbors(j, i, kP, Rows):
     rows = Rows[kP]
     result = []
@@ -52,28 +47,20 @@ def unclaimed(F):
                 result += 1
     return result
 
-def arrange_polyominoes():
+def arrange_polyominoes(Nb, d2max, D2):
     fut.print_provenience()
+
+    Rtot = 7
+    Ndiv = Nb/2 # base square has edge 1/Ndiv
+    Nrge = 8 # 0 <= x,y < Nrge
+    Nax  = Nrge * Ndiv
 
     # set up field of base squares
     F = [[-2 for i in range(Nax)] for j in range(Nax)]
-    count = 0
     for j in range(Nax):
         for i in range(Nax):
             if j**2+i**2 > (Rtot*Ndiv)**2:
                 F[j][i] = -1
-                count += 1
-
-    # load convergence radius indices
-    RadialIndex = []
-    for j in range(Nax*2):
-        row = []
-        for i in range(Nax*2):
-            line = RadialData[Nax*2*j + i]
-            assert(j == line[0])
-            assert(i == line[1])
-            row.append(line[3])
-        RadialIndex.append(row)
 
     # make lists of squared diameters and row patterns
     P = ep.sorted_polyominoes(40)
@@ -153,6 +140,18 @@ def sorted_diameters(N, sx, sy):
             D2.add(d2)
     return sorted(D2)
 
+def polyomino_pattern(d2, sx, sy):
+    rows = []
+    nj2 = int(sqrt(d2)) + 1
+    for k in range(2-sx, nj2, 2):
+        dx = sqrt(d2 - k**2)/2 - (sy)/2
+        row = 2 * int(dx) + (sy)
+        if row > 0:
+            if k > sx:
+                rows.insert(0, row)
+            rows.append(row)
+    return rows
+
 def read_d2_file(fname):
     """
     Read file that provides d2(x,y).
@@ -197,19 +196,17 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         raise Exception(f'Usage: {sys.argv[0]} <file with x blocks with y tau d2 lines>')
 
+    # Load d2(x,y) from file.
     fname = sys.argv[1]
     Nb, D2 = read_d2_file(fname)
-    N = max([max(line) for line in D2])
+    d2max = max([max(line) for line in D2])
 
-    S0 = sorted_diameters(N, 0, 0)
-    S1 = sorted_diameters(N, 0, 1)
-    S2 = sorted_diameters(N, 1, 1)
+    # Decrease d2 so that it matches the parity of the lattice point.
+    S = [[sorted_diameters(d2max, sx, sy) for sy in [0, 1]] for sx in [0, 1]]
     for ix in range(len(D2)):
         B = D2[ix]
         for iy in range(len(B)):
-            if ix%2==0 and iy%2==0:
-                adjust_d2(D2, ix, iy, S0)
-            elif ix%2==1 and iy%2==1:
-                adjust_d2(D2, ix, iy, S2)
-            else:
-                adjust_d2(D2, ix, iy, S1)
+            adjust_d2(D2, ix, iy, S[ix%2][iy%2])
+
+    # Precompute patterns P[sx][sy][d2]
+    P = [[{d2:polyomino_pattern(d2, sx, sy) for d2 in S[sx][sy]} for sy in [0, 1]] for sx in [0, 1]]
