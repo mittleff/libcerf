@@ -121,7 +121,12 @@ def read_d2_file(fname):
         D2.append(B)
     return Nb, D2
 
-def covered_squares(ix, iy, pat):
+def covered_squares(F, D2, P, ix, iy):
+    d2 = D2[ix][iy]
+    if d2==0:
+        raise Exception('Cannot add expansion as d2=0')
+    pat = P[ix%2][iy%2][d2]
+
     ret = []
     mx = ix//2
     my = iy//2
@@ -131,7 +136,7 @@ def covered_squares(ix, iy, pat):
         lx = pat[ny]
         for nx in range(lx):
             jx = nx + mx - lx//2
-            if jx>=0 and jy>=0:
+            if jx>=0 and jy>=0 and F[jx][jy] == -2:
                 ret.append((jx,jy))
     return ret
 
@@ -139,14 +144,14 @@ def add_expansion(F, C, D2, P, ix, iy):
     n = len(C)
     C.append( (ix, iy) )
 
-    d2 = D2[ix][iy]
-    if d2==0:
-        raise Exception('Cannot add expansion as d2=0')
-    pat = P[ix][iy][d2]
-    qs = covered_squares(ix, iy, pat)
+    qs = covered_squares(F, D2, P, ix, iy)
 
     for jx, jy in qs:
+        assert(F[jx][jy] == -2)
         F[jx][jy] = n
+        print(f'cover {jx},{jy} by {n}')
+
+    return len(qs)
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -156,6 +161,7 @@ if __name__ == '__main__':
     fname = sys.argv[1]
     Nb, D2 = read_d2_file(fname)
     d2max = max([max(line) for line in D2])
+    tmax = int(sqrt(d2max)) + 1
 
     # Decrease d2 so that it matches the parity of the lattice point.
     S = [[sorted_diameters(d2max, sx, sy) for sy in [0, 1]] for sx in [0, 1]]
@@ -176,15 +182,41 @@ if __name__ == '__main__':
     # Set up field of base squares.
     # Value -1: outside domain.
     # Value -2: not yet covered by polyomino.
-    F = [[-2 for jy in range(Nax)] for jx in range(Nax)]
+    F = [[-1 for jy in range(Nax)] for jx in range(Nax)]
+    nF = 0
     for jx in range(Nax):
         for jy in range(Nax):
-            if jx**2+jy**2 > (Rtot*Ndiv)**2:
-                F[jx][jy] = -1
+            if jx**2+jy**2 <= (Rtot*Ndiv)**2:
+                F[jx][jy] = -2
+                nF += 1
 
     fut.print_provenience()
 
-    add_expansion(F, C, D2, P, 0, 0)
+    # Expand around (0,0).
+    nF -= add_expansion(F, C, D2, P, 0, 0)
+
+    # Expand around points on y axis.
+    while True:
+        # Search first point not yet covered
+        for jy0 in range(1, Nax):
+            if F[0][jy0] < 0:
+                break
+        if F[0][jy0] == -1: # not in domain
+            break # all points inside domain are covered
+        options = []
+        best_n = 0
+        iy = None
+        print("DEBUG", 2*jy0+1, 2*Nax, 2*jy0+2*tmax+1)
+        for iy1 in range(2*jy0+1, min(2*Nax, 2*jy0+2*tmax+1)):
+            if F[0][iy1//2] == -1 or iy1 >= len(D2[0]):
+                break
+            qs = covered_squares(F, D2, P, 0, iy1)
+            if (0, jy0) in qs and len(qs) > best_n:
+                best_n = len(qs)
+                iy = iy1
+        if iy is None:
+            break
+        nF -= add_expansion(F, C, D2, P, 0, iy)
 
 #     while unclaimed(F)>0:
 #         max_improve = 0
