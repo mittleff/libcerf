@@ -5,8 +5,9 @@ Determine minimum of |w(z)| for z on circle with radius t around center z0.
 """
 
 from mpmath import *
-import hp_funcs as hp
 import sys
+sys.path.insert(0, '../shared')
+import hp_funcs as hp
 
 mp.dps = 48
 mp.pretty = True

@@ -16,6 +16,7 @@ or a report on the worst case (the r with largest inaccuracy of f(x)).
 
 from mpmath import *
 import sys
+sys.path.insert(0, '../shared')
 import hp_funcs as hp
 import runtool as rt
 

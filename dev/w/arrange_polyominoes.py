@@ -6,6 +6,8 @@ Generate one possible polyomino coverage.
 
 from mpmath import *
 from math import sqrt
+import sys
+sys.path.insert(0, '../shared')
 import hp_funcs as hp
 import functool as fut
 import enumerate_polyominoes as ep

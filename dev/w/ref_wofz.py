@@ -6,6 +6,7 @@ Print reference value of w(z) for one z.
 
 from mpmath import *
 import sys
+sys.path.insert(0, '../shared')
 import hp_funcs as hp
 
 mp.dps = 48

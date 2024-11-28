@@ -6,6 +6,8 @@ of increasing diameter.
 """
 
 from math import sqrt
+import sys
+sys.path.insert(0, '../shared')
 import functool as fut
 
 def sorted_diameters(N):

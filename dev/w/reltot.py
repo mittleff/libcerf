@@ -7,6 +7,7 @@ This script was used to generate figure cgt/fig/reltot.eps.
 
 from mpmath import *
 import sys
+sys.path.insert(0, '../shared')
 import hp_funcs as hp
 import functool as fut
 import derive_w as dw

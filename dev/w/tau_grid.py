@@ -5,9 +5,10 @@ Computes tau for grid points c_ij and given N, delta.
 """
 
 from mpmath import *
-import sys
 import derive_w as dw
 import enumerate_diameters as ed
+import sys
+sys.path.insert(0, '../shared')
 import functool as fut
 import reltot as rt
 

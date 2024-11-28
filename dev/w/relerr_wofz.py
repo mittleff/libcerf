@@ -6,6 +6,7 @@ Computes relative error of cerf{|w(z)|} on a grid, and prints worst case.
 
 from mpmath import *
 import sys
+sys.path.insert(0, '../shared')
 import hp_funcs as hp
 import runtool as rt
 

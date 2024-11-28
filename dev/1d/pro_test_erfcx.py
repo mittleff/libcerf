@@ -36,9 +36,10 @@
 #   September 2024, initial version.
 
 from mpmath import *
+import sys
+sys.path.insert(0, '../shared')
 import functool as fut
 import hp_funcs as hp
-import sys
 
 mp.dps = 48
 mp.pretty = True
