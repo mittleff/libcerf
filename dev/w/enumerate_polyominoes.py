@@ -6,7 +6,6 @@ Prints a LaTeX table.
 Used to generate the table in the cgt paper.
 """
 
-sys.path.insert(0, '../common')
 from math import sqrt
 import sys
 sys.path.insert(0, '../shared')
