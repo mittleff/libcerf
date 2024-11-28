@@ -1,8 +1,9 @@
 #!/bin/env python
 
 """
-Enumerate maximal polyominoes in contact with circumscribing circles
-of increasing diameter.
+Enumerates maximal polyominoes in contact with circumscribing circles of increasing diameter.
+Prints a LaTeX table.
+Used to generate the table in the cgt paper.
 """
 
 from math import sqrt
