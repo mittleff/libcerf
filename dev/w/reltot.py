@@ -22,14 +22,11 @@ def taylor_remainder(t, N, M, T):
         r += abs(T[n]) * t**n
     return r
 
-def rho_of_cNt(z, N, tau, T):
+def abserr(z, N, tau, T):
     """
-    Returns total relative error in units of epsilon.
+    Returns the absolute total error in units of epsilon.
     """
     eps = 2**-53
-
-    # Minimum function value (denominator):
-    amin = abs(hp.wofz(z+tau/sqrt(2)*mpc(1,1)))
 
     # Truncation error:
     dt = taylor_remainder(tau, N, 50, T)
@@ -55,8 +52,14 @@ def rho_of_cNt(z, N, tau, T):
             cn = 1
         re += abs(T[n]) * tau**n * (vn + cn + n*(1+la))
 
-    # Total relative error:
-    return (te + re) /amin
+    return re + te
+
+def rho_of_cNt(z, N, tau, T):
+    """
+    Returns total relative error in units of epsilon.
+    """
+
+    return abserr(z, N, tau, T) / abs(hp.wofz(z+tau/sqrt(2)*mpc(1,1)))
 
 if __name__ == '__main__':
     if len(sys.argv)==3:
