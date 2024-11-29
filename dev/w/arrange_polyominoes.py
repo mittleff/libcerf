@@ -14,18 +14,6 @@ import enumerate_polyominoes as ep
 mp.dps = 48
 mp.pretty = True
 
-def adjust_d2(D2, ix, iy, S):
-    """
-    Reduces D2 entry to value with correct parities.
-    """
-    d2 = D2[ix][iy]
-    if not d2 in S:
-        for s in reversed(S):
-            if s <= d2:
-                D2[ix][iy] = s
-                return
-        D2[ix][iy] = 0
-
 def sorted_diameters(N, sx, sy):
     D2 = set()
     for j in range(1+sy, N, 2):
@@ -74,7 +62,7 @@ def read_d2_file(fname):
         for iy in range(len(a)-1):
             l = a[1+iy]
             ww = l.split()
-            if len(ww) != 3:
+            if len(ww) != 2:
                 raise Exception(f'Unexpected data line')
             y = float(ww[0])
             if ix==0 and iy==0:
@@ -84,7 +72,7 @@ def read_d2_file(fname):
             else:
                 if round(Nb*y) != iy:
                     raise Exception(f'Unexpected y entry')
-            B.append(int(ww[2]))
+            B.append(int(ww[1]))
         D2.append(B)
     return Nb, D2
 
@@ -130,14 +118,8 @@ if __name__ == '__main__':
     d2max = max([max(line) for line in D2])
     tmax = int(sqrt(d2max)) + 1
 
-    # Decrease d2 so that it matches the parity of the lattice point.
-    S = [[sorted_diameters(d2max, sx, sy) for sy in [0, 1]] for sx in [0, 1]]
-    for ix in range(len(D2)):
-        B = D2[ix]
-        for iy in range(len(B)):
-            adjust_d2(D2, ix, iy, S[ix%2][iy%2])
-
     # Precompute patterns P[sx][sy][d2].
+    S = [[sorted_diameters(d2max, sx, sy) for sy in [0, 1]] for sx in [0, 1]]
     P = [[{d2:polyomino_pattern(d2, sx, sy) for d2 in S[sx][sy]} for sy in [0, 1]] for sx in [0, 1]]
 
     Rtot = 7
@@ -153,7 +135,7 @@ if __name__ == '__main__':
     nF = 0
     for jx in range(Nax):
         for jy in range(Nax):
-            if jx**2+jy**2 <= (Rtot*Ndiv)**2:
+            if (jx+1)**2+(jy+1)**2 <= (Rtot*Ndiv)**2:
                 F[jx][jy] = -2
                 nF += 1
 
