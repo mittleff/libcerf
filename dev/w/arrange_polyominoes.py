@@ -76,7 +76,7 @@ def read_d2_file(fname):
         D2.append(B)
     return Nb, D2
 
-def covered_squares(F, D2, P, ix, iy):
+def covered_squares(D2, P, ix, iy):
     d2 = D2[ix][iy]
     if d2==0:
         raise Exception('Cannot add expansion as d2=0')
@@ -91,22 +91,31 @@ def covered_squares(F, D2, P, ix, iy):
         lx = pat[ny]
         for nx in range(lx):
             jx = nx + mx - lx//2
-            if jx>=0 and jy>=0 and F[jx][jy] == -2:
+            if jx>=0 and jy>=0:
                 ret.append((jx,jy))
     return ret
 
-def add_expansion(F, C, D2, P, ix, iy):
+def add_expansion(F, C, Q, ix, iy):
     n = len(C)
     C.append( (ix, iy) )
 
-    qs = covered_squares(F, D2, P, ix, iy)
+    qs = Q[ix][iy]
 
+    count = 0
     for jx, jy in qs:
-        assert(F[jx][jy] == -2)
-        F[jx][jy] = n
+        if F[jx][jy] == -2:
+            F[jx][jy] = n
+            count += 1
         # print(f'cover {jx},{jy} by {n}')
 
-    return len(qs)
+    return count
+
+def n_naked(qs, F):
+    count = 0
+    for jx, jy in qs:
+        if F[jx][jy] == -2:
+            count += 1
+    return count
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -118,15 +127,15 @@ if __name__ == '__main__':
     d2max = max([max(line) for line in D2])
     tmax = int(sqrt(d2max)) + 1
 
-    # Precompute patterns P[sx][sy][d2].
-    S = [[sorted_diameters(d2max, sx, sy) for sy in [0, 1]] for sx in [0, 1]]
-    P = [[{d2:polyomino_pattern(d2, sx, sy) for d2 in S[sx][sy]} for sy in [0, 1]] for sx in [0, 1]]
-
     Rtot = 7
     Ndiv = Nb//2 # base square has edge 1/Ndiv
     Nrge = 8 # 0 <= x,y < Nrge
     Nax  = Nrge * Ndiv
     C = [] # expansion centers
+
+    S = [[sorted_diameters(d2max, sx, sy) for sy in [0, 1]] for sx in [0, 1]]
+    P = [[{d2:polyomino_pattern(d2, sx, sy) for d2 in S[sx][sy]} for sy in [0, 1]] for sx in [0, 1]]
+    Q = [[covered_squares(D2, P, ix, iy) for iy in range(len(D2[ix]))] for ix in range(len(D2))]
 
     # Set up field of base squares.
     # Value -1: outside domain.
@@ -142,38 +151,38 @@ if __name__ == '__main__':
     fut.print_provenience()
 
     # Expand around (0,0).
-    nF -= add_expansion(F, C, D2, P, 0, 0)
+    nF -= add_expansion(F, C, Q, 0, 0)
 
-#     nF -= add_expansion(F, C, D2, P, 0, 7)
-#     nF -= add_expansion(F, C, D2, P, 0, 13)
-#     nF -= add_expansion(F, C, D2, P, 0, 17)
-#     nF -= add_expansion(F, C, D2, P, 0, 23)
-#     nF -= add_expansion(F, C, D2, P, 0, 33) # n=5
-#     nF -= add_expansion(F, C, D2, P, 0, 41)
-#     nF -= add_expansion(F, C, D2, P, 0, 53)
-#     nF -= add_expansion(F, C, D2, P, 0, 63)
-#     nF -= add_expansion(F, C, D2, P, 0, 71)
-#     nF -= add_expansion(F, C, D2, P, 0, 81) # n=10
-#     nF -= add_expansion(F, C, D2, P, 0, 93)
-#     nF -= add_expansion(F, C, D2, P, 0,107)
+#     nF -= add_expansion(F, C, Q, 0, 7)
+#     nF -= add_expansion(F, C, Q, 0, 13)
+#     nF -= add_expansion(F, C, Q, 0, 17)
+#     nF -= add_expansion(F, C, Q, 0, 23)
+#     nF -= add_expansion(F, C, Q, 0, 33) # n=5
+#     nF -= add_expansion(F, C, Q, 0, 41)
+#     nF -= add_expansion(F, C, Q, 0, 53)
+#     nF -= add_expansion(F, C, Q, 0, 63)
+#     nF -= add_expansion(F, C, Q, 0, 71)
+#     nF -= add_expansion(F, C, Q, 0, 81) # n=10
+#     nF -= add_expansion(F, C, Q, 0, 93)
+#     nF -= add_expansion(F, C, Q, 0,107)
 #
-#     nF -= add_expansion(F, C, D2, P,  5, 0)
-#     nF -= add_expansion(F, C, D2, P,  9, 0)
-#     nF -= add_expansion(F, C, D2, P, 13, 0) # n=15
-#     nF -= add_expansion(F, C, D2, P, 17, 0)
-#     nF -= add_expansion(F, C, D2, P, 21, 0)
-#     nF -= add_expansion(F, C, D2, P, 25, 0)
-#     nF -= add_expansion(F, C, D2, P, 29, 0)
-#     nF -= add_expansion(F, C, D2, P, 35, 0) # n=20
-#     nF -= add_expansion(F, C, D2, P, 43, 0)
-#     nF -= add_expansion(F, C, D2, P, 47, 0)
-#     nF -= add_expansion(F, C, D2, P, 53, 0)
-#     nF -= add_expansion(F, C, D2, P, 59, 0)
-#     nF -= add_expansion(F, C, D2, P, 65, 0) # n=25
-#     nF -= add_expansion(F, C, D2, P, 75, 0)
-#     nF -= add_expansion(F, C, D2, P, 87, 0)
-#     nF -= add_expansion(F, C, D2, P, 95, 0)
-#     nF -= add_expansion(F, C, D2, P,105, 0)
+#     nF -= add_expansion(F, C, Q,  5, 0)
+#     nF -= add_expansion(F, C, Q,  9, 0)
+#     nF -= add_expansion(F, C, Q, 13, 0) # n=15
+#     nF -= add_expansion(F, C, Q, 17, 0)
+#     nF -= add_expansion(F, C, Q, 21, 0)
+#     nF -= add_expansion(F, C, Q, 25, 0)
+#     nF -= add_expansion(F, C, Q, 29, 0)
+#     nF -= add_expansion(F, C, Q, 35, 0) # n=20
+#     nF -= add_expansion(F, C, Q, 43, 0)
+#     nF -= add_expansion(F, C, Q, 47, 0)
+#     nF -= add_expansion(F, C, Q, 53, 0)
+#     nF -= add_expansion(F, C, Q, 59, 0)
+#     nF -= add_expansion(F, C, Q, 65, 0) # n=25
+#     nF -= add_expansion(F, C, Q, 75, 0)
+#     nF -= add_expansion(F, C, Q, 87, 0)
+#     nF -= add_expansion(F, C, Q, 95, 0)
+#     nF -= add_expansion(F, C, Q,105, 0)
 
     # Expand around points on y axis.
     while True:
@@ -189,13 +198,13 @@ if __name__ == '__main__':
         for iy1 in range(2*jy0+1, min(2*Nax, 2*jy0+2*tmax+1)):
             if F[0][iy1//2] == -1 or iy1 >= len(D2[0]):
                 break
-            qs = covered_squares(F, D2, P, 0, iy1)
+            qs = Q[0][iy1]
             if (0, jy0) in qs and len(qs) > best_n:
-                best_n = len(qs)
+                best_n = n_naked(qs, F)
                 iy = iy1
         if iy is None:
             break
-        nF -= add_expansion(F, C, D2, P, 0, iy)
+        nF -= add_expansion(F, C, Q, 0, iy)
 
     # Expand around points on x axis.
     while True:
@@ -211,13 +220,13 @@ if __name__ == '__main__':
         for ix1 in range(2*jx0+1, min(2*Nax, 2*jx0+2*tmax+1)):
             if F[ix1//2][0] == -1 or ix1 >= len(D2):
                 break
-            qs = covered_squares(F, D2, P, ix1, 0)
+            qs = Q[ix1][0]
             if (jx0, 0) in qs and len(qs) > best_n:
-                best_n = len(qs)
+                best_n = n_naked(qs, F)
                 ix = ix1
         if ix is None:
             break
-        nF -= add_expansion(F, C, D2, P, ix, 0)
+        nF -= add_expansion(F, C, Q, ix, 0)
 
     # Sort remaining squares by distance from (-1,0).
     JJ = []
@@ -235,27 +244,25 @@ if __name__ == '__main__':
                 break
         best_n = 0
         ix = None
-        for ix1 in range(1, 2*Nax):
-            if ix1 >= len(D2):
-                break
-            for iy1 in range(1, 2*Nax):
-                if iy1 >= len(D2[ix1]):
-                    break
+        for ix1 in range(1, len(D2)):
+            for iy1 in range(1, len(D2[ix1])):
                 if F[ix1//2][iy1//2] == -1 or D2[ix1][iy1] == 0:
                     continue
-                qs = covered_squares(F, D2, P, ix1, iy1)
+                qs = Q[ix1][iy1]
                 if (jx0, jy0) in qs and len(qs) > best_n:
-                    best_n = len(qs)
-                    ix, iy = ix1, iy1
+                    nn = n_naked(qs, F)
+                    if nn > best_n:
+                        ix, iy = ix1, iy1
+                        best_n = nn
         if ix is None:
             break
-        nF -= add_expansion(F, C, D2, P, ix, iy)
+        nF -= add_expansion(F, C, Q, ix, iy)
 
     print("# coord -> tile")
     for jx in range(Nax):
         for jy in range(Nax):
             print("%2i," % F[jx][jy], end="")
-        print()
+        print("# %2i" % jx)
     print(f"# {len(C)} tiles")
     for n in range(len(C)):
         ix, iy = C[n]
