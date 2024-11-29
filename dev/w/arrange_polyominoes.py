@@ -14,39 +14,6 @@ import enumerate_polyominoes as ep
 mp.dps = 48
 mp.pretty = True
 
-#RadialData = (
-# Created by devtool/print_taylor_radius.py on 21:01:25.585837
-#(  0,   0,  17,   2,   0.2417), # [2, 2]
-
-def neighbors(j, i, kP, Rows):
-    rows = Rows[kP]
-    result = []
-    nj = len(rows)
-    assert(j%2 == nj%2)
-    assert(i%2 == rows[0]%2)
-    j0 = j//2
-    for jj in range(nj):
-        jcorner = j0 + jj - nj//2
-        if jcorner<0 or jcorner>=Nax:
-            continue
-        ni = rows[jj]
-        i0 = i//2
-        for ii in range(ni):
-            icorner = i0 + ii - ni//2
-            if icorner<0 or icorner>=Nax:
-                continue
-            result.append((jcorner, icorner))
-    # print("neighbors(%3i %3i) kP=%3i nj=%3i %s -> %s (size %i)" % (j, i, kP, nj, str(rows), str(result), len(result)))
-    return result
-
-def unclaimed(F):
-    result = 0
-    for row in F:
-        for val in row:
-            if val == -2:
-                result += 1
-    return result
-
 def adjust_d2(D2, ix, iy, S):
     """
     Reduces D2 entry to value with correct parities.
@@ -302,32 +269,6 @@ if __name__ == '__main__':
             break
         nF -= add_expansion(F, C, D2, P, ix, iy)
 
-
-#     while unclaimed(F)>0:
-#         max_improve = 0
-#         i_max, j_max = -1, -1
-#         for j in range(2*Nax):
-#             for i in range(2*Nax):
-#                 kP = RadialIndex[j][i]
-#                 Neighbors = neighbors(j, i, kP, Rows)
-#                 count_improve = 0
-#                 for jj, ii in Neighbors:
-#                     if F[jj][ii] == -2:
-#                         count_improve += 1
-#                 if count_improve > max_improve:
-#                     max_improve = count_improve
-#                     j_max = j
-#                     i_max = i
-#
-#         kP = RadialIndex[j_max][i_max]
-#         Neighbors = neighbors(j_max, i_max, kP, Rows)
-#         for jj, ii in Neighbors:
-#             if F[jj][ii] == -2:
-#                 F[jj][ii] = len(C)
-#         C.append((i_max,j_max))
-#         print("# Improve by %3i Place %3i at %3i %3i, kP=%3i neighbors #=%3i" %
-#               (max_improve, len(C), j_max, i_max, RadialIndex[j][i], len(Neighbors)))
-#
     print("# coord -> tile")
     for jx in range(Nax):
         for jy in range(Nax):

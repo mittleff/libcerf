@@ -9,6 +9,7 @@ import derive_w as dw
 import enumerate_diameters as ed
 import sys
 sys.path.insert(0, '../shared')
+import hp_funcs as hp
 import functool as fut
 import reltot as rt
 import bisect, math
@@ -23,6 +24,15 @@ def sorted_diameters(N, sx, sy):
             D2.add(d2)
     return sorted(D2)
 
+def wmin(ix, iy, Nb, d2):
+    # print(f"WMIN ix={ix} iy={iy} d2={d2}")
+    wmin = inf
+    for dix in range(ix%2, int(sqrt(d2)), 2):
+        diy = iy%2 + int((sqrt(d2-dix**2)-iy%2)/2)
+        wmin = min(wmin, abs(hp.wofz(mpc((ix+dix)/Nb, (iy+diy)/Nb))))
+        #print(f"... dix={dix} diy={diy} wmin={'%12g' % wmin}")
+    #print(f"RETURN wmin={'%12g' % wmin}")
+    return wmin
 
 if __name__ == '__main__':
     fut.print_provenience()
@@ -58,9 +68,10 @@ if __name__ == '__main__':
                 inew = itau + 2**n
                 if inew >= len(Sxy):
                     continue
-                tau = sqrt(Sxy[inew]) / Nb
-                if rt.rho_of_cNt(z, N, tau, T) <= delta:
+                d2 = Sxy[inew]
+                tau = sqrt(d2) / Nb
+                if rt.abserr(z, N, tau, T) / wmin(ix, iy, Nb, d2) <= delta:
                     itau = inew
 
-            print("%10.5g %8.5g %3i %3i" % (y, tau, Sxy[itau], itau))
+            print("%10.5g %3i" % (y, Sxy[itau]))
         print()
