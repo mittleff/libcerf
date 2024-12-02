@@ -6,7 +6,6 @@ Computes tau for grid points c_ij and given N, delta.
 
 from mpmath import *
 import derive_w as dw
-import enumerate_diameters as ed
 import sys
 sys.path.insert(0, '../shared')
 import hp_funcs as hp
@@ -46,7 +45,6 @@ if __name__ == '__main__':
     Nb = 16
 
     nT = int((1.2*Nb)**2) + 1
-    D2 = ed.sorted_diameters(nT)
 
     for ix in range(7*Nb+1):
         x = ix / Nb
