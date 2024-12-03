@@ -105,13 +105,11 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 //   To compute w(x+iy) we assume that |y| is negligible when added to |x|.
 //   We obtain Re w = exp(-x^2) + 2 y (x Im w(x) - 1 / sqrt(pi)).
 
-    if (ya < 1e-8 * xa) {
+    if (ya==0) {
 	const double wi = im_w_of_x(x);
 	SET_ALGO(cerf_algorithm + 300);
         const double e2 = xa > 27. ? 0. : exp(-xa*xa); // prevent underflow
-	if (ya == 0)
-	    return C(e2, wi); // also works for x=+-inf
-	return C(e2 + y*(2*(x*wi - ispi)), wi);
+        return C(e2, wi); // also works for x=+-inf
     }
 
 // ------------------------------------------------------------------------------
@@ -127,12 +125,10 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 //   To compute w(iy+x) we assume that |x| is negligible when added to |y|.
 //   We obtain Im w = 2 x (1 / sqrt(pi) - y erfcx(y)).
 
-    if (xa < 1e-8 * ya) {
+    if (xa==0) {
 	const double wr = erfcx(y);
 	SET_ALGO(cerf_algorithm + 400);
-	if (xa == 0)
-	    return C(wr, 0); // also works for y=+inf
-	return C(wr, x*(2*(ispi - y*wr)));
+        return C(wr, 0); // also works for y=+inf
     }
 
 // ------------------------------------------------------------------------------
