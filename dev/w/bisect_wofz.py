@@ -24,7 +24,7 @@ import runtool as rt
 mp.dps = 48
 mp.pretty = True
 
-rt.print_line = lambda locus, a, n, rr, f, f2: print('%2i %3i %3i  %21.16e  %21.16e %21.16e %21.16e  %8e %8e %8e' %
+rt.print_line = lambda locus, a, n, rr, f, f2: print('%2i %3i %3i  %22.16e  %22.16e %22.16e %22.16e  %8e %8e %8e' %
           (locus, a, n, rr, re(f), im(f), abs(f), re(f-f2)/abs(f2), im(f-f2)/abs(f2), abs((f-f2)/f2)))
 
 
