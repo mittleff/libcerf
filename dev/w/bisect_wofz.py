@@ -41,7 +41,6 @@ if __name__ == '__main__':
         raise Exception("Invalid arg1, expected b|s")
 
     rt.external_program = "run/run_wofz"
-    rt.range_mode = 'p'
     rt.output_mode = 't'
 
 #    S = rt.loggrid(111, .2, 8)
@@ -52,9 +51,9 @@ if __name__ == '__main__':
     for s in S:
         print(s)
         def ext(r):
-            a = rt.external_function2d(s, r)
+            a = rt.external_function2d(float(s), float(r))
             return (a[0].imag, a[1], a[2], a[3])
         rt.f_ext = ext
-        rt.f_hp = lambda r : hp.wofz(mpc(s, r))
+        rt.f_hp = lambda r : hp.wofz(mpc(float(s), float(r)))
         do_scan(R)
         print()

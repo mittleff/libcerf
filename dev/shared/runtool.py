@@ -33,17 +33,17 @@
 #   Initial version published in libcerf/devtool.
 
 from mpmath import *
-import subprocess, sys
+import math, subprocess, sys
 
 this = sys.modules[__name__]
 
 ### Grids.
 
 def lingrid(N, fr, to):
-    return [(fr * (N-1-n) + to * n) / (N-1) for n in range(N)]
+    return [float(fr * (N-1-n) + to * n) / (N-1) for n in range(N)]
 
 def loggrid(N, fr, to):
-    return [fr**((N-1-n)/(N-1)) * to**(n/(N-1)) for n in range(N)]
+    return [float(fr**((N-1-n)/(N-1)) * to**(n/(N-1))) for n in range(N)]
 
 ### Run C function to be tested.
 
@@ -121,27 +121,18 @@ def check_at(locus, r):
     if 't' in this.output_mode:
         print_line(locus, a, n, rr, f, f2)
 
-def bisect(range_mode, r0, a0, n0, r2, a2, n2):
+def bisect(r0, a0, n0, r2, a2, n2):
     assert(r0 < r2)
-    if r2-r0 < 2e-15*(abs(r0)+abs(r2)):
+    if r2-r0 < 2e-15*(abs(r0)+abs(r2)) or r2-r0 < 1e-30:
         check_at(-1, r0)
         check_at(1, r2)
         return
-    if range_mode == 'l':
-        if r2-r0 < 1e-20 * x_range:
-            check_at(-1, r0)
-            check_at(1, r2)
-            return
-        r1 = (r0 + r2) / 2
-    elif range_mode == 'p':
-        r1 = sqrt(r0*r2)
-    elif range_mode == 'n':
-        r1 = -sqrt(r0*r2)
+    r1 = float((r0 + r2) / 2)
     wr, wi, a1, n1 = f_ext(r1)
     if (a0 != a1 or n0 != n1):
-        bisect(range_mode, r0, a0, n0, r1, a1, n1)
+        bisect(r0, a0, n0, r1, a1, n1)
     if (a1 != a2 or n1 != n2):
-        bisect(range_mode, r1, a1, n1, r2, a2, n2)
+        bisect(r1, a1, n1, r2, a2, n2)
 
 def scan_and_bisect(X):
     """
@@ -160,7 +151,7 @@ def scan_and_bisect(X):
         wr, wi, a2, n2 = f_ext(r2)
         check_at(0, r2)
         if i > 0 and (a2 != a0 or n2 != n0):
-            bisect(range_mode, r0, a0, n0, r2, a2, n2)
+            bisect(r0, a0, n0, r2, a2, n2)
         r0 = r2
         a0 = a2
         n0 = n2
