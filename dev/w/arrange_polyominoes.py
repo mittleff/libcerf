@@ -155,37 +155,6 @@ if __name__ == '__main__':
     # Expand around (0,0).
     nF -= add_expansion(F, C, Q, 0, 0)
 
-#     nF -= add_expansion(F, C, Q, 0, 7)
-#     nF -= add_expansion(F, C, Q, 0, 13)
-#     nF -= add_expansion(F, C, Q, 0, 17)
-#     nF -= add_expansion(F, C, Q, 0, 23)
-#     nF -= add_expansion(F, C, Q, 0, 33) # n=5
-#     nF -= add_expansion(F, C, Q, 0, 41)
-#     nF -= add_expansion(F, C, Q, 0, 53)
-#     nF -= add_expansion(F, C, Q, 0, 63)
-#     nF -= add_expansion(F, C, Q, 0, 71)
-#     nF -= add_expansion(F, C, Q, 0, 81) # n=10
-#     nF -= add_expansion(F, C, Q, 0, 93)
-#     nF -= add_expansion(F, C, Q, 0,107)
-#
-#     nF -= add_expansion(F, C, Q,  5, 0)
-#     nF -= add_expansion(F, C, Q,  9, 0)
-#     nF -= add_expansion(F, C, Q, 13, 0) # n=15
-#     nF -= add_expansion(F, C, Q, 17, 0)
-#     nF -= add_expansion(F, C, Q, 21, 0)
-#     nF -= add_expansion(F, C, Q, 25, 0)
-#     nF -= add_expansion(F, C, Q, 29, 0)
-#     nF -= add_expansion(F, C, Q, 35, 0) # n=20
-#     nF -= add_expansion(F, C, Q, 43, 0)
-#     nF -= add_expansion(F, C, Q, 47, 0)
-#     nF -= add_expansion(F, C, Q, 53, 0)
-#     nF -= add_expansion(F, C, Q, 59, 0)
-#     nF -= add_expansion(F, C, Q, 65, 0) # n=25
-#     nF -= add_expansion(F, C, Q, 75, 0)
-#     nF -= add_expansion(F, C, Q, 87, 0)
-#     nF -= add_expansion(F, C, Q, 95, 0)
-#     nF -= add_expansion(F, C, Q,105, 0)
-
     # Expand around points on y axis.
     while True:
         # Search first square not yet covered
