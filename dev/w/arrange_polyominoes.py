@@ -148,7 +148,7 @@ if __name__ == '__main__':
     nF = 0
     for jx in range(Nax):
         for jy in range(Nax):
-            if (jx+1)**2+(jy+1)**2 <= (Rtot*Ndiv)**2:
+            if (jx)**2+(jy)**2 < (Rtot*Ndiv)**2:
                 F[jx][jy] = -2
                 nF += 1
 
@@ -235,7 +235,7 @@ if __name__ == '__main__':
     with open(fname1, "w") as f:
         print("// Created by %s on %s" % (" ".join(sys.argv), datetime.datetime.now().time()),
               file=f)
-        print("static const int Centers[%i] = {" % len(C), file=f)
+        print("static const int Centers[2*%i] = {" % len(C), file=f)
         for n in range(len(C)):
             ix, iy = C[n]
             print("%3i,%3i," % (ix, iy), file=f)
@@ -258,7 +258,8 @@ if __name__ == '__main__':
     with open(fname3, "w") as f:
         print("// Created by %s on %s" % (" ".join(sys.argv), datetime.datetime.now().time()),
               file=f)
-        print("alignas(64) static const double TaylorCoeffs[%i] = {" % (2*Ntay*len(C)), file=f)
+        print("static const int NTay = %i;" % Ntay, file=f)
+        print("alignas(64) static const double TaylorCoeffs[2*%i*%i] = {" % (Ntay,len(C)), file=f)
         for c in C:
             x = c[0]/(2*Ndiv)
             y = c[1]/(2*Ndiv)

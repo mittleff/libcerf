@@ -75,7 +75,7 @@ EXPORT int cerf_nofterms;
 
 #include "w_taylor_cover.c" // -> static const int Cover[]
 #include "w_taylor_centers.c" // -> static const int Centers[]
-#include "w_taylor_coeffs.c"  // -> static const double TaylorCoeffs[]
+#include "w_taylor_coeffs.c"  // -> static const int NTay; static const double TaylorCoeffs[]
 
 /******************************************************************************/
 /*  w_of_z, Faddeeva's scaled complex error function                          */
@@ -228,7 +228,7 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 // Case |z| -> infty: Asymptotic expansion                        [ALGO 100, 22?]
 // ------------------------------------------------------------------------------
 
-    if (z2 > 49) {
+    if (z2 >= 49) {
 	_cerf_cmplx ret = 0.; // return value
 	const double xs = y < 0 ? -creal(z) : creal(z); // compute for -z if y < 0
 
@@ -328,10 +328,9 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
 	return C(y, y);
     }
 
-    const int kP = Cover[((int)(8*ya)*64)+((int)(8*xa))];
+    const int kP = Cover[((int)(8*xa)*64)+((int)(8*ya))];
     assert(kP >= 0);
     const _cerf_cmplx dz = C(xa - Centers[2*kP]/16., ya - Centers[2*kP+1]/16.);
-    const int NTay = 24;
     const double* T = &TaylorCoeffs[2*NTay*kP];
     _cerf_cmplx ret = C(T[2*NTay-2], T[2*NTay-1]);
     for (int k = NTay-2; k >= 0; --k)
