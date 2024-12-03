@@ -45,8 +45,8 @@ if __name__ == '__main__':
 
 #    S = rt.loggrid(111, .2, 8)
 #    R = rt.loggrid(111, .2, 8)
-    R = rt.lingrid(111, 0, 7.75)
-    S = rt.lingrid(111, 0, 7.75)
+    R = rt.lingrid(173, 0, 10.25)
+    S = rt.lingrid(173, 0, 10.25)
 
     for s in S:
         print(s)
