@@ -63,8 +63,8 @@ def external_function1d(x):
         last_out_line = out_text.split('\n')[-1]
         a2 = last_out_line.split()
         a3 = [mpf(a2[0]), mpf(a2[1]), int(a2[2]), int(a2[3])]
-    except:
-        print("Could not read back from C call")
+    except Exception as e:
+        print(f"Could not read back from 1d C call: {e}")
         print("x:", x)
         print("a:", a1)
         print("t:", out_text)
@@ -90,11 +90,8 @@ def external_function2d(x, y):
         out_text = a1.stdout.decode('utf-8').rstrip(' \n\t')
         last_out_line = out_text.split('\n')[-1]
         a2 = last_out_line.split()
-        if len(a2)<6:
-            raise Exception("External function did not return enough words. Build with -DCERF_INTROSPECT=ON.")
-        a3 = [mpc(a2[0], a2[1]), mpc(a2[2], a2[3]), int(a2[4]), int(a2[5])]
-    except:
-        print("Could not read back from C call")
+    except Exception as e:
+        print(f"Could not read back from 2d C call: {e}")
         print("x:", x)
         print("y:", y)
         print("a:", a1)
@@ -102,6 +99,9 @@ def external_function2d(x, y):
         print("l:", last_out_line)
         print("2:", a2)
         sys.exit(1)
+    if len(a2)<6:
+        raise Exception("External function did not return enough words. Build with -DCERF_INTROSPECT=ON.")
+    a3 = [mpc(a2[0], a2[1]), mpc(a2[2], a2[3]), int(a2[4]), int(a2[5])]
     if re(a3[0]) != mpf(xs):
         raise Exception(f"failed double-string cycle x: {x} -> {xhp} -> {xs} -> {re(a3[0])} ({(x-re(a3[0]))/x})")
     if im(a3[0]) != mpf(ys):
