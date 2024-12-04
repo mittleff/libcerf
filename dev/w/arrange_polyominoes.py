@@ -177,37 +177,15 @@ if __name__ == '__main__':
             break
         nF -= add_expansion(F, C, Q, 0, iy)
 
-    # Expand around points on x axis.
-    while True:
-        # Search first square not yet covered
-        for jx0 in range(1, Nax):
-            if F[jx0][0] < 0:
-                break
-        if F[jx0][0] == -1: # not in domain
-            break # all points inside domain are covered
-        best_n = 0
-        ix = None
-        # print("DEBUG", 2*jx0+1, 2*Nax, 2*jx0+2*tmax+1)
-        for ix1 in range(2*jx0+1, min(2*Nax, 2*jx0+2*tmax+1)):
-            if F[ix1//2][0] == -1 or ix1 >= len(D2):
-                break
-            qs = Q[ix1][0]
-            if (jx0, 0) in qs and len(qs) > best_n:
-                best_n = n_naked(qs, F)
-                ix = ix1
-        if ix is None:
-            break
-        nF -= add_expansion(F, C, Q, ix, 0)
-
     # Sort remaining squares by distance from (-1,0).
     JJ = []
     for jx in range(1, Nax):
-        for jy in range(1, Nax):
+        for jy in range(0, Nax):
             if F[jx][jy] == -2:
                 JJ.append((jx, jy))
     JJ = sorted(JJ, key=lambda jj: hypot(jj[0]+20*Ndiv, jj[1]))
 
-    # Create expansion points inside the quadrant.
+    # Create expansion points inside the quadrant and on the x axis.
     while nF>0:
         # Search first square not yet covered
         for jx0, jy0 in JJ:
