@@ -110,7 +110,8 @@ _cerf_cmplx w_of_z(_cerf_cmplx z) {
         const double e2 = xa > 27. ? 0. : exp(-xa*xa); // prevent underflow
 	if (ya == 0)
 	    return C(e2, wi); // also works for x=+-inf
-	return C(e2 + y*(2*(x*wi - ispi)), wi);
+	if (xa > 6.9)
+	    return C(e2 + y*(2*(x*wi - ispi)), wi);
     }
 
 // ------------------------------------------------------------------------------
