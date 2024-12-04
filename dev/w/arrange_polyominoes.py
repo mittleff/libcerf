@@ -151,9 +151,7 @@ if __name__ == '__main__':
             if (jx)**2+(jy)**2 < (Rtot*Ndiv)**2:
                 F[jx][jy] = -2
                 nF += 1
-
-    # Expand around (0,0).
-    nF -= add_expansion(F, C, Q, 0, 0)
+    F[0][0] = -1 # Maclaurin expansion around z=0 is implemented separately in w_of_z.c
 
     # Expand around points on y axis.
     while True:
