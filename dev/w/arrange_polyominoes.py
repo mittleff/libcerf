@@ -17,6 +17,10 @@ mp.dps = 48
 mp.pretty = True
 
 def sorted_diameters(N, sx, sy):
+    """
+    Returns sorted list of possible values of squared circumcircle diameter
+    in units of a, for given parities of center.
+    """
     D2 = set()
     for j in range(1+sy, N, 2):
         for i in range(1+sx, N, 2):
@@ -40,7 +44,8 @@ def polyomino_pattern(d2, sx, sy):
 
 def read_d2_file(fname):
     """
-    Read file that provides d2(x,y).
+    Reads file that provides d2(x,y).
+    Returns Nb=1/b and D2 (squared diameters for b-lattice points).
     """
     with open(fname, 'r') as f:
         t = ''
@@ -79,6 +84,9 @@ def read_d2_file(fname):
     return Nb, D2
 
 def covered_squares(D2, P, ix, iy):
+    """
+    Returns list of coordinates of square tiles that may be covered by Taylor expansion around b-lattice point ix,iy.
+    """
     d2 = D2[ix][iy]
     if d2==0:
         raise Exception('Cannot add expansion as d2=0')
@@ -87,12 +95,12 @@ def covered_squares(D2, P, ix, iy):
     ret = []
     mx = ix//2
     my = iy//2
-    ly = len(pat)
-    for ny in range(ly):
-        jy = my + ny - ly//2
-        lx = pat[ny]
-        for nx in range(lx):
-            jx = nx + mx - lx//2
+    lx = len(pat)
+    for nx in range(lx):
+        jx = mx + nx - lx//2
+        ly = pat[nx]
+        for ny in range(ly):
+            jy = ny + my - ly//2
             if jx>=0 and jy>=0:
                 ret.append((jx,jy))
     return ret
@@ -140,6 +148,10 @@ if __name__ == '__main__':
     S = [[sorted_diameters(d2max, sx, sy) for sy in [0, 1]] for sx in [0, 1]]
     P = [[{d2:polyomino_pattern(d2, sx, sy) for d2 in S[sx][sy]} for sy in [0, 1]] for sx in [0, 1]]
     Q = [[covered_squares(D2, P, ix, iy) for iy in range(len(D2[ix]))] for ix in range(len(D2))]
+    # print(f"42,9:\nS={S[0][1]}\nd2={D2[42][9]}\nP={P[0][1][D2[42][9]]}\nQ={sorted(Q[42][9])}\n")
+    # print(f"42,8:\nS={S[0][0]}\nd2={D2[42][8]}\nP={P[0][0][D2[42][8]]}\nQ={sorted(Q[42][8])}\n")
+    # print(f"41,9:\nS={S[1][1]}\nd2={D2[41][9]}\nP={P[1][1][D2[41][9]]}\nQ={sorted(Q[41][9])}\n")
+    # sys.exit(1)
 
     # Set up field of base squares.
     # Value -1: outside domain.
