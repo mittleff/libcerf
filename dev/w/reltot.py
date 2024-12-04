@@ -42,7 +42,7 @@ def abserr(z, N, tau, T):
 
     # Rounding error:
     la = sqrt(5)
-    if z.imag==0:
+    if z.real==0:
         la = 1
     re = 0
     for n in range(N):
