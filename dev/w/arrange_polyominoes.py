@@ -253,7 +253,7 @@ if __name__ == '__main__':
     with open(fname1, "w") as f:
         print("// Created by %s on %s" % (" ".join(sys.argv), datetime.datetime.now().time()),
               file=f)
-        print("static const int Centers[2*%i] = {" % len(C), file=f)
+        print("alignas(64) static const short Centers[2*%i] = {" % len(C), file=f)
         for n in range(len(C)):
             ix, iy = C[n]
             print("%3i,%3i," % (ix, iy), file=f)
@@ -267,7 +267,7 @@ if __name__ == '__main__':
         typ = "short"
         if len(C)<128:
             typ = "signed char"
-        print("static const %s Cover[%i] = {" % (typ, Nax**2), file=f)
+        print("alignas(64) static const %s Cover[%i] = {" % (typ, Nax**2), file=f)
         for jx in range(Nax):
             for jy in range(Nax):
                 print("%2i," % F[jx][jy], end="", file=f)
