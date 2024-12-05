@@ -264,7 +264,10 @@ if __name__ == '__main__':
     with open(fname2, "w") as f:
         print("// Created by %s on %s" % (" ".join(sys.argv), datetime.datetime.now().time()),
               file=f)
-        print("static const int Cover[%i] = {" % Nax**2, file=f)
+        typ = "short"
+        if len(C)<128:
+            typ = "signed char"
+        print("static const %s Cover[%i] = {" % (typ, Nax**2), file=f)
         for jx in range(Nax):
             for jy in range(Nax):
                 print("%2i," % F[jx][jy], end="", file=f)

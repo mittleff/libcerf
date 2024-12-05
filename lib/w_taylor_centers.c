@@ -1,4 +1,4 @@
-// Created by ./arrange_polyominoes.py 20 d30N20b16.dat on 10:57:09.308500
+// Created by ./arrange_polyominoes.py 20 d30N20b16.dat on 13:18:48.600966
 static const int Centers[2*91] = {
   0,  3,
   0,  7,
