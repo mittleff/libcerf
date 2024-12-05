@@ -2,6 +2,7 @@
 
 """
 Print expansion coefficients of w(z) for the asymptotic expansion and for the Maclaurin series.
+Used to generate code for direct inclusion in w_of_z.c.
 """
 
 from mpmath import *

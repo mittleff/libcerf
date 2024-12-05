@@ -1,7 +1,9 @@
 #!/bin/env python
 
 """
-Generates one possible polyomino coverage.
+Find approximative solution of the set cover problem.
+Reads file that provides d2(x,y).
+Writes three C source files that are included by w_of_z.c.
 """
 
 import sys
