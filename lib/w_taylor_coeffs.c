@@ -1,4 +1,4 @@
-// Created by ./arrange_polyominoes.py 20 d30N20b16.dat on 17:08:55.985997
+// Created by ./arrange_polyominoes.py 20 d30N20b16.dat on 10:57:09.310461
 static const int NTay = 20;
 alignas(64) static const double TaylorCoeffs[2*20*91] = {
  0x0.d1b5ddbf9b4368p0, 0x0, 0x0, 0x0.d23941dc4f7d88p0, -0x0.aa4b21664c5be0p0, 0x0, 0x0, -0x0.edb98f76d6e5c0p-1, 0x0.9401bbf3283650p-1, 0x0, 0x0, 0x0.a7fa969432afa8p-2, -0x0.b0585271af47d0p-3, 0x0, 0x0, -0x0.ad14ec6654dc80p-4, 0x0.a01e5c48175320p-5, 0x0, 0x0, 0x0.8c81d8aa497d10p-6, -0x0.eb1d198d00b248p-8, 0x0, 0x0, -0x0.bc57f968421e20p-9, 0x0.90f8917226ffa0p-10, 0x0, 0x0, 0x0.d71484a4609170p-12, -0x0.9a28b1675e40f0p-13, 0x0, 0x0, -0x0.d600c002dd94a8p-15, 0x0.9020a8673bddf8p-16, 0x0, 0x0, 0x0.bcb287bd5a52a8p-18, -0x0.f08083a0a2e748p-20, 0x0, 0x0, -0x0.9568d8e6967920p-21, // x=       0 y=  0.1875

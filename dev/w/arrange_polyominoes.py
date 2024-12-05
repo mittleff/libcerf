@@ -115,10 +115,16 @@ def add_expansion(F, C, Q, ix, iy):
 
     count = 0
     for jx, jy in qs:
-        if F[jx][jy] == -2:
+        nold = F[jx][jy]
+        if nold == -2:
             F[jx][jy] = n
             count += 1
-        # print(f'cover {jx},{jy} by {n}')
+        else:
+            ixold, iyold = C[nold]
+            if ixold!=0 and iyold!=0:
+                ijx, ijy = 2*jx+1, 2*jy+1
+                if (ijx-ix)**2 + (ijy-iy)**2 < (ijx-ixold)**2 + (ijy-iyold)**2:
+                    F[jx][jy] = n
 
     return count
 
